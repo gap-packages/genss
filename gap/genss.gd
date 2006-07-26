@@ -28,5 +28,13 @@ DeclareOperation( "FindBasePointCandidates", [ IsGroup, IsInt ] );
 DeclareOperation( "AddGeneratorToStabilizerChain",
   [IsStabilizerChain,IsObject,IsBool] );
 DeclareOperation( "SiftGroupElement", [ IsStabilizerChain, IsObject ] );
+DeclareOperation( "SiftGroupElement2", [ IsStabilizerChain, IsObject ] );
 DeclareAttribute( "Size", IsStabilizerChain );
+
+DeclareGlobalFunction( "GENSS_CreateStabChainRecord2" );
+DeclareGlobalFunction( "GENSS_StabilizerChain2Inner" );
+DeclareOperation( "AddGeneratorToStabilizerChain2",
+  [IsStabilizerChain,IsObject] );
+DeclareOperation( "StabilizerChain2", [ IsGroup ] );
+DeclareOperation( "StabilizerChain2", [ IsGroup, IsRecord ] );
 
