@@ -35,6 +35,7 @@ DeclareGlobalFunction( "GENSS_CreateStabChainRecord2" );
 DeclareGlobalFunction( "GENSS_StabilizerChain2Inner" );
 DeclareOperation( "AddGeneratorToStabilizerChain2",
   [IsStabilizerChain,IsObject] );
+DeclareGlobalFunction( "GENSS_CopyDefaultOptions" );
 DeclareOperation( "StabilizerChain2", [ IsGroup ] );
 DeclareOperation( "StabilizerChain2", [ IsGroup, IsRecord ] );
 
