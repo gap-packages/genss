@@ -3,11 +3,11 @@
 # Configuration variables, these are taken as defaults for the options:
 
 GENSS.InitialHashSize := NextPrimeInt(20000);
-GENSS.Report := 10000;
+GENSS.Report := 30000;
 GENSS.ShortOrbitsNrRandoms := 10;
 GENSS.OrbitLengthLimit := 10000000;
-GENSS.ShortOrbitsOrbLimit := 20000;
-GENSS.ShortOrbitsStartLimit := 100;
+GENSS.ShortOrbitsOrbLimit := 80000;
+GENSS.ShortOrbitsStartLimit := 400;
 GENSS.NumberPrevOrbitPoints := 30;
 GENSS.RandomStabGens := 5;
 GENSS.StabGenScramble := 30;
@@ -316,7 +316,7 @@ InstallGlobalFunction( GENSS_FindShortOrbit,
           fi;
         fi;
     until found;
-    Info(InfoGenSS,2,"Found orbit of length ",Length(o[i])," (#",i,").");
+    Info(InfoGenSS,1,"Found short orbit of length ",Length(o[i])," (#",i,").");
     return o[i];
   end );   
 

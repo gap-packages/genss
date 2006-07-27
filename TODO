@@ -1,1 +1,2 @@
-Lots...
+Make all GENSS options changable via the options record. Nothing global.
+Add benchmark tests like in matrixss.

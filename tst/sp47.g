@@ -1,0 +1,15 @@
+LoadPackage("genss");
+Print("Sp_4(7) natural:\n\n");
+g := Sp(4,7);
+gg := Group(GeneratorsOfGroup(g));
+ti := Runtime();
+S := StabilizerChain(gg,rec(ShortOrbit := 10));
+ti2 := Runtime();
+ti3 := Runtime();
+Print("\n");
+S := StabilizerChain(g,rec(ShortOrbit := 10));
+ti4 := Runtime();
+Print("\nStabChain:\n");
+ViewObj(S);
+Print("\n\nTime with random verification: ",ti2-ti,"\n");
+Print("Time with known size: ",ti4-ti3,"\n");

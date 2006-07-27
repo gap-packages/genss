@@ -1,0 +1,16 @@
+LoadPackage("genss");
+Print("Co1 on 98280 points:\n\n");
+gens := AtlasGenerators("Co1",1).generators;
+g := Group(gens);
+ti := Runtime();
+S := StabilizerChain(g);
+ti2 := Runtime();
+SetSize(g,Size(CharacterTable("Co1")));
+ti3 := Runtime();
+Print("\n");
+S := StabilizerChain(g); time;
+ti4 := Runtime();
+Print("\nStabChain:\n");
+ViewObj(S);
+Print("\n\nTime with random verification: ",ti2-ti,"\n");
+Print("Time with known size: ",ti4-ti3,"\n");

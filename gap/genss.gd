@@ -1,6 +1,7 @@
 # A little try to implement a generic Schreier-Sims using the orb package
 
 DeclareInfoClass( "InfoGenSS" );
+SetInfoLevel(InfoGenSS,1);
 
 DeclareGlobalVariable( "GENSS" );
 InstallValue(GENSS,rec());
