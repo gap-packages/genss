@@ -1,2 +1,7 @@
 Make all GENSS options changable via the options record. Nothing global.
 Add benchmark tests like in matrixss.
+Create an attribute for matrix groups.
+
+Later:
+ * deterministic verification
+ * lots of methods using stabilizer chains
