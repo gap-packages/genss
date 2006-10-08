@@ -47,6 +47,8 @@ GENSS.VerifyElements := 10;   # this amounts to an error bound of 1/1024
 GENSS.DeterministicVerification := false;
 # Number of random elements used to do immediate verification:
 GENSS.DirectVerificationElements := 3;
+# Are we working projectively?
+GENSS.Projective := false;
 
 #############################################################################
 # A few helper functions needed elsewhere:
@@ -215,6 +217,15 @@ InstallGlobalFunction( GENSS_FindShortOrbit,
     return o[i];
   end );   
 
+InstallGlobalFunction( GENSS_IsOneProjective,
+  function(el)
+    local s;
+    s := el[1][1];
+    if IsZero(s) then return false; fi;
+    s := s^-1;
+    return IsOne( s*el );
+  end );
+
 
 #############################################################################
 # Now to the heart of the method, the Schreier-Sims:
@@ -238,14 +249,16 @@ InstallMethod( FindBasePointCandidates, "for a matrix group over a FF",
     cand := rec( points := [], ops := [], used := 0 );
     for v in bv do
         w := ORB_NormalizeVector(ShallowCopy(v));
-        if Size(F) <> 2 then
+        if Size(F) = 2 then
             Add(cand.points,w);
-            Add(cand.ops,OnLines);
-            Add(cand.points,v);
             Add(cand.ops,OnRight);
         else
             Add(cand.points,w);
-            Add(cand.ops,OnRight);
+            Add(cand.ops,OnLines);
+            if opt.Projective = false then
+                Add(cand.points,v);
+                Add(cand.ops,OnRight);
+            fi;
         fi;
     od;
     return cand;
@@ -275,7 +288,7 @@ InstallGlobalFunction( GENSS_NextBasePoint,
     # S can be false or a stabilizer chain record
     if S <> false then  # try points in previous orbit
         # Maybe we can take the last base point now acting non-projectively?
-        if IsIdenticalObj(S!.orb!.op,OnLines) and 
+        if opt.Projective = false and IsIdenticalObj(S!.orb!.op,OnLines) and 
            NotFixedUnderAllGens(gens,S!.orb[1],OnRight) then
             return rec( point := S!.orb[1], op := OnRight, cand := cand );
         fi;
@@ -335,12 +348,17 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
     # record for base point candidates and opt the (shared) option
     # record. This is called in StabilizerChain and calls itself.
     # It also can be called if a new layer is needed.
-    local gen,S,i,next,pr,r,stabgens,x;
+    local base,gen,S,i,next,pr,r,stabgens,x;
 
     Info(InfoGenSS,2,"Entering GENSS_StabilizerChainInner layer=",layer);
     next := GENSS_NextBasePoint(gens,cand,opt,parentS);
+    if parentS <> false then
+        base := parentS!.base;
+    else
+        base := [];
+    fi;
     S := GENSS_CreateStabChainRecord(gens,size,layer,
-             next.point,next.op,[],cand,opt);
+             next.point,next.op,base,cand,opt);
 
     Info( InfoGenSS, 3, "Entering orbit enumeration layer ",layer,"..." );
     repeat
@@ -473,8 +491,10 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
                 if Size(DefaultFieldOfMatrixGroup(grp)) > 2 then
                     Add(cand.points,res[1],1);
                     Add(cand.ops,OnLines,1);
-                    Add(cand.points,res[1],2);
-                    Add(cand.ops,OnPoints,2);
+                    if opt.Projective = false then
+                        Add(cand.points,res[1],2);
+                        Add(cand.ops,OnPoints,2);
+                    fi;
                 else
                     Add(cand.points,res[1],1);
                     Add(cand.ops,OnPoints,1);
@@ -483,7 +503,7 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
         fi;
     fi;
 
-    if HasSize(grp) then
+    if HasSize(grp) and not(opt.Projective) then
         S := GENSS_StabilizerChainInner(GeneratorsOfGroup(grp), Size(grp), 1,
                                          cand, opt, false);
     elif IsBound(opt.Size) then
@@ -595,7 +615,7 @@ InstallMethod( AddGeneratorToStabilizerChain,
 InstallMethod( SiftGroupElement, "for a stabilizer chain and a group element",
   [ IsStabilizerChain and IsStabilizerChainByOrb, IsObject ],
   function( S, x )
-    local o,p,po,preS;
+    local o,p,po,preS,r;
     preS := false;
     while S <> false do
         o := S!.orb;
@@ -612,9 +632,89 @@ InstallMethod( SiftGroupElement, "for a stabilizer chain and a group element",
         preS := S;
         S := S!.stab;
     od;
-    return rec( isone := IsOne(x), rem := x, S := false, preS := preS );
+    r := rec( rem := x, S := false, preS := preS );
+    if preS!.opt.Projective then
+        r.isone := GENSS_IsOneProjective(x);
+    else
+        r.isone := IsOne(x);
+    fi;
+    return r;
   end );
 
+InstallMethod( SiftGroupElementSLP, 
+  "for a stabilizer chain and a group element",
+  [ IsStabilizerChain and IsStabilizerChainByOrb, IsObject ],
+  function( S, x )
+    local nrstrong,o,p,po,preS,r,slp;
+    preS := false;
+    slp := [];     # will be reversed in the end
+    nrstrong := 0; # we count here the number of generators
+    while S <> false do
+        o := S!.orb;
+        p := o!.op(o[1],x);
+        po := Position(o,p);
+        if po = fail then   # not in current stabilizer
+            return rec( isone := false, rem := x, S := S, preS := preS,
+                        slp := fail );
+        fi;
+        # Now sift through Schreier tree:
+        while po > 1 do
+            x := x * S!.orb!.gensi[o!.schreiergen[po]];
+            Add(slp,1);
+            Add(slp,nrstrong + o!.schreiergen[po]);
+            po := o!.schreierpos[po];
+        od;
+        nrstrong := nrstrong + Length(S!.orb!.gens);
+        preS := S;
+        S := S!.stab;
+    od;
+    r := rec( rem := x, S := false, preS := preS );
+    if preS!.opt.Projective then
+        r.isone := GENSS_IsOneProjective(x);
+    else
+        r.isone := IsOne(x);
+    fi;
+    if r.isone then
+        r.slp := StraightLineProgramNC([slp{[Length(slp),Length(slp)-1..1]}],
+                                       nrstrong);
+    else
+        r.slp := fail;
+    fi;
+    return r;
+  end );
+
+InstallMethod( StrongGenerators, "for a stabilizer chain",
+  [ IsStabilizerChain and IsStabilizerChainByOrb ],
+  function( S )
+    local gens;
+    gens := [];
+    while S <> false do
+        Append(gens,S!.orb!.gens);
+        S := S!.stab;
+    od;
+    return gens;
+  end );
+
+InstallMethod( NrStrongGenerators, "for a stabilizer chain",
+  [ IsStabilizerChain and IsStabilizerChainByOrb ],
+  function( S )
+    local nrgens;
+    nrgens := 0;
+    while S <> false do
+        nrgens := nrgens + Length(S!.orb!.gens);
+        S := S!.stab;
+    od;
+    return nrgens;
+  end );
+
+InstallMethod( ForgetMemory, "for a stabilizer chain",
+  [ IsStabilizerChain and IsStabilizerChainByOrb ],
+  function( S )
+    while S <> false do
+        ForgetMemory(S!.orb);
+        S := S!.stab;
+    od;
+  end );
 
 #############################################################################
 # The following operations apply to stabilizer chains:
@@ -692,5 +792,11 @@ InstallMethod( \in, "for a matrix and a finite matrix group with a stabchain",
     else
         return false;
     fi;
+  end );
+
+InstallMethod( IsProved, "for a stabilizer chain",
+  [ IsStabilizerChain and IsStabilizerChainByOrb ],
+  function( S )
+    return S!.proof;
   end );
 

@@ -53,6 +53,7 @@ DeclareGlobalFunction( "GENSS_CopyDefaultOptions" );
 DeclareGlobalFunction( "GENSS_MapBaseImage" );
 DeclareGlobalFunction( "GENSS_FindVectorsWithShortOrbit" );
 DeclareGlobalFunction( "GENSS_FindShortOrbit" );
+DeclareGlobalFunction( "GENSS_IsOneProjective" );
 
 
 #############################################################################
@@ -68,6 +69,9 @@ DeclareOperation( "StabilizerChain", [ IsGroup, IsRecord ] );
 DeclareOperation( "AddGeneratorToStabilizerChain",
                   [IsStabilizerChain,IsObject] );
 DeclareOperation( "SiftGroupElement", [ IsStabilizerChain, IsObject ] );
+DeclareOperation( "SiftGroupElementSLP", [ IsStabilizerChain, IsObject ] );
+DeclareOperation( "StrongGenerators", [IsStabilizerChain] );
+DeclareOperation( "NrStrongGenerators", [IsStabilizerChain] );
 
 
 #############################################################################
