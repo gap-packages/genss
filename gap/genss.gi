@@ -89,6 +89,9 @@ InstallGlobalFunction( GENSS_FindVectorsWithShortOrbit,
     for i in [1..opt.ShortOrbitsNrRandoms] do
         Add(l,PseudoRandom(g));
     od;
+    if IsObjWithMemory(l[1]) then
+        ForgetMemory(l);
+    fi;
     c := List(l,x->Set(Factors(CharacteristicPolynomial(x,1))));
     v := [];
     for i in [1..Length(l)] do
@@ -675,8 +678,12 @@ InstallMethod( SiftGroupElementSLP,
         r.isone := IsOne(x);
     fi;
     if r.isone then
-        r.slp := StraightLineProgramNC([slp{[Length(slp),Length(slp)-1..1]}],
-                                       nrstrong);
+        if Length(slp) = 0 then   # element was the identity!
+            r.slp := StraightLineProgramNC([[1,0]],nrstrong);
+        else
+            r.slp := StraightLineProgramNC(
+                           [slp{[Length(slp),Length(slp)-1..1]}],nrstrong);
+        fi;
     else
         r.slp := fail;
     fi;
