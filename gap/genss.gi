@@ -244,7 +244,9 @@ InstallMethod( FindBasePointCandidates, "for a matrix group over a FF",
     if IsObjWithMemory(GeneratorsOfGroup(grp)[1]) then
         grp := Group(StripMemory(GeneratorsOfGroup(grp)));
     fi;
-    if i = 0 and Size(F)^d > 300000 then
+    if i = 0 and 
+       ((opt!.Projective = false and Size(F)^d > 300000) or
+        (opt!.Projective = true and Size(F)^(d-1) > 300000)) then
         bv := GENSS_FindVectorsWithShortOrbit(grp,opt);
     else
         bv := One(grp);
@@ -488,6 +490,7 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
             i := opt.TryShortOrbit;
             repeat
                 i := i - 1;
+                Info(InfoGenSS,1,"Looking for short orbit (",i,")...");
                 res := GENSS_FindShortOrbit(grp,opt);
             until res <> fail or i = 0;
             if res <> fail then
