@@ -810,3 +810,36 @@ InstallMethod( IsProved, "for a stabilizer chain",
     return S!.proof;
   end );
 
+InstallMethod( MakeGAPStabChain, "for a stabilizer chain",
+  [ IsStabilizerChain and IsStabilizerChainByOrb ],
+  function( S )
+    local first,last,s,ss;
+    if not(IsPermOnIntOrbitRep(S!.orb)) then
+        Error("Can only work with permutations acting on integers!");
+        return fail;
+    fi;
+    s := rec();
+    if S!.stab <> false then
+        ss := MakeGAPStabChain(S!.stab);
+        s.labels := ss.labels;
+        s.stabilizer := ss;
+    else
+        s.labels := [];
+        s.stabilizer := rec( labels := s.labels, genlabels := [],
+                             generators := [], identity := S!.orb!.gens[1]^0 );
+    fi;
+    s.orbit := List(S!.orb);
+    first := Length(s.labels)+1;
+    Append(s.labels,List(S!.orb!.gens,x->x^-1));
+    last := Length(s.labels);
+    s.genlabels := [first..last];
+    s.generators := s.labels{s.genlabels};
+    s.identity := s.generators[1]^0;
+    s.translabels := [1];
+    Append(s.translabels,
+           List(S!.orb!.schreiergen{[2..Length(S!.orb!.schreiergen)]},
+                x->x+first-1));
+    s.transversal := s.labels{s.translabels};
+    return s;
+  end );
+ 

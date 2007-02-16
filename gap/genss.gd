@@ -80,3 +80,5 @@ DeclareOperation( "NrStrongGenerators", [IsStabilizerChain] );
 
 DeclareAttribute( "Size", IsStabilizerChain );
 DeclareOperation( "IsProved", [IsStabilizerChain] );
+DeclareOperation( "MakeGAPStabChain", [IsStabilizerChain] );
+
