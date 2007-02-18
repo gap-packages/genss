@@ -12,3 +12,11 @@
 
 ReadPackage("genss","gap/genss.gi");
 
+if IsBound(IO_PackageIsLoaded) then
+    ReadPackage("genss","gap/picklers.gi");
+else
+    if not(IsBound(IO_PkgThingsToRead)) then
+        IO_PkgThingsToRead := [];
+    fi;
+    Add(IO_PkgThingsToRead,[["genss","gap/picklers.gi"]]);
+fi;
