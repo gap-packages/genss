@@ -18,5 +18,5 @@ else
     if not(IsBound(IO_PkgThingsToRead)) then
         IO_PkgThingsToRead := [];
     fi;
-    Add(IO_PkgThingsToRead,[["genss","gap/picklers.gi"]]);
+    Add(IO_PkgThingsToRead,["genss","gap/picklers.gi"]);
 fi;
