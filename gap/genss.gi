@@ -291,7 +291,8 @@ InstallGlobalFunction( GENSS_NextBasePoint,
     end;
 
     # S can be false or a stabilizer chain record
-    if S <> false then  # try points in previous orbit
+    if S <> false and not(opt.strictlyusecandidates) then  
+        # try points in previous orbit
         # Maybe we can take the last base point now acting non-projectively?
         if opt.Projective = false and IsIdenticalObj(S!.orb!.op,OnLines) and 
            NotFixedUnderAllGens(gens,S!.orb[1],OnRight) then
@@ -308,6 +309,7 @@ InstallGlobalFunction( GENSS_NextBasePoint,
     repeat
         if cand.used >= Length(cand.points) then
             cand := FindBasePointCandidates(Group(gens),opt,1);
+            opt.strictlyusecandidates := false;
         fi;
         cand.used := cand.used + 1;
     until NotFixedUnderAllGens(gens,cand.points[cand.used],cand.ops[cand.used]);
@@ -482,7 +484,20 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
     fi;
                 
     # Find base point candidates:
-    if IsBound(opt.cand) then
+    if IsBound(opt.base) then
+        cand := rec( points := opt.base, used := 0 );
+        if not(IsBound(opt.baseops)) then
+            # Let's guess the ops:
+            if IsBound(opt.Projective) and opt.Projective = true then
+                cand.ops := ListWithIdenticalEntries(Length(opt.base),OnLines);
+            else
+                cand.ops := ListWithIdenticalEntries(Length(opt.base),OnPoints);
+            fi;
+        else
+            cand.ops := opt.baseops;
+        fi;
+        opt.strictlyusecandidates := true;
+    elif IsBound(opt.cand) then
         cand := opt.cand;
     else
         cand := FindBasePointCandidates( grp, opt, 0 );
@@ -507,6 +522,9 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
                 fi;
             fi;
         fi;
+    fi;
+    if not(IsBound(opt.strictlyusecandidates)) then
+        opt.strictlyusecandidates := false;
     fi;
 
     if HasSize(grp) and not(opt.Projective) then
