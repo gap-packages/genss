@@ -31,6 +31,12 @@ GENSS.OrbitLengthLimit := 10000000;
 GENSS.NumberPrevOrbitPoints := 30;
 # Number of (evenly distributed) random generators for the stabilizer:
 GENSS.RandomStabGens := 4;
+# Product replacement parameters for the creation of random elements
+# for short orbit search:
+GENSS.ShortOrbScramble := 0;
+GENSS.ShortOrbScrambleFactor := 0;
+GENSS.ShortOrbAddSlots := 0;
+GENSS.ShortOrbMaxDepth := 100;
 # Product replacement parameters for the stabilizer element generation:
 GENSS.StabGenScramble := 30;
 GENSS.StabGenScrambleFactor := 6;
@@ -46,9 +52,13 @@ GENSS.VerifyMaxDepth := 400;
 GENSS.VerifyElements := 10;   # this amounts to an error bound of 1/1024
 GENSS.DeterministicVerification := false;
 # Number of random elements used to do immediate verification:
-GENSS.DirectVerificationElements := 3;
+GENSS.ImmediateVerificationElements := 3;
 # Are we working projectively?
 GENSS.Projective := false;
+# To find a very short orbit we try a random vector:
+GENSS.VeryShortOrbLimit := 1000;
+# Never consider more than this number of candidates for short orbits:
+GENSS.LimitShortOrbCandidates := 100;
 
 #############################################################################
 # A few helper functions needed elsewhere:
@@ -83,12 +93,24 @@ InstallGlobalFunction( GENSS_MapBaseImage,
 InstallGlobalFunction( GENSS_FindVectorsWithShortOrbit,
   function(g,opt)
     # Needs opt components "ShortOrbitsNrRandoms"
-    local c,f,i,inters,j,l,nw,sortfun,v,vv,w,wb,ww;
+    local c,f,i,inters,j,l,nw,pr,sortfun,v,vv,w,wb,ww;
+    Info(InfoGenSS,2,"Trying Murray/O'Brien heuristics...");
     l := ShallowCopy(GeneratorsOfGroup(g));
     f := DefaultFieldOfMatrixGroup(g);
-    for i in [1..opt.ShortOrbitsNrRandoms] do
-        Add(l,PseudoRandom(g));
-    od;
+    if HasPseudoRandomSeed(g) then
+        for i in [1..opt.ShortOrbitsNrRandoms] do
+            Add(l,PseudoRandom(g));
+        od;
+    else
+        pr := ProductReplacer(GeneratorsOfGroup(g),
+                      rec( scramble := opt.ShortOrbScramble,
+                           scramblefactor := opt.ShortOrbScrambleFactor,
+                           addslots := opt.ShortOrbAddSlots,
+                           maxdepth := opt.ShortOrbMaxDepth ));
+        for i in [1..opt.ShortOrbitsNrRandoms] do
+            Add(l,Next(pr));
+        od;
+    fi;
     if IsObjWithMemory(l[1]) then
         ForgetMemory(l);
     fi;
@@ -108,7 +130,8 @@ InstallGlobalFunction( GENSS_FindVectorsWithShortOrbit,
     # Now collect a list of all those spaces together with all
     # possible intersects:
     w := [];
-    for i in [1..Length(l)] do
+    i := 1;
+    while i <= Length(l) and Length(w) < GENSS.LimitShortOrbCandidates do
         nw := [];
         for j in [1..Length(v[i])] do
             for ww in w do
@@ -121,6 +144,7 @@ InstallGlobalFunction( GENSS_FindVectorsWithShortOrbit,
             Add(nw,v[i][j]);
         od;
         Append(w,nw);
+        i := i + 1;
     od;
     sortfun := function(a,b)
         if a[2] < b[2] then return true;
@@ -148,7 +172,7 @@ end );
 InstallGlobalFunction( GENSS_FindShortOrbit,
   function( g,opt )
     # Needs opt components:
-    #  "ShortOrbitsNrRandom"  (because it uses GENSS_FindVectorsWithShortOrbit)
+    #  "ShortOrbitsNrRandoms"  (because it uses GENSS_FindVectorsWithShortOrbit)
     #  "ShortOrbitsOrbLimit"
     #  "ShortOrbitsStartLimit"
     local ThrowAwayOrbit,found,gens,hashlen,i,j,limit,newnrorbs,nrorbs,o,wb;
@@ -237,13 +261,61 @@ InstallGlobalFunction( GENSS_IsOneProjective,
 InstallMethod( FindBasePointCandidates, "for a matrix group over a FF",
   [ IsGroup and IsMatrixGroup and IsFinite, IsRecord, IsInt ],
   function( grp, opt, i )
-    local bv,cand,d,F,v,w;
+    local bv,cand,d,F,o,gens,v,w,res;
     F := DefaultFieldOfMatrixGroup(grp);
     d := DimensionOfMatrixGroup(grp);
     Info( InfoGenSS, 2, "Finding nice base points..." );
     if IsObjWithMemory(GeneratorsOfGroup(grp)[1]) then
         grp := Group(StripMemory(GeneratorsOfGroup(grp)));
     fi;
+
+    # Try a random vector to find a very short orbit:
+    Info( InfoGenSS, 3, "Trying random vector for very short orbit..." );
+    gens := GeneratorsOfGroup(grp);
+    v := ShallowCopy( gens[1][1] );
+    Randomize(v);
+    o := Orb(gens,v,OnRight);
+    Enumerate(o,opt.VeryShortOrbLimit);
+    if Length(o) > 1 and Length(o) < opt.VeryShortOrbLimit then
+        Info( InfoGenSS, 3, "Found orbit of length ",Length(o) );
+        if Size(F) = 2 then
+            cand := rec( points := [v], ops := [OnPoints], used := 0 );
+        else 
+            v := ORB_NormalizeVector(v);
+            cand := rec( points := [v], ops := [OnLines],
+                         used := 0 );
+            # Note that if we work non-projectively, then the same
+            # point will be taken next with OnRight automatically!
+        fi;
+        return cand;
+    fi;
+    Info( InfoGenSS, 3, "Found no very short orbit up to limit ",
+          opt.VeryShortOrbLimit );
+
+    # Next possibly "TryShortOrbit":
+    cand := rec( points := [], used := 0 );
+    if IsBound(opt.TryShortOrbit) and opt.TryShortOrbit > 0 then
+        repeat
+            opt.TryShortOrbit := opt.TryShortOrbit - 1;
+            Info(InfoGenSS,1,"Looking for short orbit (",opt.TryShortOrbit,
+                 ")...");
+            res := GENSS_FindShortOrbit(grp,opt);
+        until res <> fail or opt.TryShortOrbit = 0;
+        if res <> fail then
+            if Size(F) > 2 then
+                cand.points := [res[1]];
+                cand.ops := [OnLines];
+                # Note that if we work non-projectively, then the same
+                # point will be taken next with OnRight automatically!
+            else
+                cand.points := [res[1]];
+                cand.ops := [OnRight];
+            fi;
+            return cand;
+        fi;
+    fi;
+
+    # Otherwise standard Murry/O'Brien heuristics:
     if i = 0 and 
        ((opt!.Projective = false and Size(F)^d > 300000) or
         (opt!.Projective = true and Size(F)^(d-1) > 300000)) then
@@ -260,10 +332,8 @@ InstallMethod( FindBasePointCandidates, "for a matrix group over a FF",
         else
             Add(cand.points,w);
             Add(cand.ops,OnLines);
-            if opt.Projective = false then
-                Add(cand.points,v);
-                Add(cand.ops,OnRight);
-            fi;
+            # Note that if we work non-projectively, then the same
+            # point will be taken next with OnRight automatically!
         fi;
     od;
     return cand;
@@ -291,7 +361,7 @@ InstallGlobalFunction( GENSS_NextBasePoint,
     end;
 
     # S can be false or a stabilizer chain record
-    if S <> false and not(opt.strictlyusecandidates) then  
+    if S <> false and not(opt.StrictlyUseCandidates) then  
         # try points in previous orbit
         # Maybe we can take the last base point now acting non-projectively?
         if opt.Projective = false and IsIdenticalObj(S!.orb!.op,OnLines) and 
@@ -309,7 +379,7 @@ InstallGlobalFunction( GENSS_NextBasePoint,
     repeat
         if cand.used >= Length(cand.points) then
             cand := FindBasePointCandidates(Group(gens),opt,1);
-            opt.strictlyusecandidates := false;
+            opt.StrictlyUseCandidates := false;
         fi;
         cand.used := cand.used + 1;
     until NotFixedUnderAllGens(gens,cand.points[cand.used],cand.ops[cand.used]);
@@ -327,7 +397,7 @@ InstallGlobalFunction( GENSS_CreateStabChainRecord,
     Info( InfoGenSS, 2, "Creating new stab chain record..." );
 
     gens := ShallowCopy(gens);
-    # Note that we do ShallowCopy such the original list and the
+    # Note that we do ShallowCopy such that the original list and the
     # one in the orbit record are different from each other.
     S := rec( stab := false, cand := cand, size := size, base := base,
               opt := opt, layer := layer );
@@ -359,13 +429,14 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
 
     Info(InfoGenSS,2,"Entering GENSS_StabilizerChainInner layer=",layer);
     next := GENSS_NextBasePoint(gens,cand,opt,parentS);
+    cand := next.cand;   # This could have changed
     if parentS <> false then
         base := parentS!.base;
     else
         base := [];
     fi;
     S := GENSS_CreateStabChainRecord(gens,size,layer,
-             next.point,next.op,base,cand,opt);
+             next.point,next.op,base,next.cand,opt);
 
     Info( InfoGenSS, 3, "Entering orbit enumeration layer ",layer,"..." );
     repeat
@@ -417,15 +488,16 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
             S!.stab := GENSS_StabilizerChainInner(stabgens,false,
                                                    layer+1,cand,opt,S);
         fi;
-        if opt.DirectVerificationElements > 0 then
-            Info(InfoGenSS,1,"Doing direct verification in layer ",
-                 S!.layer," (",opt.DirectVerificationElements," elements)...");
+        if opt.ImmediateVerificationElements > 0 then
+            Info(InfoGenSS,1,"Doing immediate verification in layer ",
+                 S!.layer," (",opt.ImmediateVerificationElements,
+                 " elements)...");
             i := 0;
-            while i < opt.DirectVerificationElements do
+            while i < opt.ImmediateVerificationElements do
                 i := i + 1;
                 x := Next(pr);
                 if AddGeneratorToStabilizerChain(S,x) then
-                    Info( InfoGenSS, 1, "Direct verification found error ",
+                    Info( InfoGenSS, 1, "Immediate verification found error ",
                           "(layer ",S!.layer,")..." );
                     i := 0;
                 fi;
@@ -443,6 +515,18 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
     return S;
   end );
 
+InstallGlobalFunction( GENSS_DeriveCandidatesFromStabChain,
+  function( S )
+    local cand;
+    cand := rec( points := [], ops := [], used := 0 );
+    while S <> false do
+        Add( cand.points, S!.orb[1] );
+        Add( cand.ops,    S!.orb!.op );
+        S := S!.stab;
+    od;
+    return cand;
+  end );
+
 InstallMethod( StabilizerChain, "for a group object", [ IsGroup ],
   function( grp )
     return StabilizerChain( grp, rec() );
@@ -451,7 +535,52 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup ],
 InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
   function( grp, opt )
     # Computes a stabilizer chain for the group grp
-    local S,cand,i,pr,prob,res,x;
+    # Possible options:
+    #   random:     compatibility to StabChain, works as there
+    #   ErrorBound: rational giving the error bound, probability of an
+    #               error will be proven to be lower than this
+    #               if given, this sets VerifyElements and
+    #                                   DeterministicVerification
+    #   VerifyElements: number of random elements for verification
+    #   DeterministicVerification: flag, whether to do or not
+    #                              (not yet implemented)
+    #   Base:       specify a known base, this can either be the 
+    #               StabilizerChain of a known supergroup or a list of
+    #               points, if "BaseOps" is not given, it is either
+    #               set to OnPoints if Projective is not set or false,
+    #               or is set to OnLines if Projective is set to true,
+    #               if Base is set
+    #   BaseOps:    a list of operation functions for the base points
+    #   Projective: if set to true indicates that the matrices given
+    #               as generators are to be thought as projective
+    #               elements, that is, the whole StabilizerChain will
+    #               be one for a projective group!
+    #   StrictlyUseCandidates: if set to true exactly the points in
+    #               opt.cand will be used as base points and no other
+    #               points from previous orbits are used first
+    #               this is set when Base was specified
+    #   Cand:       initializer for cand, which are base points
+    #               candidates
+    #               must be a record with components "points", "ops",
+    #               "used", the latter indicates the largest index
+    #               that has already been used.
+    #   TryShortOrbit: Number of tries for the short orbit finding alg.
+    #   StabGenScramble,
+    #   StabGenScrambleFactor,
+    #   StabGenAddSlots,
+    #   StabGenMaxDepth:   parameters for product replacer for generating
+    #                      stabilizer elements when size is known
+    #   VerifyScramble,
+    #   VerifyScrambleFactor,
+    #   VerifyAddSlots,
+    #   VerifyMaxDepth:    parameters for product replacer for verification
+    #                      phase
+    #   VeryShortOrbLimit: when looking for short orbits try a random
+    #                      vector and enumerate its orbit until this limit
+    #   
+    #   ... to be continued
+    #
+    local S,cand,i,pr,prob,x;
 
     # First a few preparations, then we delegate to GENSS_StabilizerChain2Inner:
 
@@ -484,49 +613,34 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
     fi;
                 
     # Find base point candidates:
-    if IsBound(opt.base) then
-        cand := rec( points := opt.base, used := 0 );
-        if not(IsBound(opt.baseops)) then
-            # Let's guess the ops:
-            if IsBound(opt.Projective) and opt.Projective = true then
-                cand.ops := ListWithIdenticalEntries(Length(opt.base),OnLines);
-            else
-                cand.ops := ListWithIdenticalEntries(Length(opt.base),OnPoints);
-            fi;
-        else
-            cand.ops := opt.baseops;
-        fi;
-        opt.strictlyusecandidates := true;
-    elif IsBound(opt.cand) then
-        cand := opt.cand;
-    else
-        cand := FindBasePointCandidates( grp, opt, 0 );
-        if IsMatrixGroup(grp) and IsBound(opt.TryShortOrbit) then
-            i := opt.TryShortOrbit;
-            repeat
-                i := i - 1;
-                Info(InfoGenSS,1,"Looking for short orbit (",i,")...");
-                res := GENSS_FindShortOrbit(grp,opt);
-            until res <> fail or i = 0;
-            if res <> fail then
-                if Size(DefaultFieldOfMatrixGroup(grp)) > 2 then
-                    Add(cand.points,res[1],1);
-                    Add(cand.ops,OnLines,1);
-                    if opt.Projective = false then
-                        Add(cand.points,res[1],2);
-                        Add(cand.ops,OnPoints,2);
-                    fi;
+    if IsBound(opt.Base) then
+        if IsStabilizerChain(opt.Base) then
+            cand := GENSS_DeriveCandidatesFromStabChain(opt.Base);
+        else  # directly take the base points:
+            cand := rec( points := opt.Base, used := 0 );
+            if not(IsBound(opt.BaseOps)) then
+                # Let's guess the ops:
+                if IsBound(opt.Projective) and opt.Projective = true then
+                    cand.ops := ListWithIdenticalEntries(Length(opt.Base),
+                                                         OnLines);
                 else
-                    Add(cand.points,res[1],1);
-                    Add(cand.ops,OnPoints,1);
+                    cand.ops := ListWithIdenticalEntries(Length(opt.Base),
+                                                         OnPoints);
                 fi;
+            else
+                cand.ops := opt.BaseOps;
             fi;
         fi;
+        opt.StrictlyUseCandidates := true;
+    elif IsBound(opt.Cand) then
+        cand := opt.Cand;
+    else
+        # Otherwise try Murray/O'Brien:
+        cand := FindBasePointCandidates( grp, opt, 0 );
     fi;
-    if not(IsBound(opt.strictlyusecandidates)) then
-        opt.strictlyusecandidates := false;
+    if not(IsBound(opt.StrictlyUseCandidates)) then
+        opt.StrictlyUseCandidates := false;
     fi;
-
     if HasSize(grp) and not(opt.Projective) then
         S := GENSS_StabilizerChainInner(GeneratorsOfGroup(grp), Size(grp), 1,
                                          cand, opt, false);

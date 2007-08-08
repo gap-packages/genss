@@ -64,6 +64,7 @@ DeclareOperation( "FindBasePointCandidates", [ IsGroup, IsRecord, IsInt ] );
 DeclareGlobalFunction( "GENSS_NextBasePoint" );
 DeclareGlobalFunction( "GENSS_CreateStabChainRecord" );
 DeclareGlobalFunction( "GENSS_StabilizerChainInner" );
+DeclareGlobalFunction( "GENSS_DeriveCandidatesFromStabChain" );
 DeclareOperation( "StabilizerChain", [ IsGroup ] );
 DeclareOperation( "StabilizerChain", [ IsGroup, IsRecord ] );
 DeclareOperation( "AddGeneratorToStabilizerChain",
