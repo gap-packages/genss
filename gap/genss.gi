@@ -119,7 +119,7 @@ InstallGlobalFunction( GENSS_FindVectorsWithShortOrbit,
     for i in [1..Length(l)] do
         for j in [1..Length(c[i])] do
             vv := [];
-            Add(vv,[VectorSpace(f,NullspaceMat(Value(c[i][j],l[i]))),
+            Add(vv,[NullspaceMat(Value(c[i][j],l[i])),
                     Degree(c[i][j]),
                     WeightVecFFE(CoefficientsOfLaurentPolynomial(c[i][j])[1]),
                     1]);
@@ -135,8 +135,8 @@ InstallGlobalFunction( GENSS_FindVectorsWithShortOrbit,
         nw := [];
         for j in [1..Length(v[i])] do
             for ww in w do
-                inters := Intersection(ww[1],v[i][j][1]);
-                if Dimension(inters) > 0 then
+                inters := SumIntersectionMat(ww[1],v[i][j][1])[2];
+                if Length(inters) > 0 then
                     Add(nw,[inters,Minimum(ww[2],v[i][j][2]),
                             Minimum(ww[3],v[i][j][3]),ww[4]+v[i][j][4]]);
                 fi;
@@ -153,12 +153,12 @@ InstallGlobalFunction( GENSS_FindVectorsWithShortOrbit,
         elif a[3] > b[3] then return false;
         elif a[4] < b[4] then return true;
         elif a[4] > b[4] then return false;
-        elif Dimension(a[1]) < Dimension(b[1]) then return true;
+        elif Length(a[1]) < Length(b[1]) then return true;
         else return false;
         fi;
     end;
     Sort(w,sortfun);
-    wb := List(w,ww->Basis(ww[1])[1]);
+    wb := List(w,ww->ww[1][1]);
     Info(InfoGenSS,2,"Have ",Length(wb)," vectors for possibly short orbits.");
     for ww in [1..Length(wb)] do
         if not(IsMutable(wb[ww])) then
