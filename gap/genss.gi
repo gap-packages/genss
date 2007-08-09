@@ -527,6 +527,11 @@ InstallGlobalFunction( GENSS_DeriveCandidatesFromStabChain,
     return cand;
   end );
 
+InstallGlobalFunction( GENSS_TrivialOp,
+  function( p, x )
+    return p;
+  end );
+
 InstallMethod( StabilizerChain, "for a group object", [ IsGroup ],
   function( grp )
     return StabilizerChain( grp, rec() );
@@ -580,13 +585,25 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
     #   
     #   ... to be continued
     #
-    local S,cand,i,pr,prob,x;
+    local S,cand,i,pr,prob,x,gens;
 
     # First a few preparations, then we delegate to GENSS_StabilizerChain2Inner:
 
     # Add some default options:
     GENSS_CopyDefaultOptions(GENSS,opt);
 
+    # Check for the identity group:
+    gens := GeneratorsOfGroup(grp);
+    if Length(gens) = 0 or ForAll(gens,IsOne) then
+        # Set up a trivial stabilizer chain record:
+        S := GENSS_CreateStabChainRecord(gens,1,1,1,GENSS_TrivialOp,
+                                         [],false,opt);
+        Enumerate(S!.orb);
+        S!.proof := true;
+        S!.trivialgroup := true;
+        return S;
+    fi;
+    
     # Old style error probability for compatibility:
     if IsBound(opt.random) then
         if opt.random = 0 then
