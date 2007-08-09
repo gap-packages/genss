@@ -74,6 +74,8 @@ DeclareOperation( "SiftGroupElement", [ IsStabilizerChain, IsObject ] );
 DeclareOperation( "SiftGroupElementSLP", [ IsStabilizerChain, IsObject ] );
 DeclareOperation( "StrongGenerators", [IsStabilizerChain] );
 DeclareOperation( "NrStrongGenerators", [IsStabilizerChain] );
+DeclareGlobalFunction( "GENSS_FindGensStabilizer" );
+DeclareGlobalFunction( "GENSS_FindShortGensStabilizer" );
 
 
 #############################################################################
