@@ -94,7 +94,7 @@ InstallGlobalFunction( GENSS_FindVectorsWithShortOrbit,
   function(g,opt)
     # Needs opt components "ShortOrbitsNrRandoms"
     local c,f,i,inters,j,l,nw,pr,sortfun,v,vv,w,wb,ww;
-    Info(InfoGenSS,2,"Trying Murray/O'Brien heuristics...");
+    Info(InfoGenSS,3,"Trying Murray/O'Brien heuristics...");
     l := ShallowCopy(GeneratorsOfGroup(g));
     f := DefaultFieldOfMatrixGroup(g);
     if HasPseudoRandomSeed(g) then
@@ -126,7 +126,7 @@ InstallGlobalFunction( GENSS_FindVectorsWithShortOrbit,
         od;
         Add(v,vv);
     od;
-    Info(InfoGenSS,2,"Have eigenspaces.");
+    Info(InfoGenSS,3,"Have eigenspaces.");
     # Now collect a list of all those spaces together with all
     # possible intersects:
     w := [];
@@ -159,7 +159,7 @@ InstallGlobalFunction( GENSS_FindVectorsWithShortOrbit,
     end;
     Sort(w,sortfun);
     wb := List(w,ww->ww[1][1]);
-    Info(InfoGenSS,2,"Have ",Length(wb)," vectors for possibly short orbits.");
+    Info(InfoGenSS,3,"Have ",Length(wb)," vectors for possibly short orbits.");
     for ww in [1..Length(wb)] do
         if not(IsMutable(wb[ww])) then
             wb[ww] := ShallowCopy(wb[ww]);
@@ -210,7 +210,7 @@ InstallGlobalFunction( GENSS_FindShortOrbit,
         Enumerate(o[i],limit);
         found := IsClosed(o[i]);
         if Length(o[i]) = 1 then
-            Info(InfoGenSS,2,"Orbit Number ",i," has length 1.");
+            Info(InfoGenSS,3,"Orbit Number ",i," has length 1.");
             found := false;
             # Now throw away this orbit:
             ThrowAwayOrbit(i);
@@ -219,16 +219,16 @@ InstallGlobalFunction( GENSS_FindShortOrbit,
             i := i + 1;
         fi;
         if i > nrorbs then
-          Info(InfoGenSS,2,"Done ",nrorbs,
+          Info(InfoGenSS,3,"Done ",nrorbs,
                " orbit(s) to limit ",limit,".");
           limit := limit * 2;
           if limit > opt.ShortOrbitsOrbLimit then
-              Info(InfoGenSS,2,"Limit reached, giving up.");
+              Info(InfoGenSS,3,"Limit reached, giving up.");
               return fail;
           fi;
           i := 1;
           if nrorbs < i then
-              Info(InfoGenSS,2,"No orbits left, giving up.");
+              Info(InfoGenSS,3,"No orbits left, giving up.");
               return fail;
           fi;
           if nrorbs > 1 then
@@ -240,7 +240,7 @@ InstallGlobalFunction( GENSS_FindShortOrbit,
           fi;
         fi;
     until found;
-    Info(InfoGenSS,1,"Found short orbit of length ",Length(o[i])," (#",i,").");
+    Info(InfoGenSS,2,"Found short orbit of length ",Length(o[i])," (#",i,").");
     return o[i];
   end );   
 
@@ -264,7 +264,7 @@ InstallMethod( FindBasePointCandidates, "for a matrix group over a FF",
     local bv,cand,d,F,o,gens,v,w,res;
     F := DefaultFieldOfMatrixGroup(grp);
     d := DimensionOfMatrixGroup(grp);
-    Info( InfoGenSS, 2, "Finding nice base points..." );
+    Info( InfoGenSS, 3, "Finding nice base points..." );
     if IsObjWithMemory(GeneratorsOfGroup(grp)[1]) then
         grp := Group(StripMemory(GeneratorsOfGroup(grp)));
     fi;
@@ -297,7 +297,7 @@ InstallMethod( FindBasePointCandidates, "for a matrix group over a FF",
     if IsBound(opt.TryShortOrbit) and opt.TryShortOrbit > 0 then
         repeat
             opt.TryShortOrbit := opt.TryShortOrbit - 1;
-            Info(InfoGenSS,1,"Looking for short orbit (",opt.TryShortOrbit,
+            Info(InfoGenSS,2,"Looking for short orbit (",opt.TryShortOrbit,
                  ")...");
             res := GENSS_FindShortOrbit(grp,opt);
         until res <> fail or opt.TryShortOrbit = 0;
@@ -394,7 +394,7 @@ InstallGlobalFunction( GENSS_CreateStabChainRecord,
   function( gens, size, layer, nextpoint, nextop, base, cand, opt )
     local S,hashsize;
 
-    Info( InfoGenSS, 2, "Creating new stab chain record..." );
+    Info( InfoGenSS, 3, "Creating new stab chain record..." );
 
     gens := ShallowCopy(gens);
     # Note that we do ShallowCopy such that the original list and the
@@ -427,7 +427,7 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
     # It also can be called if a new layer is needed.
     local base,gen,S,i,next,pr,r,stabgens,x;
 
-    Info(InfoGenSS,2,"Entering GENSS_StabilizerChainInner layer=",layer);
+    Info(InfoGenSS,4,"Entering GENSS_StabilizerChainInner layer=",layer);
     next := GENSS_NextBasePoint(gens,cand,opt,parentS);
     cand := next.cand;   # This could have changed
     if parentS <> false then
@@ -445,11 +445,11 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
             Error("Orbit too long, increase opt.OrbitLengthLimit");
         fi;
     until IsClosed(S!.orb);
-    Info(InfoGenSS, 1, "Layer ", layer, ": Orbit length is ", Length(S!.orb)); 
+    Info(InfoGenSS, 2, "Layer ", layer, ": Orbit length is ", Length(S!.orb)); 
     if Length(S!.orb) > 50 or S!.orb!.depth > 5 then
-        Info(InfoGenSS, 2, "Trying to make Schreier tree shallower...");
+        Info(InfoGenSS, 3, "Trying to make Schreier tree shallower...");
         MakeSchreierTreeShallow(S!.orb);
-        Info(InfoGenSS, 2, "Depth is now ",S!.orb!.depth);
+        Info(InfoGenSS, 3, "Depth is now ",S!.orb!.depth);
     fi;
     Info( InfoGenSS, 3, "Done orbit enumeration layer ",layer );
     S!.orb!.gensi := List(S!.orb!.gens,x->x^-1);
@@ -457,12 +457,12 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
     # Are we done?
     if size <> false and Length(S!.orb) = size then
         S!.proof := true;
-        Info(InfoGenSS,2,"Leaving GENSS_StabilizerChainInner layer=",layer);
+        Info(InfoGenSS,4,"Leaving GENSS_StabilizerChainInner layer=",layer);
         return S;
     fi;
 
     # Now create a few random stabilizer elements:
-    Info(InfoGenSS,2,"Creating ",opt.RandomStabGens,
+    Info(InfoGenSS,3,"Creating ",opt.RandomStabGens,
          " random elements of the point stabilizer...");
     pr := ProductReplacer( gens,
                       rec( scramble := S!.opt.StabGenScramble,
@@ -480,7 +480,7 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
         fi;
     od;
     if Length(stabgens) > 0 then   # there is a non-trivial stabiliser
-        Info(InfoGenSS,2,"Found ",Length(stabgens)," non-trivial ones.");
+        Info(InfoGenSS,3,"Found ",Length(stabgens)," non-trivial ones.");
         if size <> false then
             S!.stab := GENSS_StabilizerChainInner(stabgens,size/Length(S!.orb),
                                                    layer+1,cand,opt,S);
@@ -489,7 +489,7 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
                                                    layer+1,cand,opt,S);
         fi;
         if opt.ImmediateVerificationElements > 0 then
-            Info(InfoGenSS,1,"Doing immediate verification in layer ",
+            Info(InfoGenSS,2,"Doing immediate verification in layer ",
                  S!.layer," (",opt.ImmediateVerificationElements,
                  " elements)...");
             i := 0;
@@ -497,7 +497,7 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
                 i := i + 1;
                 x := Next(pr);
                 if AddGeneratorToStabilizerChain(S,x) then
-                    Info( InfoGenSS, 1, "Immediate verification found error ",
+                    Info( InfoGenSS, 2, "Immediate verification found error ",
                           "(layer ",S!.layer,")..." );
                     i := 0;
                 fi;
@@ -507,11 +507,11 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
         S!.proof := S!.stab!.proof;   # hand up information
     else
         # We are not sure that the next stabiliser is trivial, but we believe!
-        Info(InfoGenSS,2,"Found no non-trivial ones.");
+        Info(InfoGenSS,3,"Found no non-trivial ones.");
         S!.proof := false;
     fi;
 
-    Info(InfoGenSS,2,"Leaving GENSS_StabilizerChainInner layer=",layer);
+    Info(InfoGenSS,4,"Leaving GENSS_StabilizerChainInner layer=",layer);
     return S;
   end );
 
@@ -672,27 +672,27 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
     # Do we already have a proof?
     if S!.proof or opt.VerifyElements = 0 then return S; fi;
 
-    Info(InfoGenSS,1,"Current size found: ",Size(S));
+    Info(InfoGenSS,2,"Current size found: ",Size(S));
     # Now a possible verification phase:
     if S!.size <> false then   # we knew the size in advance
-        Info(InfoGenSS,1,"Doing verification via known size...");
+        Info(InfoGenSS,2,"Doing verification via known size...");
         pr := ProductReplacer(GeneratorsOfGroup(grp),
                       rec( scramble := opt.StabGenScramble,
                            scramblefactor := opt.StabGenScrambleFactor,
                            addslots := opt.StabGenAddSlots,
                            maxdepth := opt.StabGenMaxDepth ));
         while Size(S) < Size(grp) do
-            Info(InfoGenSS,1,"Known size not reached, throwing in a random ",
+            Info(InfoGenSS,2,"Known size not reached, throwing in a random ",
                  "element...");
             x := Next(pr);
             if AddGeneratorToStabilizerChain(S,x) then
-                Info( InfoGenSS, 1, "Increased size to ",Size(S) );
+                Info( InfoGenSS, 2, "Increased size to ",Size(S) );
             fi;
         od;
         S!.proof := true;
     else
         # Do some verification here:
-        Info(InfoGenSS,1,"Doing randomized verification...");
+        Info(InfoGenSS,2,"Doing randomized verification...");
         pr := ProductReplacer(GeneratorsOfGroup(grp),
                       rec( scramble := opt.VerifyScramble,
                            scramblefactor := opt.VerifyScrambleFactor,
@@ -703,7 +703,7 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
             i := i + 1;
             x := Next(pr);
             if AddGeneratorToStabilizerChain(S,x) then
-                Info( InfoGenSS, 1, "Verification found error ... ",
+                Info( InfoGenSS, 2, "Verification found error ... ",
                       "new size ", Size(S) );
                 i := 0;
             fi;
@@ -729,11 +729,11 @@ InstallMethod( AddGeneratorToStabilizerChain,
     #      the identity, then we have to prolong the chain
     if r.S <> false then   # case (1)
         SS := r.S;
-        Info( InfoGenSS, 1, "Adding new generator to stabilizer chain ",
+        Info( InfoGenSS, 2, "Adding new generator to stabilizer chain ",
               "in layer ", SS!.layer, "..." );
         AddGeneratorsToOrbit(SS!.orb,[r.rem]);
         Add(SS!.orb!.gensi,r.rem^-1);
-        Info( InfoGenSS, 3, "Entering orbit enumeration layer ",SS!.layer,
+        Info( InfoGenSS, 4, "Entering orbit enumeration layer ",SS!.layer,
               "..." );
         repeat
             Enumerate(SS!.orb,S!.opt.OrbitLengthLimit);
@@ -741,7 +741,7 @@ InstallMethod( AddGeneratorToStabilizerChain,
                 Error("Orbit too long, increase S!.opt.OrbitLengthLimit!");
             fi;
         until IsClosed(SS!.orb);
-        Info( InfoGenSS, 3, "Done orbit enumeration layer ",SS!.layer,"..." );
+        Info( InfoGenSS, 4, "Done orbit enumeration layer ",SS!.layer,"..." );
         SS!.proof := false;
     else   # case (2)
         # Note that we do not create a pr instance here for one
@@ -759,7 +759,7 @@ InstallMethod( AddGeneratorToStabilizerChain,
     # we add it to all these orbits, thereby also making the Schreier trees
     # shallower:
     while S!.layer <> SS!.layer do
-        Info(InfoGenSS,2,"Adding new generator to orbit at layer ",S!.layer);
+        Info(InfoGenSS,3,"Adding new generator to orbit at layer ",S!.layer);
         AddGeneratorsToOrbit(S!.orb,[r.rem]);
         Add(S!.orb!.gensi,r.rem^-1);
         S := S!.stab;
@@ -1051,7 +1051,7 @@ InstallGlobalFunction( GENSS_FindGensStabilizer,
         fi;
         # now el is an element in the stabilizer of pt 
         if IsOne(el) then
-            Info(InfoGenSS,2,"Found trivial stabilizer element.");
+            Info(InfoGenSS,3,"Found trivial stabilizer element.");
         else
             Add(stabgens,el);
             stab := GroupWithGenerators(stabgens);
@@ -1081,7 +1081,7 @@ InstallGlobalFunction( GENSS_FindGensStabilizer,
     return SLPOfElms(stabgens{[i-1..Length(stabgens)]});
   end );
 
-InstallGlobalFunction( GENSS_FindShortGensStabilizer,
+InstallGlobalFunction( GENSS_FindShortGensStabilizerOld,
   function( S, pt )
     # Assumes that S is a correct stabilizer chain for the group generated by
     # its gens (in S!.orb!.gens) and that pt lies in the first orbit S!.orb.
@@ -1114,7 +1114,7 @@ InstallGlobalFunction( GENSS_FindShortGensStabilizer,
     invgens := List(mgens,x->x^-1);
 
     # Set up the search:
-    pr := [mgens[1]^0];
+    pr := ShallowCopy(mgens);
     i := 1;   # counts points
     j := 1;   # counts gens
     stabgens := [];   # here we collect the stabilizer generators
@@ -1170,5 +1170,109 @@ InstallGlobalFunction( GENSS_FindShortGensStabilizer,
         fi;
     until size < stabsize;
     return SLPOfElms(stabgens{[i-1..Length(stabgens)]});
+  end );
+
+InstallGlobalFunction( GENSS_FindShortGensStabilizer,
+  function( gens, pt, op, grpsize, stabsize, S )
+    # Assumes that S is a correct stabilizer chain a supergroup of the
+    # group g generated by gens. pt and op is an action for g.
+    # grpsize is the Size of g and stabsize is the size of the stabilizer.
+    # Finds an SLP to express generators of the stabilizer of pt in
+    # g in terms of the gens.
+    # Assumes that g and the orbit of pt under g are non-trivial.
+    local SS,el,g,i,invgens,j,mgens,newpt,orb,pr,ptcosetrep,ptpos,randel,size,
+          stab,stabgens,word;
+    g := GroupWithGenerators(gens);
+    Info(InfoGenSS,2,"Enumerating orbit of length ",grpsize/stabsize);
+    orb := Orb(gens,pt,op,rec(schreier := true,stabsizebound := stabsize));
+    Enumerate(orb);
+    # Give the gens a (new) memory:
+    if IsObjWithMemory(gens[1]) then
+        mgens := GeneratorsWithMemory(List(gens,x->x!.el));
+    else
+        mgens := GeneratorsWithMemory(gens);
+    fi;
+    invgens := List(mgens,x->x^-1);
+
+    # Set up the search:
+    pr := ShallowCopy(mgens);
+    i := 1;   # counts points
+    j := 1;   # counts gens
+    stabgens := [];   # here we collect the stabilizer generators
+    size := 1;
+    repeat
+        Add(pr,pr[i]*mgens[j]);
+        j := j + 1; 
+        if j > Length(mgens) then
+            j := 1;
+            i := i + 1;
+        fi;
+        randel := pr[Length(pr)];
+        newpt := op(pt,randel!.el);
+        ptpos := Position(orb,newpt);
+        word := TraceSchreierTreeBack(orb,ptpos);
+        if Length(word) > 0 then
+            ptcosetrep := Product(invgens{word});
+            el := randel * ptcosetrep;
+        else
+            el := randel;
+        fi;
+        # now el is an element in the stabilizer of pt 
+        if IsOne(el) then
+            Info(InfoGenSS,3,"Found trivial stabilizer element.");
+        else
+            Add(stabgens,el);
+            stab := GroupWithGenerators(stabgens);
+            SS := StabilizerChain(stab,rec( Base := S ));
+            Info(InfoGenSS,1,"Have group size ",Size(SS)," (of ",
+                 stabsize,")");
+            if Size(SS) = size then
+                Remove(stabgens);
+            else
+                size := Size(SS);
+            fi;
+        fi;
+    until size >= stabsize;
+    if size > stabsize then
+        Error("Something is wrong, stabsize limit was too small");
+        return fail;
+    fi;
+    # Try leaving out the first generators found:
+    i := 1;
+    Info(InfoGenSS,1,"Need ",Length(stabgens)," generators.");
+    while i < Length(stabgens) do
+       stab := Group(stabgens{Concatenation([1..i-1],[i+1..Length(stabgens)])});
+       SS := StabilizerChain(stab,rec(Base := S));
+       if Size(SS) < stabsize then
+           i := i + 1;   # keep generator
+       else
+           Remove(stabgens,i);
+           Info(InfoGenSS,1,"Need ",Length(stabgens)," generators.");
+       fi;
+    od;
+    return SLPOfElms(stabgens);
+  end );
+
+InstallGlobalFunction( SLPChainStabilizerChain,
+  function( S, gens )
+    # S a stabilizer chain assumed to be correct for the group g generated
+    # by generators gens.
+    # Returns a list of straight line programs expressing successively
+    # the stabilizers in the chain, each in terms of the generators of the
+    # previous, the first in terms of gens.
+    local l,slp;
+    l := [];
+    while S!.stab <> false do
+        Info(InfoGenSS,1,"Working on group with size ",Size(S),"...");
+        slp := GENSS_FindShortGensStabilizer( 
+             gens, S!.orb[1], S!.orb!.op, Size(S), Size(S!.stab), S );
+        Add(l,slp);
+        gens := ResultOfStraightLineProgram(slp,gens);
+        Info(InfoGenSS,1,"Found SLP with ",
+             Length(LinesOfStraightLineProgram(slp))," lines to compute ",
+             Length(gens)," generators.");
+        S := S!.stab;
+    od;
+    return l;
   end );
 
