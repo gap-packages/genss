@@ -1260,19 +1260,21 @@ InstallGlobalFunction( SLPChainStabilizerChain,
     # Returns a list of straight line programs expressing successively
     # the stabilizers in the chain, each in terms of the generators of the
     # previous, the first in terms of gens.
-    local l,slp;
+    local l,ll,slp;
     l := [];
+    ll := [Size(S)];
     while S!.stab <> false do
         Info(InfoGenSS,1,"Working on group with size ",Size(S),"...");
         slp := GENSS_FindShortGensStabilizer( 
              gens, S!.orb[1], S!.orb!.op, Size(S), Size(S!.stab), S );
         Add(l,slp);
+        Add(ll,Size(S!.stab));
         gens := ResultOfStraightLineProgram(slp,gens);
         Info(InfoGenSS,1,"Found SLP with ",
              Length(LinesOfStraightLineProgram(slp))," lines to compute ",
              Length(gens)," generators.");
         S := S!.stab;
     od;
-    return l;
+    return rec(slps := l,sizes := ll);
   end );
 
