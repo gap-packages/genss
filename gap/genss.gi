@@ -297,7 +297,7 @@ InstallMethod( FindBasePointCandidates, "for a matrix group over a FF",
     if IsBound(opt.TryShortOrbit) and opt.TryShortOrbit > 0 then
         repeat
             opt.TryShortOrbit := opt.TryShortOrbit - 1;
-            Info(InfoGenSS,2,"Looking for short orbit (",opt.TryShortOrbit,
+            Info(InfoGenSS,1,"Looking for short orbit (",opt.TryShortOrbit,
                  ")...");
             res := GENSS_FindShortOrbit(grp,opt);
         until res <> fail or opt.TryShortOrbit = 0;
@@ -445,7 +445,7 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
             Error("Orbit too long, increase opt.OrbitLengthLimit");
         fi;
     until IsClosed(S!.orb);
-    Info(InfoGenSS, 2, "Layer ", layer, ": Orbit length is ", Length(S!.orb)); 
+    Info(InfoGenSS, 1, "Layer ", layer, ": Orbit length is ", Length(S!.orb)); 
     if Length(S!.orb) > 50 or S!.orb!.depth > 5 then
         Info(InfoGenSS, 3, "Trying to make Schreier tree shallower...");
         MakeSchreierTreeShallow(S!.orb);
