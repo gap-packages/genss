@@ -87,4 +87,8 @@ DeclareGlobalFunction( "SLPChainStabilizerChain" );
 DeclareAttribute( "Size", IsStabilizerChain );
 DeclareOperation( "IsProved", [IsStabilizerChain] );
 DeclareOperation( "MakeGAPStabChain", [IsStabilizerChain] );
-
+DeclareOperation( "MakeGroupIterator", [IsStabilizerChain] );
+DeclareGlobalFunction( "GENSS_GroupNextIterator" );
+DeclareGlobalFunction( "GENSS_GroupIsDoneIterator" );
+DeclareGlobalFunction( "GENSS_GroupShallowCopy" );
+DeclareGlobalFunction( "GENSS_MakeIterRecord" );

@@ -1,4 +1,4 @@
-#############################################################################
+    #############################################################################
 ##
 ##  genss.gi              genss package           
 ##                                                           Max Neunhoeffer
@@ -1276,5 +1276,72 @@ InstallGlobalFunction( SLPChainStabilizerChain,
         S := S!.stab;
     od;
     return rec(slps := l,sizes := ll);
+  end );
+
+InstallGlobalFunction( GENSS_MakeIterRecord,
+  function( S )
+    local SS,Slist,it;
+    Slist := [S];
+    SS := S!.stab;
+    while SS <> false do
+        Add(Slist,SS);
+        SS := SS!.stab;
+    od;
+    it := rec( NextIterator := GENSS_GroupNextIterator,
+               IsDoneIterator := GENSS_GroupIsDoneIterator,
+               ShallowCopy := GENSS_GroupShallowCopy,
+               pos := ListWithIdenticalEntries( Length( S!.base ), 1 ),
+               Slist := Slist,
+               cache := ListWithIdenticalEntries( Length(S!.base), 
+                                                  One(S!.orb!.gens[1]) ),
+               one := One(S!.orb!.gens[1]),
+               lens := List(Slist,x->Length(x!.orb)) );
+    return it;
+  end );
+
+InstallMethod( MakeGroupIterator, "for a stabilizer chain",
+  [ IsStabilizerChain ],
+  function( S )
+    return IteratorByFunctions(GENSS_MakeIterRecord(S));
+  end );
+
+InstallGlobalFunction( GENSS_GroupNextIterator,
+  function( iter )
+    local done,i,j,res,word;
+    if iter!.pos[1] > iter!.lens[1] then return fail; fi;
+    res := iter!.cache[Length(iter!.cache)];
+    # Now step forwards:
+    i := Length(iter!.Slist);
+    repeat
+        iter!.pos[i] := iter!.pos[i] + 1;
+        if iter!.pos[i] > iter!.lens[i] then
+            iter!.pos[i] := 1;
+            i := i - 1;
+            done := false;
+        else
+            done := true;
+        fi;
+    until done or i = 0;
+    if i = 0 then 
+        iter!.pos[1] := iter!.lens[1]+1; 
+        return res; 
+    fi;   # we are done
+    word := TraceSchreierTreeForward(iter!.Slist[i]!.orb,iter!.pos[i]);
+    iter!.cache[i] := Product(iter!.Slist[i]!.orb!.gens{word});
+    if i > 1 then iter!.cache[i] := iter!.cache[i] * iter!.cache[i-1]; fi;
+    for j in [i+1..Length(iter!.Slist)] do
+        iter!.cache[j] := iter!.cache[j-1];
+    od;
+    return res;
+  end );
+
+InstallGlobalFunction( GENSS_GroupIsDoneIterator,
+  function( iter )
+    return iter!.pos[1] > iter!.lens[1];
+  end );
+
+InstallGlobalFunction( GENSS_GroupShallowCopy,
+  function( iter )
+    return GENSS_MakeIterRecord( iter!.Slist[1] );
   end );
 
