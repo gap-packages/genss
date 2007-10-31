@@ -1299,7 +1299,7 @@ InstallGlobalFunction( GENSS_MakeIterRecord,
     return it;
   end );
 
-InstallMethod( MakeGroupIterator, "for a stabilizer chain",
+InstallMethod( GroupIteratorByStabilizerChain, "for a stabilizer chain",
   [ IsStabilizerChain ],
   function( S )
     return IteratorByFunctions(GENSS_MakeIterRecord(S));
