@@ -871,6 +871,7 @@ InstallMethod( ForgetMemory, "for a stabilizer chain",
   function( S )
     while S <> false do
         ForgetMemory(S!.orb);
+        ForgetMemory(S!.orb!.gensi);
         S := S!.stab;
     od;
   end );
