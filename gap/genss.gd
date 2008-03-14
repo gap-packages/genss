@@ -63,6 +63,7 @@ DeclareGlobalFunction( "GENSS_IsOneProjective" );
 DeclareOperation( "FindBasePointCandidates", [ IsGroup, IsRecord, IsInt ] );
 DeclareGlobalFunction( "GENSS_NextBasePoint" );
 DeclareGlobalFunction( "GENSS_CreateStabChainRecord" );
+DeclareGlobalFunction( "GENSS_ComputeStrongBelowNumbers" );
 DeclareGlobalFunction( "GENSS_StabilizerChainInner" );
 DeclareGlobalFunction( "GENSS_DeriveCandidatesFromStabChain" );
 DeclareGlobalFunction( "GENSS_TrivialOp" );
@@ -74,10 +75,18 @@ DeclareOperation( "SiftGroupElement", [ IsStabilizerChain, IsObject ] );
 DeclareOperation( "SiftGroupElementSLP", [ IsStabilizerChain, IsObject ] );
 DeclareOperation( "StrongGenerators", [IsStabilizerChain] );
 DeclareOperation( "NrStrongGenerators", [IsStabilizerChain] );
+DeclareOperation( "GENSS_CreateSchreierGenerator",
+  [ IsStabilizerChain, IsPosInt, IsPosInt ] );
 DeclareGlobalFunction( "GENSS_FindGensStabilizer" );
 DeclareGlobalFunction( "GENSS_FindShortGensStabilizerOld" );
 DeclareGlobalFunction( "GENSS_FindShortGensStabilizer" );
 DeclareGlobalFunction( "SLPChainStabilizerChain" );
+DeclareGlobalFunction( "GENSS_Prod" );
+DeclareGlobalFunction( "VerifyStabilizerChainTC" );
+DeclareGlobalFunction( "VerifyStabilizerChainTC2" );
+DeclareGlobalFunction( "GENSS_ImageElm" );
+DeclareGlobalFunction( "GENSS_PreImagesRepresentative" );
+DeclareGlobalFunction( "GroupHomomorphismByImagesNCStabilizerChain" );
 
 
 #############################################################################
