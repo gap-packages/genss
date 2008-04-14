@@ -62,7 +62,7 @@ GENSS.LimitShortOrbCandidates := 100;
 # Do not throw Errors but return fail:
 GENSS.FailInsteadOfError := false;
 # Number of Schreier generators to create in TC verification:
-GENSS.NumberSchreierGens := 100;
+GENSS.NumberSchreierGens := 20;
 # Maximal number of Schreier generators to create in TC verification:
 GENSS.MaxNumberSchreierGens := 100;
 # By default do 10 short orbit tries:
@@ -1194,7 +1194,7 @@ InstallGlobalFunction( VerifyStabilizerChainTC2,
 VerifyStabilizerChainTC3 := 
   function( S )
     local Grels,Hrels,MakeSchreierGens,Prels,TestGenerationSGens,ace,
-          acenrGrels,cosetnrlimitfactor,f,gens,gensi,i,j,k,l,li,max,
+          acenrGrels,cosetnrlimitfactor,dr,f,gens,gensi,i,j,k,l,li,max,
           newpres,nrcosets,nrgens,nrschr,o,ok,ords,pres,sb,sgs,slp,subgens,x;
     if S!.stab <> false then
         pres := VerifyStabilizerChainTC3(S!.stab);
@@ -1301,28 +1301,35 @@ VerifyStabilizerChainTC3 :=
              "+",Length(Prels),"+",Length(Grels)," relations...");
         if ace = false then
             ace := ACEStart(gens,Concatenation(Hrels,Prels,Grels),subgens:
-                            max := cosetnrlimitfactor * Length(o) );
-            nrcosets := ACEStats(ace);
+                            max := cosetnrlimitfactor * Length(o), hlt );
+            dr := ACEDataRecord(ace);
+            nrcosets := dr.stats.index;
         else
-            # k := Random([Length(o)+1..nrcosts.
-            ACEAddRelators(ace,Grels{[acenrGrels+1..Length(Grels)]});
-            nrcosets := ACEStats(ace);
+            # k := Random([Length(o)+1..nrcosts]).
+            if Length(Grels) > acenrGrels then
+                ACEAddRelators(ace,Grels{[acenrGrels+1..Length(Grels)]}:
+                               max := cosetnrlimitfactor * Length(o), hlt );
+            else
+                ACEContinue(ace : max := cosetnrlimitfactor * Length(o));
+            fi;
+            dr := ACEDataRecord(ace);
+            nrcosets := dr.stats.index;
         fi;
         acenrGrels := Length(Grels);
         if not(IsCompleteACECosetTable(ace))  then   # did not close!
             cosetnrlimitfactor := QuoInt(cosetnrlimitfactor*3,2);
             Info(InfoGenSS,2,"Coset enumeration did not finish!");
-            if nrschr > Length(sgs) # or
-               # nrschr > S!.opt.MaxNumberSchreierGens 
-               then   # we are done!
-                # Something is wrong!
-                Error("wrong1");
-                ACEQuit(ace);
-                return [fail, S!.layer];
-            fi;
+            #if nrschr > Length(sgs) # or
+            #   # nrschr > S!.opt.MaxNumberSchreierGens 
+            #   then   # we are done!
+            #    # Something is wrong!
+            #    Error("wrong1");
+            #    ACEQuit(ace);
+            #    return [fail, S!.layer];
+            #fi;
         else
             Info(InfoGenSS,2,"Coset enumeration found ",nrcosets," cosets.");
-            if nrcosets.index = Length(o) then
+            if nrcosets = Length(o) then
                 ACEQuit(ace);
                 # Verification is OK, now build a presentation:
                 l := GeneratorsWithMemory(
@@ -1350,10 +1357,593 @@ VerifyStabilizerChainTC3 :=
             fi;
         fi;
         # nrschr := nrschr + S!.opt.NumberSchreierGens;
-        nrschr := QuoInt(nrschr*9,3);
+        nrschr := QuoInt(nrschr*4,3);
         MakeSchreierGens(nrschr);
     od;
   end;
+
+
+VerifyStabilizerChainTC4 := 
+  function( S )
+    local Grels,Hrels,MakeSchreierGen,Prels,ace,cosetlimit,done,dr,f,
+          gens,gensi,guck1,guck2,hlt,i,j,k,l,li,max,newpres,nrcosets,
+          nrgens,o,ords,pres,sb,sg,sgs,slp,st,subgens,x,y,y1,y2;
+
+    if S!.stab <> false then
+        pres := VerifyStabilizerChainTC4(S!.stab);
+        if IsList(pres) then return pres; fi;
+    else
+        pres := StraightLineProgram([[]],0);
+    fi;
+    Info(InfoGenSS,1,"Verifying stabilizer chain in layer ",S!.layer);
+
+    # The following are global to "MakeSchreierGen":
+    i := 1;
+    j := 1;
+    MakeSchreierGen := function()
+        local sg;
+        Info(InfoGenSS,4,"Creating Schreier generator... i=",i," j=",j);
+        while i <= Length(o) do
+            sg := GENSS_CreateSchreierGenerator(S,i,j);
+            j := j + 1;
+            if j > nrgens then
+                j := 1;
+                i := i + 1;
+            fi;
+            if sg <> fail then return sg; fi;
+        od;
+        return fail;
+    end;
+
+    o := S!.orb;
+    nrgens := Length(o!.gens);
+    sb := S!.strongbelow;
+            
+    if S!.nrstrong > 26 then
+        f := FreeGroup(List([1..S!.nrstrong],String));
+    else
+        gens := [];
+        st := "a";
+        for k in [1..S!.nrstrong] do
+            Add(gens,ShallowCopy(st));
+            st[1] := CHAR_INT(INT_CHAR(st[1])+1);
+        od;
+        f := FreeGroup(gens);
+    fi;
+    gens := GeneratorsOfGroup(f);
+    gensi := List(gens,x->x^-1);
+    subgens := gens{[1..S!.strongbelow]};
+    Hrels := ResultOfStraightLineProgram(pres,subgens);
+    if S!.opt.Projective then
+        ords := List([1..nrgens],i->ProjectiveOrder(o!.gens[i]));
+    else
+        ords := List([1..nrgens],i->Order(o!.gens[i]));
+    fi;
+    Prels := List([1..nrgens],i->gens[i+sb]^ords[i]);
+    sgs := [];
+    Grels := [];
+
+    # Now start up a coset enumeration:
+    cosetlimit := QuoInt(5 * Length(o),4);
+    Info(InfoGenSS,2,"Starting ACE coset enumeration with limit ",
+         cosetlimit," and ",Length(Hrels),
+         "+",Length(Prels),"+",Length(Grels)," relations...");
+    ace := ACEStart(gens,Concatenation(Hrels,Prels,Grels),subgens:
+                    max := cosetlimit, hlt := true );
+    done := IsCompleteACECosetTable(ace);
+    if done then
+        dr := ACEDataRecord(ace);
+        nrcosets := dr.stats.index;
+    fi;
+        
+    while true do   # will be left by return eventually
+        if done then
+            Info(InfoGenSS,2,"Coset enumeration found ",nrcosets," cosets.");
+            if nrcosets = Length(o) then
+                ACEQuit(ace);
+                # Verification is OK, now build a presentation:
+                l := GeneratorsWithMemory(
+                       ListWithIdenticalEntries(S!.nrstrong,()));
+                li := List(l,x->x^-1);
+                newpres := ResultOfStraightLineProgram(pres,
+                                   l{[1..S!.strongbelow]});
+                for k in [1..nrgens] do
+                    Add(newpres,l[k+sb]^ords[k]);
+                od;
+                for k in [1..Length(sgs)] do
+                    if sgs[k][4] <> false then
+                        Add(newpres,
+                            GENSS_Prod(l,sgs[k][1]+sb)*l[sgs[k][2]+sb]*
+                            GENSS_Prod(li,sgs[k][3]+sb)*
+                            ResultOfStraightLineProgram(sgs[k][4],l)^-1);
+                    else
+                        Add(newpres,GENSS_Prod(l,sgs[k][1]+sb)*l[sgs[k][2]+sb]*
+                                    GENSS_Prod(li,sgs[k][3]+sb));
+                    fi;
+                od;
+                Info(InfoGenSS,2,"Found presentation for layer ",S!.layer,
+                     " using ",Length(newpres)," relators.");
+                return SLPOfElms(newpres);
+            elif nrcosets < Length(o) then
+                Error("This cannot possible have happened!");
+            else   # nrcosets > Length(o)
+                Info(InfoGenSS,2,"Too many cosets, we must have forgotten ",
+                     "another relation!");
+                done := false;
+            fi;
+        fi;
+        if not(done) then
+            while true do    # will be left by break
+                sg := MakeSchreierGen();
+                if sg = fail then
+                    Error("Something wrong, have processed all Schreier gens");
+                fi;
+                # Sift residue:
+                x := GENSS_Prod(o!.gens,sg[1]) * o!.gens[sg[2]] * 
+                     GENSS_Prod(o!.gensi,sg[3]);
+                if not(IsOne(x)) then
+                    if S!.stab <> false then
+                        slp := SiftGroupElementSLP(S!.stab,x);
+                        if not(slp.isone) then
+                            ACEQuit(ace);
+                            return [fail,S!.layer,x];
+                        fi;
+                    fi;
+                    sg[4] := slp.slp;
+                else
+                    sg[4] := false;
+                fi;
+                y1 := GENSS_Prod(gens,sg[1]+sb) * gens[sg[2]+sb];
+                y2 := GENSS_Prod(gens,Reversed(sg[3]+sb));
+                # Now check with ACE:
+                guck1 := ACETraceWord(ace,1,y1);
+                guck2 := ACETraceWord(ace,1,y2);
+                if guck1 = fail or guck2 = fail or guck1 <> guck2 then
+                    y := y1/y2;
+                    if sg[4] <> false then
+                        y := y / ResultOfStraightLineProgram(sg[4],subgens);
+                    fi;
+                    Add(sgs,sg);
+                    Add(Grels,y);
+                    break;
+                fi;
+                # Otherwise go to next Schreier generator.
+            od;
+            Info(InfoGenSS,2,"Redoing ACE coset enumeration with limit ",
+                 cosetlimit," and ",Length(Hrels),
+                 "+",Length(Prels),"+",Length(Grels)," relations...");
+            ACEAddRelators(ace,[y]);
+            done := IsCompleteACECosetTable(ace);
+            if done then
+                dr := ACEDataRecord(ace);
+                nrcosets := dr.stats.index;
+            fi;
+        fi;
+    od;
+  end;
+
+GENSS_CosetTableFromGensAndRelsInit :=
+function(fgens,grels,fsgens,limit)
+    local   next,  prev,            # next and previous coset on lists
+            firstFree,  lastFree,   # first and last free coset
+            firstDef,   lastDef,    # first and last defined coset
+            table,                  # columns in the table for gens
+            rels,                   # representatives of the relators
+            relsGen,                # relators sorted by start generator
+            subgroup,               # rows for the subgroup gens
+            i, gen, inv,            # loop variables for generator
+            g,                      # loop variable for generator col
+            rel,                    # loop variables for relation
+            p, p1, p2,              # generator position numbers
+            app,                    # arguments list for 'MakeConsequences'
+            j,                      # integer variable
+            length, length2,        # length of relator (times 2)
+            cols,
+            nums,
+            l,
+            nrdef,                  # number of defined cosets
+            nrmax,                  # maximal value of the above
+            nrdel,                  # number of deleted cosets
+            nrinf;                  # number for next information message
+
+    # give some information
+    Info( InfoFpGroup, 3, "    defined deleted alive   maximal");
+    nrdef := 1;
+    nrmax := 1;
+    nrdel := 0;
+    nrinf := 1000;
+
+    # define one coset (1)
+    firstDef  := 1;  lastDef  := 1;
+    firstFree := 2;  lastFree := limit;
+
+    # make the lists that link together all the cosets
+    next := [ 2 .. limit + 1 ];  next[1] := 0;  next[limit] := 0;
+    prev := [ 0 .. limit - 1 ];  prev[2] := 0;
+
+    # compute the representatives for the relators
+    rels := RelatorRepresentatives( grels );
+
+    # make the columns for the generators
+    table := [];
+    for gen  in fgens  do
+        g := ListWithIdenticalEntries( limit, 0 );
+        Add( table, g );
+        if not ( gen^2 in rels or gen^-2 in rels ) then
+            g := ListWithIdenticalEntries( limit, 0 );
+        fi;
+        Add( table, g );
+    od;
+
+    # make the rows for the relators and distribute over relsGen
+    relsGen := RelsSortedByStartGen( fgens, rels, table, true );
+
+    # make the rows for the subgroup generators
+    subgroup := [];
+    for rel  in fsgens  do
+      #T this code should use ExtRepOfObj -- its faster
+      # cope with SLP elms
+      if IsStraightLineProgElm(rel) then
+        rel:=EvalStraightLineProgElm(rel);
+      fi;
+        length := Length( rel );
+        length2 := 2 * length;
+        nums := [ ]; nums[length2] := 0;
+        cols := [ ]; cols[length2] := 0;
+
+        # compute the lists.
+        i := 0;  j := 0;
+        while i < length do
+            i := i + 1;  j := j + 2;
+            gen := Subword( rel, i, i );
+            p := Position( fgens, gen );
+            if p = fail then
+                p := Position( fgens, gen^-1 );
+                p1 := 2 * p;
+                p2 := 2 * p - 1;
+            else
+                p1 := 2 * p - 1;
+                p2 := 2 * p;
+            fi;
+            nums[j]   := p1;  cols[j]   := table[p1];
+            nums[j-1] := p2;  cols[j-1] := table[p2];
+        od;
+        Add( subgroup, [ nums, cols ] );
+    od;
+
+    # make the structure that is passed to 'MakeConsequences'
+    app := [ table, next, prev, relsGen, subgroup, 
+             firstFree, lastFree, firstDef, lastDef, 0, 0 ];
+
+    # we do not want minimal gaps to be marked in the coset table
+    app[12] := 0;
+
+    return rec( nrdef := nrdef, nrmax := nrmax, nrdel := nrdel, nrinf := nrinf,
+                app := app, closed := false, table := table, limit := limit,
+                fgens := fgens );
+end;
+
+GENSS_DoToddCoxeter := function( r )
+    local app,fgens,firstDef,firstFree,gen,i,inv,lastDef,lastFree,next,nrdef,
+          nrdel,nrinf,nrmax,prev,relsGen,subgroup,table;
+
+    fgens := r.fgens;
+    nrdef := r.nrdef;
+    nrmax := r.nrmax;
+    nrdel := r.nrdel;
+    nrinf := r.nrinf;
+    app := r.app;
+    table := app[1];
+    next := app[2];
+    prev := app[3];
+    relsGen := app[4];
+    subgroup := app[5];
+    firstFree := app[6];
+    lastFree := app[7];
+    firstDef := app[8];
+    lastDef := app[9];
+
+    # run over all the cosets:
+    while firstDef <> 0  do
+
+        # run through all the rows and look for undefined entries
+        for i  in [ 1 .. Length( table ) ]  do
+            gen := table[i];
+
+            if gen[firstDef] <= 0  then
+
+                inv := table[i + 2*(i mod 2) - 1];
+
+                # if necessary expand the table
+                if firstFree = 0  then
+                    app[6] := firstFree;
+                    app[7] := lastFree;
+                    app[8] := firstDef;
+                    app[9] := lastDef;
+                    r.nrdef := nrdef;
+                    r.nrmax := nrmax;
+                    r.nrdel := nrdel;
+                    r.nrinf := nrinf;
+                    return fail;
+                fi;
+
+                # update the debugging information
+                nrdef := nrdef + 1;
+                if nrmax <= firstFree  then
+                    nrmax := firstFree;
+                fi;
+
+                # define a new coset
+                gen[firstDef]   := firstFree;
+                inv[firstFree]  := firstDef;
+                next[lastDef]   := firstFree;
+                prev[firstFree] := lastDef;
+                lastDef         := firstFree;
+                firstFree       := next[firstFree];
+                next[lastDef]   := 0;
+
+                # set up the deduction queue and run over it until it's empty
+                app[6] := firstFree;
+                app[7] := lastFree;
+                app[8] := firstDef;
+                app[9] := lastDef;
+                app[10] := i;
+                app[11] := firstDef;
+                nrdel := nrdel + MakeConsequences( app );
+                firstFree := app[6];
+                lastFree := app[7];
+                firstDef := app[8];
+                lastDef  := app[9];
+
+                # give some information
+                if nrinf <= nrdef+nrdel then
+                    Info( InfoFpGroup, 3, "\t", nrdef, "\t", nrinf-nrdef,
+                          "\t", 2*nrdef-nrinf, "\t", nrmax );
+                    nrinf := ( Int(nrdef+nrdel)/1000 + 1 ) * 1000;
+                fi;
+
+            fi;
+        od;
+
+        firstDef := next[firstDef];
+    od;
+
+    Info( InfoFpGroup, 2, "\t", nrdef, "\t", nrdel, "\t", nrdef-nrdel, "\t",
+          nrmax );
+
+    # separate pairs of identical table columns.                  
+    for i in [ 1 .. Length( fgens ) ] do                             
+        if IsIdenticalObj( table[2*i-1], table[2*i] ) then
+            table[2*i] := StructuralCopy( table[2*i-1] );       
+        fi;                                                                
+    od;
+
+    # standardize the table
+    StandardizeTable( table );
+
+    # return the success result
+    r.closed := true;
+    return true;
+end;
+
+GENSS_ToddCoxeterExpandLimit := function(r,newlimit)
+    local app,g,l,limit,next,prev,table;
+    if newlimit <= r.limit then return r; fi;
+    app := r.app;
+    table := app[1];
+    next := app[2];
+    prev := app[3];
+    limit := r.limit;
+    next[newlimit] := 0;
+    prev[newlimit] := newlimit-1;
+    for g  in table  do g[newlimit] := 0;  od;
+    for l  in [ limit+2 .. newlimit-1 ]  do
+        next[l] := l+1;
+        prev[l] := l-1;
+        for g  in table  do g[l] := 0;  od;
+    od;
+    next[limit+1] := limit+2;
+    prev[limit+1] := 0;
+    for g  in table  do g[limit+1] := 0;  od;
+    app[6] := limit+1;   # this is firstFree
+    r.limit := newlimit;
+    app[7] := newlimit;     # this is lastFree
+end;
+
+GENSS_TCAddRelators := function(r,newrels)
+  local i,relsGen;
+  newrels := RelatorRepresentatives(newrels);
+  newrels := RelsSortedByStartGen( r.fgens, newrels, r.table, true );
+  relsGen := r.app[4];
+  for i in [1..Length(relsGen)] do
+      Append(relsGen[i],newrels[i]);
+  od;
+end;
+
+
+VerifyStabilizerChainTC5 := 
+  function( S )
+    local FindTwoWords,Grels,Hrels,Prels,allgens,cosetlimit,done,el,f,
+          gens,gensi,hom,k,l,li,newpres,newrel,nrcosets,nrgens,o,opgens,
+          ords,pres,r,rels,sb,stronggens,strongi,subgens,tc,words;
+
+    if S!.stab <> false then
+        pres := VerifyStabilizerChainTC5(S!.stab);
+        if IsList(pres) then return pres; fi;
+    else
+        pres := StraightLineProgram([[]],0);
+    fi;
+    Info(InfoGenSS,1,"Verifying stabilizer chain in layer ",S!.layer);
+
+    o := S!.orb;
+    nrgens := Length(o!.gens);
+    sb := S!.strongbelow;
+            
+    f := FreeGroup(sb+nrgens);
+    gens := GeneratorsOfGroup(f);
+    gensi := List(gens,x->x^-1);
+    allgens := 0*[1..2*Length(gens)];
+    allgens{[1,3..2*Length(gens)-1]} := gens;
+    allgens{[2,4..2*Length(gens)]} := gensi;
+    subgens := gens{[1..S!.strongbelow]};
+    Hrels := ResultOfStraightLineProgram(pres,subgens);
+    if S!.opt.Projective then
+        ords := List([1..nrgens],i->ProjectiveOrder(o!.gens[i]));
+    else
+        ords := List([1..nrgens],i->Order(o!.gens[i]));
+    fi;
+    Prels := List([1..nrgens],i->gens[i+sb]^ords[i]);
+    Grels := [];
+    stronggens := StrongGenerators(S);
+    strongi := List(stronggens,x->x^-1);
+    opgens := 0*[1..2*Length(stronggens)];
+    opgens{[1,3..2*Length(stronggens)-1]} := stronggens;
+    opgens{[2,4..2*Length(stronggens)]} := strongi;
+
+    # Now start up a coset enumeration:
+    cosetlimit := Maximum(QuoInt(7 * Length(o),6),Length(o)+5);
+    Info(InfoGenSS,2,"Starting coset enumeration with limit ",
+         cosetlimit," and ",Length(Hrels),
+         "+",Length(Prels),"+",Length(Grels)," relations...");
+    rels := Concatenation(Hrels,Prels);
+    tc := GENSS_CosetTableFromGensAndRelsInit(gens,rels,subgens,cosetlimit);
+    done := GENSS_DoToddCoxeter(tc);
+        
+    FindTwoWords := function(o,opgens,table)
+        local TraceWord,cosets,cosetsrevtab,i,j,new,nrcosets,pt,pts,
+              ptsrev,schgen,schpt,w1,w2,x,y;
+        nrcosets := Length(table[1]);
+        cosets := [1];
+        cosetsrevtab := 0*[1..nrcosets];
+        cosetsrevtab[1] := 1;
+        pts := [o[1]];
+        ptsrev := 0*[1..Length(o)];
+        ptsrev[1] := 1;
+        schpt := [fail];    # the Schreier tree
+        schgen := [fail];
+        i := 1;
+        TraceWord := function(pos)
+            local w;
+            w := [];
+            while pos > 1 do
+                Add(w,schgen[pos]);
+                pos := schpt[pos];
+            od;
+            return Reversed(w);
+        end;
+        while i <= Length(cosets) do
+            for j in [1..Length(opgens)] do
+                x := table[j][cosets[i]];
+                if x <> 0 then   # image is defined:
+                    if cosetsrevtab[x] = 0 then   # not visited
+                        Add(cosets,x);
+                        new := Length(cosets);
+                        cosetsrevtab[x] := new;
+                        schpt[new] := i;
+                        schgen[new] := j;
+                        pt := o!.op(pts[i],opgens[j]);
+                        y := Position(o,pt);
+                        if ptsrev[y] = 0 then
+                            Add(pts,pt);
+                            ptsrev[y] := new;
+                        else
+                            # We have reached a new coset by a word that
+                            # maps the starting point of the orbit to the 
+                            # same point as the one of another coset!
+                            w1 := TraceWord(ptsrev[y]);
+                            w2 := TraceWord(new);
+                            return [w1,w2];
+                        fi;
+                    fi;
+                fi;
+            od;
+            i := i + 1;
+        od;
+        Error("Bad, this should never have been reached!");
+        return fail;
+    end;
+
+    while true do   # will be left by return eventually
+        if done = true then
+            nrcosets := Length(tc.table[1]);
+            Info(InfoGenSS,2,"Coset enumeration found ",nrcosets," cosets.");
+            if nrcosets = Length(o) then
+                # Verification is OK, now build a presentation:
+                l := GeneratorsWithMemory(
+                       ListWithIdenticalEntries(S!.nrstrong,()));
+                newpres := ResultOfStraightLineProgram(pres,
+                                   l{[1..S!.strongbelow]});
+                for k in [1..nrgens] do
+                    Add(newpres,l[k+sb]^ords[k]);
+                od;
+                hom := GroupHomomorphismByImagesNC(f,Group(l),gens,l);
+                for k in Grels do
+                    Add(newpres,ImageElm(hom,k));
+                od;
+                Info(InfoGenSS,2,"Found presentation for layer ",S!.layer,
+                     " using ",Length(newpres)," relators.");
+                return SLPOfElms(newpres);
+            elif nrcosets < Length(o) then
+                Error("This cannot possibly have happened!");
+                return [fail,S!.layer];
+            else   # nrcosets > Length(o)
+                Info(InfoGenSS,2,"Too many cosets, we must have forgotten ",
+                     "another relation!");
+                Error("This cannot possibly have happened2!");
+                return [fail,S!.layer];
+            fi;
+        fi;
+        # Now we have to find another relation, we do a breadth-first
+        # search through the already defined cosets to find two cosets
+        # that are still different but ought to be equal because the
+        # corresponding orbit points are equal:
+        words := FindTwoWords(o,opgens,tc.table);
+        el := EvaluateWord(opgens,words[1])/EvaluateWord(opgens,words[2]);
+        r := SiftGroupElementSLP(S,el);
+        if not(r.isone) then
+            # Error, we found a new stabilizer element!
+            return [fail,S!.layer,el];
+        fi;
+        newrel := [(EvaluateWord(allgens,words[1])
+                    /EvaluateWord(allgens,words[2]))
+                   / ResultOfStraightLineProgram(r.slp,gens)];
+        GENSS_TCAddRelators(tc,newrel);
+        Add(Grels,newrel[1]);
+        if Length(words[1]) > 0 then
+            tc.app[10] := words[1][1];
+        else
+            # More difficult:
+            words := ExtRepOfObj(newrel[1]);
+            if words[2] > 0 then
+                tc.app[10] := 2*words[1]-1;
+            else
+                tc.app[10] := 2*words[1];
+            fi;
+        fi;
+        #Print("<\c");
+        #for i in [1..tc.limit] do
+        #    for j in [1..Length(allgens)] do
+        #        if tc.table[j][i] <> 0 then
+        #            tc.app[11] := i;
+        #            tc.app[10] := j;
+        #            tc.nrdel := tc.nrdel + MakeConsequences( tc.app );
+        #        fi;
+        #    od;
+        #od;
+        tc.app[11] := 1;
+        tc.nrdel := tc.nrdel + MakeConsequences( tc.app );
+        #Print("-\c");
+        done := GENSS_DoToddCoxeter(tc);
+        #Print(">\c");
+        if Length(Grels) mod 100 = 0 then
+            #Print("\n");
+            Info(InfoGenSS,2,"Currently using ",Length(Hrels),"+",
+                 Length(Prels),"+",Length(Grels)," relations.");
+        fi;
+    od;
+  end;
+
+
 
 
 
