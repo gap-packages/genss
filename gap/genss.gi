@@ -620,11 +620,15 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
 
     # Check for the identity group:
     gens := GeneratorsOfGroup(grp);
-    if Length(gens) = 0 or ForAll(gens,IsOne) then
+    if Length(gens) = 0 or 
+       ForAll(gens,IsOne) or
+       (IsBound(opt.Projective) and opt.Projective = true and
+        ForAll(gens,GENSS_IsOneProjective)) then
         # Set up a trivial stabilizer chain record:
         S := GENSS_CreateStabChainRecord(gens,1,1,1,GENSS_TrivialOp,
                                          [],false,opt);
         Enumerate(S!.orb);
+        S!.orb!.gensi := List(S!.orb!.gens,x->x^-1);
         S!.proof := true;
         S!.trivialgroup := true;
         GENSS_ComputeStrongBelowNumbers(S);
@@ -1943,11 +1947,105 @@ VerifyStabilizerChainTC5 :=
     od;
   end;
 
+VerifyStabilizerChainMax := 
+  function( S )
+    local bl,count,d,gens,i,invtab,j,k,o,p,r,res,s,w1,w2,x,xi,y;
 
+    if S!.stab <> false then
+        res := VerifyStabilizerChainMax(S!.stab);
+        if res <> true then return res; fi;
+    fi;
+    Info(InfoGenSS,1,"Verifying stabilizer chain in layer ",S!.layer,
+         " (orbit of length ",Length(S!.orb),")");
 
+    count := 0;
+    gens := ShallowCopy(Set(S!.orb!.gens));
+    invtab := [];
+    k := Length(gens);
+    for i in [1..k] do
+        x := gens[i];
+        xi := x^-1;
+        p := Position(gens,xi);
+        if p = fail then
+            Add(gens,xi);
+            invtab[i] := Length(gens);
+            invtab[Length(gens)] := i;
+        else
+            invtab[i] := p;
+        fi;
+    od;
+    o := Orb(gens,S!.orb[1],S!.orb!.op,rec(schreier := true, log := true));
+    Enumerate(o);
 
+    if Length(o) <> Length(S!.orb) then
+        Error("something is fishy, orbits do not have the same length");
+        return fail;
+    fi;
 
+    # Now we have a nice breadth-first orbit such that all inverses of 
+    # generators are again generators.
+    # First check whether the generators fix the first point:
+    for x in gens do
+        if o!.op(o[1],x) = o[1] then
+            count := count + 1;
+            if S!.stab = false then
+                r := rec( isone := IsOne(x) );
+            else
+                r := SiftGroupElement(S!.stab,x);
+            fi;
+            if not(r.isone) then
+                return [fail,S!.layer,x,"generator"];
+            fi;
+        fi;
+    od;
 
+    bl := BlistList([1..Length(o)],[]);
+    for d in [1..o!.depth] do
+        Info(InfoGenSS,2,"Testing in depth ",d," (of ",o!.depth,") checking ",
+             o!.depthmarks[d+1]-o!.depthmarks[d]," points (of ",Length(o),")");
+        for i in [o!.depthmarks[d]..o!.depthmarks[d+1]-1] do
+            # These indices contain points in depth d
+            if bl[o!.schreierpos[i]] then
+                # this subtree does not need to be done!
+                bl[i] := true;   # mark subtree as done
+            else
+                x := o[i];
+                for j in [1..Length(gens)] do
+                    if j <> invtab[o!.schreiergen[i]] then
+                        y := o!.op(x,gens[j]);
+                        p := Position(o,y);
+                        # if p > i then this is a new point, do nothing
+                        if p <= i then
+                            count := count + 1;
+                            w1 := TraceSchreierTreeForward(o,i);
+                            w2 := TraceSchreierTreeForward(o,p);
+                            s := (EvaluateWord(gens,w1)*gens[j])
+                                 /EvaluateWord(gens,w2);
+                            #Print(Length(gens),w1,j,w2,"\n");
+                            if S!.stab = false then
+                                r := rec( isone := IsOne(s) );
+                            else
+                                r := SiftGroupElement(S!.stab,s);
+                            fi;
+                            if not(r.isone) then
+                                return [fail,S!.layer,s,"schreier gen"];
+                            fi;
+                        fi;
+                        if p < o!.depthmarks[d] then
+                            # this goes up in the tree, this means, if this
+                            # Schreier generator is OK, we do not have to
+                            # look below!
+                            bl[i] := true;
+                            break;
+                        fi;
+                    fi;
+                od;
+            fi;
+        od;
+    od;
+    Info(InfoGenSS,2,"Have sifted ",count," elements.");
+    return true;
+  end;
 
 #############################################################################
 # The following operations apply to stabilizer chains:
