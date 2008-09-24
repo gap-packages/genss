@@ -365,7 +365,11 @@ InstallGlobalFunction( GENSS_NextBasePoint,
     local NotFixedUnderAllGens,i;
 
     NotFixedUnderAllGens := function( gens, x, op )
-      return ForAny( gens, g->op(x,g) <> x );
+      if IsObjWithMemory(gens[1]) then
+        return ForAny( gens, g->op(x,g!.el) <> x );
+      else
+        return ForAny( gens, g->op(x,g) <> x );
+      fi;
     end;
 
     # S can be false or a stabilizer chain record
@@ -814,7 +818,11 @@ InstallMethod( SiftGroupElement, "for a stabilizer chain and a group element",
     preS := false;
     while S <> false do
         o := S!.orb;
-        p := o!.op(o[1],x);
+        if o!.memorygens then
+          p := o!.op(o[1],x!.el);
+        else
+          p := o!.op(o[1],x);
+        fi;
         po := Position(o,p);
         if po = fail then   # not in current stabilizer
             return rec( isone := false, rem := x, S := S, preS := preS );
@@ -2535,17 +2543,17 @@ InstallGlobalFunction( GENSS_PreImagesRepresentative,
   end );
 
 InstallGlobalFunction( GroupHomomorphismByImagesNCStabilizerChain,
-  function( g, h, images, opt )
+  function( g, h, images, opt1, opt2 )
     local Sg,Si,data,gm,im,slpstrongg,slpstrongi,strongg,stronggims,
           strongi,strongipre;
     gm := GroupWithMemory(g);
-    Sg := StabilizerChain(gm,opt);
+    Sg := StabilizerChain(gm,opt1);
     strongg := StrongGenerators(Sg);
     ForgetMemory(Sg);
     slpstrongg := SLPOfElms(strongg);
     stronggims := ResultOfStraightLineProgram(slpstrongg,images);
     im := GroupWithMemory(images);
-    Si := StabilizerChain(im,opt);
+    Si := StabilizerChain(im,opt2);
     strongi := StrongGenerators(Si);
     ForgetMemory(Si);
     slpstrongi := SLPOfElms(strongi);
