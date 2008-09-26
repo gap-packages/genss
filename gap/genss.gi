@@ -24,7 +24,7 @@ GENSS.ShortOrbitsNrRandoms := 10;
 # Absolute limit for orbit length in search for short orbits:
 GENSS.ShortOrbitsOrbLimit := 80000;
 # First limit for the parallel enumeration of orbits looking for short orbits:
-GENSS.ShortOrbitsStartLimit := 400;
+GENSS.ShortOrbitsInitialLimit := 400;
 # Absolute limit for single orbit length:
 GENSS.OrbitLengthLimit := 10000000;
 # Number of points in the previous orbit to consider for the next base point:
@@ -47,6 +47,11 @@ GENSS.VerifyScramble := 100;
 GENSS.VerifyScrambleFactor := 10;
 GENSS.VerifyAddSlots := 10;
 GENSS.VerifyMaxDepth := 400;
+# Product replacement parameters for Stab:
+GENSS.StabScramble := 10;
+GENSS.StabScrambleFactor := 1;
+GENSS.StabAddSlots := 1;
+GENSS.StabMaxDepth := 400;
 # Number of random elements used for verification,
 # note that this is changed by the "random" and "ErrorBound" options!
 GENSS.VerifyElements := 10;   # this amounts to an error bound of 1/1024
@@ -67,6 +72,16 @@ GENSS.NumberSchreierGens := 20;
 GENSS.MaxNumberSchreierGens := 100;
 # By default do 10 short orbit tries:
 GENSS.TryShortOrbit := 10;
+# Initial limit for orbit length for Stab computation:
+GENSS.StabInitialLimit := 1000;
+# Patience to find random elements mapping the orbit into itself:
+GENSS.StabInitialPatience := 10;
+# Maximal amount of memory used for the orbit:
+GENSS.StabOrbitLimit := 1000000;
+# If the probability of a wrong stabiliser is smaller than this, do no
+# longer try to create stabiliser elements:
+GENSS.StabAssumeCompleteLimit := 1/(10^7);
+
 
 #############################################################################
 # A few helper functions needed elsewhere:
@@ -182,7 +197,7 @@ InstallGlobalFunction( GENSS_FindShortOrbit,
     # Needs opt components:
     #  "ShortOrbitsNrRandoms"  (because it uses GENSS_FindVectorsWithShortOrbit)
     #  "ShortOrbitsOrbLimit"
-    #  "ShortOrbitsStartLimit"
+    #  "ShortOrbitsInitialartLimit"
     local ThrowAwayOrbit,found,gens,hashlen,i,j,limit,newnrorbs,nrorbs,o,wb;
 
     wb := GENSS_FindVectorsWithShortOrbit(g,opt);
@@ -196,7 +211,7 @@ InstallGlobalFunction( GENSS_FindShortOrbit,
     for i in [1..nrorbs] do
         Add(o,Orb(gens,ShallowCopy(wb[i]),OnLines,hashlen));
     od;
-    limit := opt.ShortOrbitsStartLimit;
+    limit := opt.ShortOrbitsInitialLimit;
     i := 1;               # we start to work on the first one
 
     ThrowAwayOrbit := function(i)
@@ -474,7 +489,7 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
             fi;
         fi;
     until IsClosed(S!.orb);
-    Info(InfoGenSS, 1, "Layer ", layer, ": Orbit length is ", Length(S!.orb)); 
+    Info(InfoGenSS, 2, "Layer ", layer, ": Orbit length is ", Length(S!.orb)); 
     if Length(S!.orb) > 50 or S!.orb!.depth > 5 then
         Info(InfoGenSS, 3, "Trying to make Schreier tree shallower...");
         MakeSchreierTreeShallow(S!.orb);
@@ -2526,6 +2541,26 @@ InstallGlobalFunction( GENSS_GroupShallowCopy,
     return GENSS_MakeIterRecord( iter!.Slist[1] );
   end );
 
+InstallMethod( StoredStabilizerChain, "for a group",
+  [IsGroup],
+  function(g)
+    if IsBound(g!.StabilizerChain) then
+      return g!.StabilizerChain;
+    else
+      return fail;
+    fi;
+  end );
+
+InstallMethod( SetStabilizerChain, "for a group and a stabilizer chain",
+  [IsGroup, IsStabilizerChain],
+  function(g,S)
+    if HasSize(g) and Size(g) <> Size(S) then
+      Error("you try to set a stabilizer chain for the wrong group");
+      return;
+    fi;
+    g!.StabilizerChain := S;
+  end );
+
 InstallGlobalFunction( GENSS_ImageElm,
   function( data, x )
     local r;
@@ -2565,4 +2600,190 @@ InstallGlobalFunction( GroupHomomorphismByImagesNCStabilizerChain,
                                    GENSS_PreImagesRepresentative, data );
   end );
 
+
+#############################################################################
+# The following methods are about methods to compute stabilisers:
+#############################################################################
+
+InstallMethod( Stab, "add empty options record",
+  [IsGroup, IsObject, IsFunction],
+  function( g, x, op )
+    return Stab(g,x,op,rec());
+  end );
+
+InstallMethod( Stab, "add empty options record",
+  [IsList, IsObject, IsFunction],
+  function( l, x, op )
+    return Stab(l,x,op,rec());
+  end );
+
+InstallMethod( Stab, "create group from list of generators",
+  [IsList, IsObject, IsFunction, IsRecord],
+  function( l, x, op, opt )
+    return Stab(GroupWithGenerators(l),x,op,opt);
+  end );
+
+# Now the real one: 
+
+InstallMethod( Stab, "by Orb orbit enumeration",
+  [IsGroup, IsObject, IsFunction, IsRecord],
+  function( g, x, op, opt )
+    local S,count,el,errorprob,found,gens,i,j,limit,memperpt,nrrand,o,
+          pat,pr,res,stab,stabchain,stabel,stabgens,stabsizeest,w1,w2,y;
+    GENSS_CopyDefaultOptions(GENSS,opt);
+    S := StoredStabilizerChain(g);
+    if S <> fail then
+      if IsIdenticalObj(S!.orb!.op,op) and x in S!.orb then
+        Error("not yet implemented, simply return conjugate stabilizer");
+        return fail;
+      fi;
+    fi;
+    # Now we have to do it ourselves:
+    if not(IsBound(opt.ErrorBound)) then   # we are working deterministically
+        if not(HasSize(g)) then
+            # We are basically stuffed, unless we want to check all
+            # Schreier generators of an orbit!
+            Error("I do not want to check all Schreier generators");
+            return fail;
+        fi;
+    else
+        if opt.ErrorBound < opt.StabAssumeCompleteLimit then
+            opt.StabAssumeCompleteLimit := opt.ErrorBound;
+        fi;
+    fi;
+    # Now we either know the group size or work Monte Carlo:
+    errorprob := 1;
+    limit := opt.StabInitialLimit;
+    pat := opt.StabInitialPatience;
+    o := Orb(g,x,op,rec( report := opt.Report, hashlen := opt.InitialHashSize,
+                         schreier := true ) );
+    stabgens := [];
+    stabsizeest := 1;
+    pr := ProductReplacer(GeneratorsOfGroup(g),
+                rec( scramble := opt.StabScramble, 
+                     scramblefactor := opt.StabScrambleFactor,
+                     addslots := opt.StabAddSlots,
+                     maxdepth := opt.StabMaxDepth ));
+    gens := GeneratorsOfGroup(g);
+    # Now go through a cycle of orbit enumeration and stabilizer generation:
+    repeat
+        if not(IsClosed(o)) then
+            if HasSize(g) and limit > QuoInt(Size(g),stabsizeest*2)+1 then
+                limit := QuoInt(Size(g),stabsizeest*2)+2;
+            fi;
+            Info(InfoGenSS,2,"Enumerating orbit with limit ",limit);
+            Enumerate(o,limit);
+            if IsClosed(o) then
+                Info(InfoGenSS,2,"Orbit closed, size is ",Length(o));
+            fi;
+        fi;
+        if errorprob < opt.StabAssumeCompleteLimit then 
+            if HasSize(g) and 
+               2 * Length(o) * stabsizeest > Size(g) then
+                # Done!
+                #stab := Subgroup(g,stabgens);
+                stab := Group(stabgens);
+                SetParent(g,stab);
+                SetSize(stab,stabsizeest);
+                SetStabilizerChain(stab,stabchain);
+                return rec( stab := stab, size := stabsizeest, 
+                            stabilizerchain := stabchain,
+                            proof := true );
+            fi;
+            limit := 2*limit;
+            continue; 
+        fi;
+        count := 0;
+        found := false;
+        repeat
+            el := Next(pr);
+            i := 1;
+            while i <= Length(o) and not(found) do
+                y := op(o[i],el);
+                j := Position(o,y);
+                if j <> fail then 
+                    found := true; 
+                else
+                    i := i + 1;
+                fi;
+            od;
+            count := count + 1;
+        until found or count >= pat;
+        if not(IsClosed(o)) then
+            if not(found) then
+                limit := QuoInt(3*limit,2);
+            else
+                if count < 10 then
+                    limit := limit + 100;
+                else
+                    limit := QuoInt(3*limit,2);
+                fi;
+            fi;
+        fi;
+        pat := QuoInt(pat*5,4);
+        if found then   # Have a potential stabiliser element:
+            Info(InfoGenSS,3,"Found a potential stabilising element...");
+            w1 := TraceSchreierTreeForward(o,i);
+            w2 := TraceSchreierTreeForward(o,j);
+            stabel := EvaluateWord(gens,w1)*el/EvaluateWord(gens,w2);
+            if IsOne(stabel) then
+                errorprob := errorprob / 2;
+                Info(InfoGenSS,3,"... which was the identity.");
+            else
+                Add(stabgens,stabel);
+                if Length(stabgens) < 2 then
+                    Info(InfoGenSS,3,"Waiting for second stabiliser element.");
+                else      # Length(stabgens) >= 2 then
+                    if Length(stabgens) = 2 then
+                        Info(InfoGenSS,2,"Estimating stabilizer...");
+                        stabchain := StabilizerChain(Group(stabgens));
+                        errorprob := 1;
+                    else
+                        res := AddGeneratorToStabilizerChain(stabchain,stabel);
+                        if not(res) then
+                            Remove(stabgens,Length(stabgens));
+                            errorprob := errorprob / 2;
+                            Info(InfoGenSS,2,"Error probablity now < ",
+                                 errorprob);
+                        else
+                            Info(InfoGenSS,2,
+                                 "Added generator to stabilizer...");
+                            errorprob := 1;
+                        fi;
+                    fi;
+                    if Size(stabchain) > stabsizeest then
+                        stabsizeest := Size(stabchain);
+                        Info(InfoGenSS,2,"New stabilizer estimate: ",
+                             stabsizeest);
+                    else
+                        Info(InfoGenSS,2,"Stabiliser estimate unchanged.");
+                    fi;
+                    if HasSize(g) and
+                       2 * Length(o) * stabsizeest > Size(g) then
+                        # Done!
+                        #stab := Subgroup(g,stabgens);
+                        stab := Group(stabgens);
+                        SetParent(g,stab);
+                        SetSize(stab,stabsizeest);
+                        SetStabilizerChain(stab,stabchain);
+                        return rec( stab := stab, size := stabsizeest, 
+                                    stabilizerchain := stabchain,
+                                    proof := true );
+                    fi;
+                    if IsBound(opt.ErrorBound) and
+                       errorprob < opt.ErrorBound then
+                        #stab := Subgroup(g,stabgens);
+                        stab := Group(stabgens);
+                        SetParent(g,stab);
+                        return rec( stab := stab, size := stabsizeest,
+                                    stabilizerchain := stabchain,
+                                    proof := false );
+                    fi;
+                fi;
+            fi;
+        else   # no element found
+            Info(InfoGenSS,3,"No stabiliser element found!");
+        fi;
+    until Length(o) > opt.StabOrbitLimit;
+  end );
 
