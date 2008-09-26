@@ -11,6 +11,7 @@
 #############################################################################
 
 ReadPackage("genss","gap/genss.gi");
+ReadPackage("genss","gap/setwise.gi");
 
 if IsBound(IO_PackageIsLoaded) then
     ReadPackage("genss","gap/picklers.gi");

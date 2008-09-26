@@ -11,3 +11,4 @@
 #############################################################################
 
 ReadPackage("genss","gap/genss.gd");
+ReadPackage("genss","gap/setwise.gd");
