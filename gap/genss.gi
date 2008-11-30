@@ -2787,3 +2787,132 @@ InstallMethod( Stab, "by Orb orbit enumeration",
     until Length(o) > opt.StabOrbitLimit;
   end );
 
+
+BacktrackSearchStabilizerChainElement :=
+  function( S,     # a stabilizer chain
+            P,     # a property function G -> {true,false}
+            g )
+    # Let G be a group and U being the subgroup defined by S.
+    # Does a backtrack search in U using S for an element x of U
+    # for which P(xg) is true. g not necessarily in U!
+    local cache,gen,i,ii,res,t,w,x;
+
+    cache := WeakPointerObj([[S!.orb!.gens[1]^0,[]]]);
+    for i in [1..Length(S!.orb)] do
+        ii := S!.orb!.orbind[i];
+        if ii > 1 then
+            t := ElmWPObj(cache,S!.orb!.schreierpos[ii]);
+            if t <> fail then
+                gen := S!.orb!.schreiergen[ii];
+                w := ShallowCopy(t[2]);
+                Add(w,gen);
+                t := t[1] * S!.orb!.gens[gen];
+            else
+                w := TraceSchreierTreeForward(S!.orb,ii);
+                t := Product(S!.orb!.gens{w});
+            fi;
+            SetElmWPObj(cache,ii,[t,w]);
+            x := t*g;
+        else
+            w := [];
+            t := S!.orb!.gens[1]^0;
+            x := g;
+        fi;
+        if S!.stab = false then
+            if P(x) then 
+                return rec( elm := x, vec := [i], word := w );
+            fi;
+        else
+            res := BacktrackSearchStabilizerChainElement(S!.stab,P,x);
+            if res <> fail then
+                Add(res.vec,i,1);
+                res.word := Concatenation(res.word,
+                                w+NrStrongGenerators(S!.stab));
+                return res;
+            fi;
+        fi;
+    od;
+    return fail;
+  end;
+
+BacktrackSearchStabilizerChainSubgroup :=
+  function(S,P) 
+    local SS,SSS,i,ii,newgens,o,res,t,w;
+    if S!.stab = false then
+        newgens := [];
+        o := false;
+        for i in [2..Length(S!.orb)] do
+            ii := S!.orb!.orbind[i];
+            if o = false or not(S!.orb[ii] in o) then
+                w := TraceSchreierTreeForward(S!.orb,ii);
+                t := Product(S!.orb!.gens{w});
+                if P(t) then
+                    Add(newgens,t);
+                    if Length(newgens) = 1 then
+                        o := Orb(ShallowCopy(newgens),S!.orb[1],S!.orb!.op,
+                                 rec( hashlen := 200, schreier := true,
+                                      log := true ));
+                    else
+                        AddGeneratorsToOrbit(o,[t]);
+                    fi;
+                    Enumerate(o);
+                fi;
+            fi;
+        od;
+        if o = false then   # No solution found
+            newgens := [S!.orb!.gens[1]^0];
+            o := Orb(newgens,S!.orb[1],S!.orb!.op,
+                     rec(schreier := true, log := true));
+            Enumerate(o);
+        fi;
+        SSS := rec( stab := false, size := Length(o), base := [o[1]],
+                    opt := ShallowCopy(S!.opt), layer := S!.layer,
+                    orb := o, nrstrong := Length(newgens),
+                    strongbelow := 0 );
+        Objectify( StabChainByOrbType, SSS );
+        o!.stabilizerchain := SSS;
+        o!.gensi := List(o!.gens,x->x^-1);
+    else   # S!.stab <> false
+        # First go down in tree, essentially trying coset rep 1 first:
+        SS := BacktrackSearchStabilizerChainSubgroup(S!.stab,P);
+        newgens := [];
+        o := false;
+        for i in [2..Length(S!.orb)] do
+            ii := S!.orb!.orbind[i];
+            if o = false or not(S!.orb[ii] in o) then
+                w := TraceSchreierTreeForward(S!.orb,ii);
+                t := Product(S!.orb!.gens{w});
+                res := BacktrackSearchStabilizerChainElement(S!.stab,P,t);
+                if res <> fail then
+                    Add(newgens,res.elm);
+                    if Length(newgens) = 1 then
+                        o := Orb(Concatenation(StrongGenerators(SS),newgens),
+                                 S!.orb[1],S!.orb!.op,
+                        rec( hashlen := Maximum(100,QuoInt(Length(S!.orb),3)), 
+                             schreier := true, log := true ));
+                    else
+                        AddGeneratorsToOrbit(o,[res.elm]);
+                    fi;
+                    Enumerate(o);
+                fi;
+            fi;
+        od;
+        if o = false then   # No solution found
+            o := Orb([S!.orb!.gens[1]^0],S!.orb[1],S!.orb!.op,
+                     rec(schreier := true, log := true));
+            Enumerate(o);
+        fi;
+        SSS := rec( stab := SS, size := Length(o)*Size(SS), 
+                    base := SS!.base,
+                    opt := ShallowCopy(S!.opt), layer := S!.layer,
+                    orb := o, nrstrong := Length(o!.gens)+SS!.nrstrong,
+                    strongbelow := SS!.nrstrong );
+        Add(SSS.base,o[1],1);
+        Objectify( StabChainByOrbType, SSS );
+        o!.stabilizerchain := SSS;
+        o!.gensi := List(o!.gens,x->x^-1);
+    fi;
+    return SSS;
+  end;
+
+
