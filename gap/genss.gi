@@ -2791,11 +2791,13 @@ InstallMethod( Stab, "by Orb orbit enumeration",
 BacktrackSearchStabilizerChainElement :=
   function( S,     # a stabilizer chain
             P,     # a property function G -> {true,false}
-            g )
+            g,     # a group element
+            pruner )
     # Let G be a group and U being the subgroup defined by S.
     # Does a backtrack search in U using S for an element x of U
     # for which P(xg) is true. g not necessarily in U!
-    local cache,gen,i,ii,res,t,w,x;
+    # pruner is either false or a function taking arguments as seen below.
+    local cache,gen,i,ii,res,t,w,x,dotree;
 
     cache := WeakPointerObj([[S!.orb!.gens[1]^0,[]]]);
     for i in [1..Length(S!.orb)] do
@@ -2823,12 +2825,19 @@ BacktrackSearchStabilizerChainElement :=
                 return rec( elm := x, vec := [i], word := w );
             fi;
         else
-            res := BacktrackSearchStabilizerChainElement(S!.stab,P,x);
-            if res <> fail then
-                Add(res.vec,i,1);
-                res.word := Concatenation(res.word,
-                                w+NrStrongGenerators(S!.stab));
-                return res;
+            dotree := true;
+            if pruner <> false then
+                dotree := pruner(S!.stab,x);
+            fi;
+            if dotree then
+                res := BacktrackSearchStabilizerChainElement(S!.stab,P,x,
+                                                             pruner);
+                if res <> fail then
+                    Add(res.vec,i,1);
+                    res.word := Concatenation(res.word,
+                                    w+NrStrongGenerators(S!.stab));
+                    return res;
+                fi;
             fi;
         fi;
     od;
@@ -2836,8 +2845,8 @@ BacktrackSearchStabilizerChainElement :=
   end;
 
 BacktrackSearchStabilizerChainSubgroup :=
-  function(S,P) 
-    local SS,SSS,i,ii,newgens,o,res,t,w;
+  function(S,P,pruner) 
+    local SS,SSS,i,ii,newgens,o,res,t,w,dotree;
     if S!.stab = false then
         newgens := [];
         o := false;
@@ -2874,7 +2883,7 @@ BacktrackSearchStabilizerChainSubgroup :=
         o!.gensi := List(o!.gens,x->x^-1);
     else   # S!.stab <> false
         # First go down in tree, essentially trying coset rep 1 first:
-        SS := BacktrackSearchStabilizerChainSubgroup(S!.stab,P);
+        SS := BacktrackSearchStabilizerChainSubgroup(S!.stab,P,pruner);
         newgens := [];
         o := false;
         for i in [2..Length(S!.orb)] do
@@ -2882,18 +2891,25 @@ BacktrackSearchStabilizerChainSubgroup :=
             if o = false or not(S!.orb[ii] in o) then
                 w := TraceSchreierTreeForward(S!.orb,ii);
                 t := Product(S!.orb!.gens{w});
-                res := BacktrackSearchStabilizerChainElement(S!.stab,P,t);
-                if res <> fail then
-                    Add(newgens,res.elm);
-                    if Length(newgens) = 1 then
+                dotree := true;
+                if pruner <> false then
+                    dotree := pruner(S!.stab,t);
+                fi;
+                if dotree then
+                    res := BacktrackSearchStabilizerChainElement(S!.stab,P,t,
+                                                                 pruner);
+                    if res <> fail then
+                      Add(newgens,res.elm);
+                      if Length(newgens) = 1 then
                         o := Orb(Concatenation(StrongGenerators(SS),newgens),
                                  S!.orb[1],S!.orb!.op,
                         rec( hashlen := Maximum(100,QuoInt(Length(S!.orb),3)), 
                              schreier := true, log := true ));
-                    else
+                      else
                         AddGeneratorsToOrbit(o,[res.elm]);
+                      fi;
+                      Enumerate(o);
                     fi;
-                    Enumerate(o);
                 fi;
             fi;
         od;
