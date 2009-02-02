@@ -2931,4 +2931,37 @@ BacktrackSearchStabilizerChainSubgroup :=
     return SSS;
   end;
 
+InstallMethod( FindShortGeneratorsOfSubgroup, 
+  "without option rec or func, permutation group method",
+  [ IsPermGroup, IsPermGroup ],
+  function(G,U)
+    local S; 
+    S := StabilizerChain(U);
+    return FindShortGeneratorsOfSubgroup(G,U,
+             rec( membershiptest :=
+                    function(a,b) 
+                      return SiftGroupElement(S,a).isone; 
+                    end,
+                  sizetester :=
+                    function(a) 
+                      return Size(StabilizerChain(a)); 
+                    end ));
+  end );
+
+InstallMethod( FindShortGeneratorsOfSubgroup, 
+  "without option rec or func, matrix group method",
+  [ IsMatrixGroup, IsMatrixGroup ],
+  function(G,U)
+    local S; 
+    S := StabilizerChain(U);
+    return FindShortGeneratorsOfSubgroup(G,U,
+             rec( membershiptest :=
+                    function(a,b) 
+                      return SiftGroupElement(S,a).isone; 
+                    end,
+                  sizetester :=
+                    function(a) 
+                      return Size(StabilizerChain(a)); 
+                    end ));
+  end );
 
