@@ -613,7 +613,8 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
     #               candidates
     #               must be a record with components "points", "ops",
     #               "used", the latter indicates the largest index
-    #               that has already been used.
+    #               that has already been used. "used" is automatically
+    #               set to 0 if not set.
     #   TryShortOrbit: Number of tries for the short orbit finding alg.
     #   StabGenScramble,
     #   StabGenScrambleFactor,
@@ -651,6 +652,10 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
         S!.proof := true;
         S!.trivialgroup := true;
         GENSS_ComputeStrongBelowNumbers(S);
+        if not(IsBound(opt.Projective)) or
+           opt.Projective = false then
+            SetStoredStabilizerChain(grp,S);
+        fi;
         return S;
     fi;
     
@@ -701,6 +706,9 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
         opt.StrictlyUseCandidates := true;
     elif IsBound(opt.Cand) then
         cand := opt.Cand;
+        if not(IsBound(cand.used)) then
+            cand.used := 0;
+        fi;
     else
         # Otherwise try Murray/O'Brien:
         cand := FindBasePointCandidates( grp, opt, 0 );
@@ -722,7 +730,13 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
     GENSS_ComputeStrongBelowNumbers(S);
 
     # Do we already have a proof?
-    if S!.proof or opt.VerifyElements = 0 then return S; fi;
+    if S!.proof then
+        if not(IsBound(opt.Projective)) or opt.Projective = false then
+            SetStoredStabilizerChain(grp,S);
+        fi;
+        return S;
+    fi;
+    if opt.VerifyElements = 0 then return S; fi;
 
     Info(InfoGenSS,2,"Current size found: ",Size(S));
     # Now a possible verification phase:
@@ -742,6 +756,9 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
             fi;
         od;
         S!.proof := true;
+        if not(IsBound(opt.Projective)) or opt.Projective = false then
+            SetStoredStabilizerChain(grp,S);
+        fi;
     else
         # Do some verification here:
         Info(InfoGenSS,2,"Doing randomized verification...");
@@ -2122,6 +2139,54 @@ InstallMethod( ViewObj, "for a stabilizer chain",
   end );
 Unbind(GENSS_VIEWDEPTH);
 
+InstallMethod( BaseStabilizerChain,
+  "generic method for stabilizer chains",
+  [IsStabilizerChain],
+  function( S )
+    local SS,pts,ops;
+    pts := [];
+    ops := [];
+    SS := S;
+    while SS <> false do
+        Add(pts,SS!.orb[1]);
+        Add(ops,SS!.orb!.op);
+        SS := SS!.stab;
+    od;
+    return rec( points := pts, ops := ops );
+  end );
+
+InstallMethod( SiftBaseImage,
+  "generic method for genss stabilizer chains",
+  [IsStabilizerChain, IsList],
+  function(S,bi)
+    local l, SS, i, o, pos;
+    l := Length(bi);
+    SS := S;
+    i := 1;
+    while i <= Length(bi) do
+        o := SS!.orb;
+        pos := Position(o,bi[i]);
+        if pos = fail then
+            return false;
+        fi;
+        while pos > 1 do
+            if o!.memorygens then
+                bi{[i..l]} := GENSS_MapBaseImage(bi{[i..l]},
+                                o!.gensi[o!.schreiergen[pos]]!.el,SS);
+            else
+                bi{[i..l]} := GENSS_MapBaseImage(bi{[i..l]},
+                                o!.gensi[o!.schreiergen[pos]],SS);
+            fi;
+            pos := o!.schreierpos[pos];
+        od;
+        if o[1] <> bi[i] then
+            Error("this should not have happened, tell the authors");
+        fi;
+        i := i + 1;
+        SS := SS!.stab;
+    od;
+    return true;
+  end );
 
 #############################################################################
 # We can store a stabilizer chain in the (mutable) attribute
@@ -2541,16 +2606,6 @@ InstallGlobalFunction( GENSS_GroupShallowCopy,
     return GENSS_MakeIterRecord( iter!.Slist[1] );
   end );
 
-InstallMethod( StoredStabilizerChain, "for a group",
-  [IsGroup],
-  function(g)
-    if IsBound(g!.StabilizerChain) then
-      return g!.StabilizerChain;
-    else
-      return fail;
-    fi;
-  end );
-
 InstallMethod( SetStabilizerChain, "for a group and a stabilizer chain",
   [IsGroup, IsStabilizerChain],
   function(g,S)
@@ -2558,7 +2613,50 @@ InstallMethod( SetStabilizerChain, "for a group and a stabilizer chain",
       Error("you try to set a stabilizer chain for the wrong group");
       return;
     fi;
-    g!.StabilizerChain := S;
+    SetStoredStabilizerChain(g,S);
+  end );
+
+InstallMethod( Size, "for a group with a stored stabilizer chain",
+  [IsGroup and HasStoredStabilizerChain],
+  function(g)
+    return Size(StoredStabilizerChain(g));
+  end );
+
+InstallMethod( Size, "for a perm. group with a stored stabilizer chain",
+  [IsPermGroup and HasStoredStabilizerChain],
+  function(g)
+    return Size(StoredStabilizerChain(g));
+  end );
+
+InstallMethod( Size, "for a group with a stored stabilizer chain",
+  [IsGroup and HasStoredStabilizerChain and IsHandledByNiceMonomorphism],
+  function(g)
+    return Size(StoredStabilizerChain(g));
+  end );
+
+InstallMethod( \in, "for a group elm and a group with stored stabilizer chain",
+  [IsObject, IsGroup and HasStoredStabilizerChain],
+  function(x, g)
+    local S,r;
+    S := StoredStabilizerChain(g);
+    r := SiftGroupElement(S,x);
+    return r.isone;
+  end );
+
+InstallMethod( SizeMC, "for a group and an error bound",
+  [IsGroup, IsRat],
+  function( G, err )
+    local S;
+    S := StabilizerChain(G,rec( ErrorBound := err ));
+    return Size(S);
+  end );
+
+InstallMethod( SizeMC, "for a permutation group and an error bound, genss",
+  [IsGroup and IsPermGroup, IsRat], 1,
+  function( G, err )
+    local S;
+    S := StabilizerChain(G,rec( ErrorBound := err ));
+    return Size(S);
   end );
 
 InstallGlobalFunction( GENSS_ImageElm,
@@ -2599,6 +2697,63 @@ InstallGlobalFunction( GroupHomomorphismByImagesNCStabilizerChain,
     return GroupHomByFuncWithData( g, h, GENSS_ImageElm, false,
                                    GENSS_PreImagesRepresentative, data );
   end );
+
+InstallMethod( ORB_StabilizerChainKnownSize,
+  "GENSS method for arbitrary groups",
+  [IsGroup,IsPosInt],
+  function(g,size)
+    if HasStoredStabilizerChain(g) and
+       size = Size(StoredStabilizerChain(g)) then
+        return StoredStabilizerChain(g);
+    fi;
+    return StabilizerChain(g,rec( Size := size ));
+  end );
+
+InstallMethod( ORB_BaseStabilizerChain,
+  "GENSS method for arbitary groups",
+  [IsStabilizerChain],
+  BaseStabilizerChain );
+
+InstallMethod( ORB_StabilizerChainKnownBase,
+  "GENSS method for arbitrary groups",
+  [IsGroup,IsRecord],
+  function(g,base)
+    if HasStoredStabilizerChain(g) then
+        return StoredStabilizerChain(g);
+    fi;
+    if base = fail then
+        return StabilizerChain( g );
+    else
+        return StabilizerChain( g, rec( Cand := ShallowCopy(base) ) );
+    fi;
+  end );
+
+InstallMethod( ORB_SizeStabilizerChain,
+  "GENSS method for arbitrary groups",
+  [IsStabilizerChain], Size );
+
+InstallMethod( ORB_IsWordInStabilizerChain,
+  "GENSS method for arbitrary groups",
+  [IsList,IsList,IsList,IsStabilizerChain],
+  function(word, gens, gensi, S)
+    local x, b, ops, i;
+    if Size(S) = 1 then
+        x := ORB_ApplyWord(gens[1]^0,word,gens,gensi,OnRight);
+        return IsOne(x);
+    fi;
+    b := BaseStabilizerChain(S);
+    ops := b.ops;
+    b := b.points;
+    for i in [1..Length(word)] do
+        if word[i] > 0 then
+            b := List([1..Length(b)],j->ops[j](b[j],gens[word[i]]));
+        else
+            b := List([1..Length(b)],j->ops[j](b[j],gensi[word[i]]));
+        fi;
+    od;
+    return SiftBaseImage(S,b);
+  end );
+
 
 
 #############################################################################

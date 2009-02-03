@@ -101,8 +101,12 @@ DeclareGlobalFunction( "GENSS_GroupNextIterator" );
 DeclareGlobalFunction( "GENSS_GroupIsDoneIterator" );
 DeclareGlobalFunction( "GENSS_GroupShallowCopy" );
 DeclareGlobalFunction( "GENSS_MakeIterRecord" );
+
+DeclareOperation( "BaseStabilizerChain", [IsStabilizerChain] );
+DeclareOperation( "SiftBaseImage", [IsStabilizerChain, IsList] );
+
 DeclareOperation( "SetStabilizerChain", [IsGroup,IsStabilizerChain] );
-DeclareOperation( "StoredStabilizerChain", [IsGroup] );
+DeclareAttribute( "StoredStabilizerChain", IsGroup );
 
 #############################################################################
 # The following operations are about methods to compute stabilisers:
