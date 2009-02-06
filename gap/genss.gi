@@ -2635,6 +2635,16 @@ InstallMethod( Size, "for a group with a stored stabilizer chain",
   end );
 
 InstallMethod( \in, "for a group elm and a group with stored stabilizer chain",
+  [IsObject, IsMatrixGroup and HasStoredStabilizerChain and 
+             IsHandledByNiceMonomorphism],
+  function(x, g)
+    local S,r;
+    S := StoredStabilizerChain(g);
+    r := SiftGroupElement(S,x);
+    return r.isone;
+  end );
+
+InstallMethod( \in, "for a group elm and a group with stored stabilizer chain",
   [IsObject, IsGroup and HasStoredStabilizerChain],
   function(x, g)
     local S,r;
@@ -2716,7 +2726,7 @@ InstallMethod( ORB_BaseStabilizerChain,
 
 InstallMethod( ORB_StabilizerChainKnownBase,
   "GENSS method for arbitrary groups",
-  [IsGroup,IsRecord],
+  [IsGroup,IsObject],
   function(g,base)
     if HasStoredStabilizerChain(g) then
         return StoredStabilizerChain(g);
@@ -2748,7 +2758,7 @@ InstallMethod( ORB_IsWordInStabilizerChain,
         if word[i] > 0 then
             b := List([1..Length(b)],j->ops[j](b[j],gens[word[i]]));
         else
-            b := List([1..Length(b)],j->ops[j](b[j],gensi[word[i]]));
+            b := List([1..Length(b)],j->ops[j](b[j],gensi[-word[i]]));
         fi;
     od;
     return SiftBaseImage(S,b);
