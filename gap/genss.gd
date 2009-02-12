@@ -54,16 +54,17 @@ DeclareGlobalFunction( "GENSS_MapBaseImage" );
 DeclareGlobalFunction( "GENSS_FindVectorsWithShortOrbit" );
 DeclareGlobalFunction( "GENSS_FindShortOrbit" );
 DeclareGlobalFunction( "GENSS_IsOneProjective" );
+DeclareGlobalFunction( "GENSS_RandomElementFromAbove" );
 
 
 #############################################################################
 # Now to the heart of the method, the Schreier-Sims:
 #############################################################################
 
-DeclareOperation( "FindBasePointCandidates", [ IsGroup, IsRecord, IsInt ] );
+DeclareOperation( "FindBasePointCandidates", 
+  [ IsGroup, IsRecord, IsInt, IsObject ] );
 DeclareGlobalFunction( "GENSS_NextBasePoint" );
 DeclareGlobalFunction( "GENSS_CreateStabChainRecord" );
-DeclareGlobalFunction( "GENSS_ComputeStrongBelowNumbers" );
 DeclareGlobalFunction( "GENSS_StabilizerChainInner" );
 DeclareGlobalFunction( "GENSS_DeriveCandidatesFromStabChain" );
 DeclareGlobalFunction( "GENSS_TrivialOp" );

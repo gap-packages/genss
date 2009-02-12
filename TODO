@@ -1,3 +1,15 @@
+AddGeneratorsToStabilizerChain for trivial stabchains testen
+Sort out storing of stabchains (attribute???)
+Random element generation with pools etc. besser testen
+ImmediateVerification wieder rein???
+FindVectorsWithShortOrbit: schneller
+Make schreier trees shallow, when???
+
+spaeter:
+
+Verification in Ordnung mit strongbelow
+
+
 Add benchmark tests like in matrixss.
 
 Later:
