@@ -1,9 +1,11 @@
+Soluble-Method
+FindVectorsWithShortOrbit: schneller
+opt.isone throughout
+Summarize all options in comments
+
 AddGeneratorsToStabilizerChain for trivial stabchains testen
 Sort out storing of stabchains (attribute???)
 Random element generation with pools etc. besser testen
-ImmediateVerification wieder rein???
-FindVectorsWithShortOrbit: schneller
-Make schreier trees shallow, when???
 
 spaeter:
 
@@ -15,3 +17,23 @@ Add benchmark tests like in matrixss.
 Later:
  * deterministic verification
  * lots of methods using stabilizer chains
+
+Test:
+
+
+LoadPackage("genss");
+LoadPackage("chop");
+
+gens := AtlasGenerators("Fi22",6).generators;
+g := Group(gens);
+SetInfoLevel(InfoGenSS,3);
+S := StabilizerChain(g);
+s := AtlasStraightLineProgram("Fi22",1).program;
+hgens := ResultOfStraightLineProgram(s,gens);
+cgens := List(hgens,CMat);
+m := Module(cgens);
+r := Chop(m);
+soc := SocleSeries(m,r.db);
+v := Unpack(soc.basis[1]);
+ConvertToVectorRep(v);
+S := StabilizerChain(g,rec( Cand := rec( points := [v], ops := [OnRight])));
