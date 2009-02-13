@@ -202,6 +202,7 @@ InstallGlobalFunction( GENSS_FindShortOrbit,
     local ThrowAwayOrbit,found,gens,hashlen,i,j,limit,newnrorbs,nrorbs,o,wb;
 
     wb := GENSS_FindVectorsWithShortOrbit(g,opt,parentS);
+    if Length(wb) = 0 then return fail; fi;
 
     # Now we have a list of vectors with (hopefully) short orbits.
     # We start enumerating all those orbits, but first only 50 elements:
@@ -394,8 +395,8 @@ InstallMethod( FindBasePointCandidates,
     immorblimit := opt.OrbitLimitImmediatelyTake;
     orblimit := opt.OrbitLimitBirthdayParadox;
 
-    Info( InfoGenSS, 3, "Finding nice base points (birthday paradox, limit=",
-                        orblimit,")..." );
+    Info( InfoGenSS, 3, "Finding base points (birthday paradox, limit=",
+                        orblimit,", randels=",randels,")..." );
     if IsObjWithMemory(GeneratorsOfGroup(grp)[1]) then
         grp := Group(StripMemory(GeneratorsOfGroup(grp)));
     fi;
@@ -412,6 +413,10 @@ InstallMethod( FindBasePointCandidates,
         fi;
         v := Filtered(v,vv->ForAny(GeneratorsOfGroup(grp),x-> vv <> op(vv,x)));
         l := Length(v);
+        if l = 0 then
+            v := MutableCopyMat(One(grp));
+            l := Length(v);
+        fi;
         c := 0*[1..l];    # the number of coincidences
         e := ListWithIdenticalEntries(l,infinity);   # the current estimates
         ht := NewHT(v[1],NextPrimeInt(l * randels * 4));
@@ -535,6 +540,9 @@ InstallMethod( FindBasePointCandidates,
        ((opt!.Projective = false and Size(F)^d > 300000) or
         (opt!.Projective = true and Size(F)^(d-1) > 300000)) then
         bv := GENSS_FindVectorsWithShortOrbit(grp,opt,parentS);
+        if Length(bv) < 3 then
+            bv := MutableCopyMat(One(grp));
+        fi;
         bv := bv{[1..3]};   # just take 3 of them
     else
         bv := One(grp);
@@ -789,7 +797,7 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
     for i in [1..opt.RandomStabGens] do
         x := GENSS_RandomElementFromAbove(S,layer);
         if (not(S!.opt.Projective) and not(IsOne(x))) or
-           (    S!.opt.Projective  and not(GENSS_IsOneProjective)) then
+           (    S!.opt.Projective  and not(GENSS_IsOneProjective(x))) then
             Add(stabgens,x);
         fi;
     od;
