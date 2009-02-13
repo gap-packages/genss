@@ -912,6 +912,12 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
     # First a few preparations, then we delegate to GENSS_StabilizerChainInner:
 
     # Add some default options:
+    if (HasSize(grp) and not(IsBound(opt.Projective) and opt.Projective))
+       or IsBound(opt.Size) then
+        if not(IsBound(opt.ImmediateVerificationElements)) then
+            opt.ImmediateVerificationElements := 0;
+        fi;
+    fi;
     GENSS_CopyDefaultOptions(GENSS,opt);
 
     # Check for the identity group:
