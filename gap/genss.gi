@@ -355,7 +355,7 @@ InstallMethod( FindBasePointCandidates,
             break;
         fi;
         vv[kk] := Zero(F);
-        kk := kk + 1;
+        kk := kk - 1;
     od;
     # Pick a random vector:
     vv := ZeroMutable( gens[1][1] );
