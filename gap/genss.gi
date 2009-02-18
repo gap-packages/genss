@@ -296,10 +296,10 @@ InstallMethod( FindBasePointCandidates,
     F := DefaultFieldOfMatrixGroup(grp);
     q := Size(F);
     d := DimensionOfMatrixGroup(grp);
-    if IsObjWithMemory(GeneratorsOfGroup(grp)[1]) then
-        grp := Group(StripMemory(GeneratorsOfGroup(grp)));
-    fi;
     gens := GeneratorsOfGroup(grp);
+    if IsObjWithMemory(gens[1]) then
+        gens := StripMemory(gens);
+    fi;
     if ForAny(gens,x->not(GENSS_IsOneProjective(x))) then
         opt.FindBasePointCandidatesData := rec( randpool := [], vecs := [] );
         # This is needed for communication between different methods
@@ -320,10 +320,10 @@ InstallMethod( FindBasePointCandidates,
     F := DefaultFieldOfMatrixGroup(grp);
     q := Size(F);
     d := DimensionOfMatrixGroup(grp);
-    if IsObjWithMemory(GeneratorsOfGroup(grp)[1]) then
-        grp := Group(StripMemory(GeneratorsOfGroup(grp)));
-    fi;
     gens := GeneratorsOfGroup(grp);
+    if IsObjWithMemory(gens[1]) then
+        gens := StripMemory(gens);
+    fi;
 
     # Try two standard basis vectors and a random vector to find a very 
     # short orbit:
@@ -387,7 +387,7 @@ InstallMethod( FindBasePointCandidates,
   [ IsGroup and IsMatrixGroup and IsFinite, IsRecord, IsInt, IsObject ], 20,
   function( grp, opt, mode, parentS )
     local F, q, d, randels, immorblimit, orblimit, data, op, v, l, c, e, ht, 
-          val, x, w, cand, minest, minpos, round, i, j;
+          val, x, w, cand, minest, minpos, round, i, j, gens;
     F := DefaultFieldOfMatrixGroup(grp);
     q := Size(F);
     d := DimensionOfMatrixGroup(grp);
@@ -397,24 +397,25 @@ InstallMethod( FindBasePointCandidates,
 
     Info( InfoGenSS, 3, "Finding base points (birthday paradox, limit=",
                         orblimit,", randels=",randels,")..." );
-    if IsObjWithMemory(GeneratorsOfGroup(grp)[1]) then
-        grp := Group(StripMemory(GeneratorsOfGroup(grp)));
-    fi;
     data := opt.FindBasePointCandidatesData; # this we get from earlier methods
     if q = 2 then
         op := OnPoints;
     else
         op := OnLines;
     fi;
+    gens := GeneratorsOfGroup(grp);
+    if IsObjWithMemory(gens[1]) then
+        gens := StripMemory(gens);
+    fi;
     for round in [1..opt.TryBirthdayParadox] do
         v := GENSS_FindVectorsWithShortOrbit(grp,opt,parentS);
         if round = 1 then
             Append(v,data.vecs);   # take previously tried ones as well
         fi;
-        v := Filtered(v,vv->ForAny(GeneratorsOfGroup(grp),x-> vv <> op(vv,x)));
+        v := Filtered(v,vv->ForAny(gens,x-> vv <> op(vv,x)));
         l := Length(v);
         if l = 0 then
-            v := MutableCopyMat(One(grp));
+            v := MutableCopyMat(One(gens[1]));
             l := Length(v);
         fi;
         c := 0*[1..l];    # the number of coincidences
@@ -494,9 +495,6 @@ InstallMethod( FindBasePointCandidates,
     d := DimensionOfMatrixGroup(grp);
     data := opt.FindBasePointCandidatesData;
     Info( InfoGenSS, 3, "Finding nice base points (TryShortOrbit)..." );
-    if IsObjWithMemory(GeneratorsOfGroup(grp)[1]) then
-        grp := Group(StripMemory(GeneratorsOfGroup(grp)));
-    fi;
 
     # Next possibly "TryShortOrbit":
     cand := rec( points := [], used := 0 );
@@ -531,9 +529,6 @@ InstallMethod( FindBasePointCandidates,
     F := DefaultFieldOfMatrixGroup(grp);
     d := DimensionOfMatrixGroup(grp);
     Info( InfoGenSS, 3, "Finding nice base points (Murray/O'Brien)..." );
-    if IsObjWithMemory(GeneratorsOfGroup(grp)[1]) then
-        grp := Group(StripMemory(GeneratorsOfGroup(grp)));
-    fi;
 
     # Standard Murray/O'Brien heuristics:
     if i = 0 and 
