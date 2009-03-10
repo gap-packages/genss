@@ -81,6 +81,8 @@ GENSS.OrbitLimitBirthdayParadox := 1000000;
 GENSS.OrbitLimitImmediatelyTake := 10000;
 # Limit for number of random elements during orbit estimation:
 GENSS.NrRandElsBirthdayParadox := 6000;
+# Set this to false to allow orbits of length 1:
+GENSS.Reduced := true;
 
 #############################################################################
 # A few helper functions needed elsewhere:
@@ -573,7 +575,7 @@ InstallMethod( FindBasePointCandidates, "for a permutation group",
     
 InstallGlobalFunction( GENSS_NextBasePoint, 
   function( gens, cand, opt, S )
-    local NotFixedUnderAllGens,i;
+    local NotFixedUnderAllGens,i,notfixed;
 
     if IsBound(opt.FindBasePointCandidatesData) then
         Unbind(opt.FindBasePointCandidatesData);
@@ -605,14 +607,31 @@ InstallGlobalFunction( GENSS_NextBasePoint,
         fi;
     fi;
 
+    # Now use the candidates we already have:
     repeat
         if cand.used >= Length(cand.points) then
-            cand := FindBasePointCandidates(Group(gens),opt,1,S);
-            opt.StrictlyUseCandidates := false;
+            if IsBound(cand.points2) and Length(cand.points2) > 0 then
+                cand := rec( points := cand.points2, ops := cand.ops2,
+                             used := 0 );
+            else
+                cand := FindBasePointCandidates(Group(gens),opt,1,S);
+                opt.StrictlyUseCandidates := false;
+                opt.Reduced := true;
+            fi;
         fi;
         cand.used := cand.used + 1;
-    until NotFixedUnderAllGens(gens,cand.points[cand.used],cand.ops[cand.used]);
-
+        notfixed := NotFixedUnderAllGens(gens,
+                          cand.points[cand.used],cand.ops[cand.used]);
+        if notfixed = false and opt.Reduced = true then # everything is fixed!
+            if IsBound(cand.points2) then
+                # Maybe our current stabilizer is too small, we still
+                # might want to use these points again:
+                Add(cand.points2,cand.points[cand.used]);
+                Add(cand.ops2,cand.ops[cand.used]);
+            fi;
+        fi;
+    until opt.Reduced = false or notfixed;
+          
     return rec( point := cand.points[cand.used], op := cand.ops[cand.used],
                 cand := cand );
   end );
@@ -885,6 +904,8 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
     #               opt.cand will be used as base points and no other
     #               points from previous orbits are used first
     #               this is set when Base was specified
+    #   Reduced:    if set to true no orbits of length 1 will occur
+    #               (except for the trivial group), is true by default
     #   Cand:       initializer for cand, which are base points
     #               candidates
     #               must be a record with components "points", "ops",
@@ -974,7 +995,8 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
         if IsStabilizerChain(opt.Base) then
             cand := GENSS_DeriveCandidatesFromStabChain(opt.Base);
         else  # directly take the base points:
-            cand := rec( points := opt.Base, used := 0 );
+            cand := rec( points := opt.Base, used := 0, points2 := [],
+                         ops2 := [] );
             if not(IsBound(opt.BaseOps)) then
                 # Let's guess the ops:
                 if IsBound(opt.Projective) and opt.Projective = true then
@@ -994,6 +1016,8 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
         if not(IsBound(cand.used)) then
             cand.used := 0;
         fi;
+        cand.points2 := [];
+        cand.ops2 := [];
     else
         # Otherwise try different things later using generic methods:
         cand := rec( points := [], ops := [], used := 0 );
