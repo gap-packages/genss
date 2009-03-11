@@ -55,7 +55,7 @@ DeclareGlobalFunction( "GENSS_FindVectorsWithShortOrbit" );
 DeclareGlobalFunction( "GENSS_FindShortOrbit" );
 DeclareGlobalFunction( "GENSS_IsOneProjective" );
 DeclareGlobalFunction( "GENSS_RandomElementFromAbove" );
-
+DeclareGlobalFunction( "GENSS_OpFunctionMaker" );
 
 #############################################################################
 # Now to the heart of the method, the Schreier-Sims:

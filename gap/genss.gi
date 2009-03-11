@@ -573,6 +573,67 @@ InstallMethod( FindBasePointCandidates, "for a permutation group",
     return rec( points := points, ops := ops, used := 0 );
   end );
     
+InstallMethod( FindBasePointCandidates, "for a direct product",
+  [ IsGroup and HasDirectProductInfo, IsRecord, IsInt, IsObject ],
+  function( grp, opt, i, parentS )
+    local info,cand,j,fac,cand2,k,op;
+    info := DirectProductInfo(grp);
+    cand := rec( points := [], ops := [] );
+    for j in [1..Length(info.groups)] do
+      fac := info.groups[j];
+      cand2 := FindBasePointCandidates(fac,opt,i,parentS);
+      if cand2 <> fail then
+          Append(cand.points,cand2.points);
+          for k in [1..Length(cand2.ops)] do
+              op := cand2.ops[k];
+              Add(cand.ops,function(x,el) return op(x,el[j]); end);
+          od;
+      fi;
+    od;
+    cand.used := 0;
+    return cand;
+  end );
+
+GENSS_HACK := OnPoints;
+
+InstallGlobalFunction( GENSS_OpFunctionMaker, function(op,index)
+  local name,s,f;
+  name := NAME_FUNC(op);
+  if name = "unknown" or name = "GENSS_HACK" then return fail; fi;
+  s := Concatenation( "GENSS_HACK := function(x,el) return ",
+                      name, "(x,el[",String(index),"]); end;" );
+  f := InputTextString(s);
+  Read(f);
+  return GENSS_HACK;
+end);
+
+InstallMethod( FindBasePointCandidates, "for a direct product",
+  [ IsGroup, IsRecord, IsInt, IsObject ],
+  function( grp, opt, i, parentS )
+    local gens,l,cand,j,factgens,fac,cand2,k,op;
+    gens := GeneratorsOfGroup(grp);
+    if not(ForAll(gens,IsTuple)) or Length(gens) = 0 then
+        TryNextMethod();
+    fi;
+    l := Length(gens[1]);
+    cand := rec( points := [], ops := [] );
+    for j in [1..l] do
+        factgens := List(gens,x->x[j]);
+        fac := Group(factgens);
+        cand2 := FindBasePointCandidates(fac,opt,i,parentS);
+        if cand2 <> fail then
+            Append(cand.points,cand2.points);
+            for k in [1..Length(cand2.ops)] do
+                op := cand2.ops[k];
+                Add(cand.ops,GENSS_OpFunctionMaker(op,j));
+            od;
+        fi;
+    od;
+    cand.used := 0;
+    return cand;
+  end );
+
+
 InstallGlobalFunction( GENSS_NextBasePoint, 
   function( gens, cand, opt, S )
     local NotFixedUnderAllGens,i,notfixed;
