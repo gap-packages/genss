@@ -805,7 +805,7 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
     # record for base point candidates and opt the (shared) option
     # record. This is called in StabilizerChain and calls itself.
     # It also can be called if a new layer is needed.
-    local base,gen,S,i,next,pr,r,stabgens,x;
+    local base,gen,S,i,merk,merk2,next,pr,r,stabgens,x;
 
     Info(InfoGenSS,4,"Entering GENSS_StabilizerChainInner layer=",layer);
     next := GENSS_NextBasePoint(gens,cand,opt,parentS);
@@ -834,7 +834,11 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
         if Length(S!.orb) > 50 or S!.orb!.depth > 5 then
             Info(InfoGenSS, 3, "Trying to make Schreier tree shallower (depth=",
                  S!.orb!.depth,")...");
+            merk := Length(S!.orb!.gens);
+            merk2 := Length(S!.stronggens);
             MakeSchreierTreeShallow(S!.orb);
+            Append(S!.stronggens,S!.orb!.gens{[merk+1..Length(S!.orb!.gens)]});
+            Append(S!.layergens,[merk2+1..Length(S!.stronggens)]);
             Info(InfoGenSS, 3, "Depth is now ",S!.orb!.depth);
         fi;
     fi;
@@ -1300,6 +1304,7 @@ InstallMethod( NrStrongGenerators, "for a stabilizer chain",
 InstallMethod( ForgetMemory, "for a stabilizer chain",
   [ IsStabilizerChain and IsStabilizerChainByOrb ],
   function( S )
+    ForgetMemory(S!.stronggens);
     while S <> false do
         ForgetMemory(S!.orb);
         ForgetMemory(S!.orb!.gensi);
