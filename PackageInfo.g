@@ -28,13 +28,13 @@ Subtitle := "genss - generic Schreier-Sims",
 ##  See '?Extending: Version Numbers' in GAP help for an explanation
 ##  of valid version numbers. For an automatic package distribution update
 ##  you must provide a new version number even after small changes.
-Version := "0.96",
+Version := "1.0",
 ##  Please adjust also the VERSION file in the package directory when
 ##  changing this.
 
 ##  Release date of the current version in dd/mm/yyyy format.
 # 
-#Date := "20/06/2003",  # not yet released
+Date := "22/07/2009",  # not yet released
 
 ##  URL of the archive(s) of the current package release, but *without*
 ##  the format extension(s), like '.zoo', which are given next.
@@ -45,8 +45,8 @@ Version := "0.96",
 ##  example/init.g, ...    or  example-1.3/init.g, ...  )
 # 
 ArchiveURL := Concatenation( 
-  "http://www.math.rwth-aachen.de/~Max.Neunhoeffer/Computer/Software/Gap/",
-  "genss/genss"),
+  "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/",
+  "genss/genss-1.0"),
 
 ##  All provided formats as list of file extensions, separated by white
 ##  space or commas.
@@ -125,16 +125,16 @@ Persons := [
     FirstNames    := "Max",
     IsAuthor      := true,
     IsMaintainer  := true,
-    Email         := "max.neunhoeffer@math.rwth-aachen.de",
-    WWWHome       := "http://www.math.rwth-aachen.de/~Max.Neunhoeffer",
+    Email         := "neunhoef@mcs.st-and.ac.uk",
+    WWWHome       := "http://www-groups.mcs.st-and.ac.uk/~neunhoef",
     PostalAddress := Concatenation( [
-                       "Max Neunhoeffer\n",
-                       "Lehrstuhl D fuer Mathematik, RWTH Aachen\n",
-                       "Templergraben 64\n",
-                       "52056 Aachen\n",
-                       "Germany" ] ),
-    Place         := "Aachen",
-    Institution   := "RWTH Aachen"
+                       "School of Mathematics and Statistics\n",
+                       "Mathematical Institute\n",
+                       "North Haugh\n",
+                       "St Andrews, Fife KY16 9SS\n",
+                       "Scotland, UK" ] ),
+    Place         := "St Andrews",
+    Institution   := "University of St Andrews"
   ),
   rec( 
     LastName      := "Noeske",
@@ -164,7 +164,7 @@ Persons := [
 ##    "other"         for all other packages
 ##
 # Status := "accepted",
-Status := "dev",
+Status := "deposited",
 
 ##  You must provide the next two entries if and only if the status is 
 ##  "accepted" because is was successfully refereed:
@@ -186,10 +186,10 @@ Status := "dev",
 ##  and updating of the package in the GAP distribution.
 #
 README_URL := Concatenation(
-  "http://www.math.rwth-aachen.de/~Max.Neunhoeffer/Computer/Software/Gap/",
+  "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/",
   "genss/README.genss"),
 PackageInfoURL := Concatenation( 
-  "http://www.math.rwth-aachen.de/~Max.Neunhoeffer/Computer/Software/Gap/",
+  "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/",
   "genss/PackageInfo.g"),
 
 ##  Here you  must provide a short abstract explaining the package content 
@@ -208,7 +208,7 @@ PackageInfoURL := Concatenation(
 #   package. It has little functionality except for being a package",
 #
 PackageWWWHome := Concatenation(
-  "http://www.math.rwth-aachen.de/~Max.Neunhoeffer/Computer/Software/Gap/",
+  "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/",
   "genss.html"),
 #               
 ##  Here is the information on the help books of the package, used for
@@ -265,11 +265,12 @@ PackageDoc := rec(
 Dependencies := rec(
   # GAP version, use version strings for specifying exact versions,
   # prepend a '>=' for specifying a least version.
-  GAP := ">=4.4",
+  GAP := ">=4.4.12",
   # list of pairs [package name, (least) version],  package name is case
   # insensitive, least version denoted with '>=' prepended to version string.
   # without these, the package will not load
-  NeededOtherPackages := [["GAPDoc", ">= 0.99"],["orb", ">= 2.0"]],
+  NeededOtherPackages := [["GAPDoc", ">= 1.2"],["IO", ">= 3.0"],
+                          ["orb", ">= 3.0"]],
   # without these the package will issue a warning while loading
   # SuggestedOtherPackages := [],
   SuggestedOtherPackages := [],

@@ -1,0 +1,91 @@
+<!-- 
+
+      stabchains.xml            genss package documentation
+                                                                Max Neunhoeffer
+                                                                   Felix Noeske
+
+         Copyright (C) 2006-2009 by the authors.
+
+This chapter explains how to work with stabiliser chains.
+
+-->
+
+<Chapter Label="StabChains">
+<Heading>Stabiliser Chains</Heading>
+
+This chapter describes the core functionality of the package. It mainly
+covers how to use <Package>genss</Package> to compute stabiliser chains
+for &GAP; groups and use them to do sifting.
+
+<Section Label="StabChainComp">
+<Heading>Computing stabiliser chains</Heading>
+
+The main tool to compute a stabiliser chain is the following operation.
+It has many options and can be customised in a very flexible way.
+
+<ManSection>
+<Oper Name="StabilizerChain" Arg="G [, opt]"/>
+<Returns>a stabiliser chain object or <K>fail</K></Returns>
+<Description>
+</Description>
+</ManSection>
+
+</Section>
+
+<Section Label="StabChainOpts">
+<Heading>Options for the computation of stabiliser chains</Heading>
+
+The options record for the <Ref Oper="StabilizerChain"/> can contain the
+following components:
+
+<List>
+<Mark></Mark>
+<Item></Item>
+</List>
+
+</Section>
+
+
+<Section Label="UseStabChain">
+<Heading>Using stabiliser chains</Heading>
+
+<!--
+
+SiftGroupElement
+SiftGroupElementSLP
+StrongGenerators
+NrStrongGenerators
+SLPChainStabilizerChain
+VerifyStabilizerChainTC
+GroupHomomorphismByImagesNCStabilizerChain
+Size
+\in
+IsProved
+MakeGAPStabChain
+GroupIteratorByStabilizerChain
+BaseStabilizerChain
+SiftBaseImage
+SetStabilizerChain
+StoredStabilizerChain
+Stab
+SetwiseStabilizer
+SetwiseStabilizerPartitionBacktrack
+FindShortGeneratorsOfSubgroup
+BacktrackSearchStabilizerChainSubgroup
+BacktrackSearchStabilizerChainElement
+FindBasePointCandidates
+GENSS_IsOneProjective
+
+<ManSection>
+<Oper Name="" Arg=""/>
+<Returns></K></Returns>
+<Description>
+</Description>
+</ManSection>
+
+-->
+
+</Section>
+<!-- ############################################################ -->
+
+</Chapter>

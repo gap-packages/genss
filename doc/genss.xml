@@ -22,14 +22,15 @@
     </Version>
     <Author>Max Neunhöffer
 <Address>
-Lehrstuhl D für Mathematik,
-RWTH Aachen,
-Templergraben 64,
-52062 Aachen,
-Germany
+School of Mathematics and Statistics
+Mathematical Institute
+University of St Andrews
+North Haugh
+St Andrews, Fife KY16 9SS
+Scotland, UK
 </Address>
-    <Email>max.neunhoeffer@math.rwth-aachen.de</Email>
-    <Homepage>http://www.math.rwth-aachen.de/&tilde;Max.Neunhoeffer</Homepage>
+    <Email>neunhoef@mcs.st-and.ac.uk</Email>
+    <Homepage>http://www-groups.mcs.st-and.ac.uk/&tilde;neunhoef</Homepage>
     </Author>
     <Author>Felix Noeske
 <Address>
@@ -42,13 +43,13 @@ Germany
     <Email>felix.noeske@math.rwth-aachen.de</Email>
     <Homepage>http://www.math.rwth-aachen.de/&tilde;Felix.Noeske</Homepage>
     </Author>
-    <Date>Januar 2006</Date>
+    <Date>July 2009</Date>
 
 <Copyright>
-  &copyright; 2006 by Max Neunhöffer and Felix Noeske<P/>
+  &copyright; 2006-2009 by Max Neunhöffer and Felix Noeske<P/>
 
   This package may be distributed under the terms and conditions of the
-  GNU Public License Version 2 or higher.
+  GNU Public License Version 3 or higher.
 </Copyright>
 
 </TitlePage>
@@ -60,6 +61,7 @@ Germany
 <Body>
 <#Include SYSTEM "intro.xml">
 <#Include SYSTEM "install.xml">
+<#Include SYSTEM "stabchains.xml">
 <#Include SYSTEM "examples.xml">
 </Body>
 
