@@ -714,7 +714,7 @@ InstallGlobalFunction( GENSS_CreateStabChainRecord,
     S := rec( stab := false, orb := orb, cand := cand, base := base,
               opt := opt, layer := layer, parentS := parentS,
               stronggens := stronggens, layergens := layergens,
-              size := size, randpool := [] );
+              size := size, randpool := [], isone := opt.isone );
     if parentS = false then
         S!.topS := S;
     else
@@ -856,8 +856,7 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
     stabgens := EmptyPlist(opt.RandomStabGens);
     for i in [1..opt.RandomStabGens] do
         x := GENSS_RandomElementFromAbove(S,layer);
-        if (not(S!.opt.Projective) and not(IsOne(x))) or
-           (    S!.opt.Projective  and not(GENSS_IsOneProjective(x))) then
+        if not(S!.isone(x)) then
             Add(stabgens,x);
         fi;
     od;
@@ -980,14 +979,19 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
             opt.ImmediateVerificationElements := 0;
         fi;
     fi;
+    if IsBound(opt.Projective) and opt.Projective then
+        opt.isone := GENSS_IsOneProjective;
+    elif not(IsBound(opt.isone)) then
+        opt.isone := IsOne;
+    fi;
+    # Now opt.isone is set to a function to check whether or not a group
+    # element is equal to the identity.
     GENSS_CopyDefaultOptions(GENSS,opt);
 
     # Check for the identity group:
     gens := GeneratorsOfGroup(grp);
     if Length(gens) = 0 or 
-       ForAll(gens,IsOne) or
-       (IsBound(opt.Projective) and opt.Projective = true and
-        ForAll(gens,GENSS_IsOneProjective)) then
+       ForAll(gens,opt.isone) then
         # Set up a trivial stabilizer chain record:
         S := GENSS_CreateStabChainRecord(false,gens,1,1,GENSS_TrivialOp,
                                          rec( points := [], ops := [],
@@ -996,8 +1000,9 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
         S!.orb!.gensi := List(S!.orb!.gens,x->x^-1);
         S!.proof := true;
         S!.trivialgroup := true;
-        if not(IsBound(opt.Projective)) or
-           opt.Projective = false then
+        if (not(IsBound(opt.Projective)) or
+            opt.Projective = false) and
+           IsIdenticalObj(opt.isone,IsOne) then
             SetStoredStabilizerChain(grp,S);
         fi;
         return S;
@@ -1105,7 +1110,8 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
             fi;
         od;
         S!.proof := true;
-        if not(IsBound(opt.Projective)) or opt.Projective = false then
+        if (not(IsBound(opt.Projective)) or opt.Projective = false) and
+           IsIdenticalObj(opt.isone,IsOne) then
             SetStoredStabilizerChain(grp,S);
         fi;
     else
@@ -1140,8 +1146,7 @@ InstallMethod( AddGeneratorToStabilizerChain,
     # Increases the set represented by S by the generator el.
     local SS, r, n;
     if IsBound(S!.trivialgroup) and S!.trivialgroup then
-        if (S!.opt.Projective and GENSS_IsOneProjective(el)) or
-           (not(S!.opt.Projective) and IsOne(el)) then
+        if S!.isone(el) then
             return false;
         fi;
         SS := StabilizerChain(Group(el),S!.opt);
@@ -1214,7 +1219,8 @@ InstallMethod( AddGeneratorToStabilizerChain,
 InstallMethod( SiftGroupElement, "for a stabilizer chain and a group element",
   [ IsStabilizerChain and IsStabilizerChainByOrb, IsObject ],
   function( S, x )
-    local o,p,po,preS,r;
+    local o,p,po,preS,r,isone;
+    isone := S!.isone;
     preS := false;
     while S <> false do
         o := S!.orb;
@@ -1235,12 +1241,7 @@ InstallMethod( SiftGroupElement, "for a stabilizer chain and a group element",
         preS := S;
         S := S!.stab;
     od;
-    r := rec( rem := x, S := false, preS := preS );
-    if preS!.opt.Projective then
-        r.isone := GENSS_IsOneProjective(x);
-    else
-        r.isone := IsOne(x);
-    fi;
+    r := rec( rem := x, S := false, preS := preS, isone := isone(x) );
     return r;
   end );
 
@@ -1248,8 +1249,9 @@ InstallMethod( SiftGroupElementSLP,
   "for a stabilizer chain and a group element",
   [ IsStabilizerChain and IsStabilizerChainByOrb, IsObject ],
   function( S, x )
-    local preS, nrstrong, slp, o, p, po, r;
+    local preS, nrstrong, slp, o, p, po, r, isone;
     preS := false;
+    isone := S!.isone;
     nrstrong := Length(S!.stronggens);
     slp := [];     # will be reversed in the end
     while S <> false do
@@ -1270,12 +1272,7 @@ InstallMethod( SiftGroupElementSLP,
         preS := S;
         S := S!.stab;
     od;
-    r := rec( rem := x, S := false, preS := preS );
-    if preS!.opt.Projective then
-        r.isone := GENSS_IsOneProjective(x);
-    else
-        r.isone := IsOne(x);
-    fi;
+    r := rec( rem := x, S := false, preS := preS, isone := isone(x) );
     if r.isone then
         if Length(slp) = 0 then   # element was the identity!
             r.slp := StraightLineProgramNC([[1,0]],nrstrong);
@@ -1402,7 +1399,7 @@ InstallGlobalFunction( VerifyStabilizerChainTC,
                                                                    subgens);
                 sgs[k][4] := slp.slp;
             else
-                if not(IsOne(x)) then
+                if not(S!.isone(x)) then
                     return [fail,S!.layer];
                 fi;
                 sgs[k][4] := false;
@@ -1457,471 +1454,6 @@ InstallGlobalFunction( VerifyStabilizerChainTC,
     od;
   end);
 
-
-
-## InstallGlobalFunction( VerifyStabilizerChainTC2,
-##   function( S )
-##     local Grels,Hrels,MakeSchreierGens,Prels,ace,acenrGrels,
-##           cosetnrlimitfactor,f,gens,gensi,i,j,k,l,li,max,newpres,
-##           nrcosets,nrgens,nrschr,o,ords,pres,sb,sgs,slp,subgens,x;
-##     if S!.stab <> false then
-##         pres := VerifyStabilizerChainTC2(S!.stab);
-##         if IsList(pres) then return pres; fi;
-##     else
-##         pres := StraightLineProgram([[]],0);
-##     fi;
-##     Info(InfoGenSS,1,"Verifying stabilizer chain in layer ",S!.layer);
-##     # First create a few Schreier generators:
-##     sgs := [];
-##     i := 1;
-##     j := 1;
-##     o := S!.orb;
-##     nrgens := Length(o!.gens);
-##     sb := S!.strongbelow;
-##     MakeSchreierGens := function(n)
-##         local sg;
-##         Info(InfoGenSS,3,"Creating ",n," Schreier generators...");
-##         while Length(sgs) < n and
-##               i <= Length(o) do
-##             sg := GENSS_CreateSchreierGenerator(S,i,j);
-##             j := j + 1;
-##             if j > nrgens then
-##                 j := 1;
-##                 i := i + 1;
-##             fi;
-##             if sg <> fail then
-##                 Add(sgs,sg);
-##             fi;
-##         od;
-##     end;
-## 
-##     nrschr := S!.opt.NumberSchreierGens;
-##     MakeSchreierGens(nrschr);
-##     f := FreeGroup(S!.nrstrong);
-##     gens := GeneratorsOfGroup(f);
-##     gensi := List(gens,x->x^-1);
-##     subgens := gens{[1..S!.strongbelow]};
-##     Hrels := ResultOfStraightLineProgram(pres,subgens);
-##     if S!.opt.Projective then
-##         ords := List([1..nrgens],i->ProjectiveOrder(o!.gens[i]));
-##     else
-##         ords := List([1..nrgens],i->Order(o!.gens[i]));
-##     fi;
-##     Prels := List([1..nrgens],i->gens[i+sb]^ords[i]);
-##     Grels := [];
-##     cosetnrlimitfactor := 100;
-##     ace := false;
-##     while true do   # will be left by return eventually
-##         for k in [Length(Grels)+1..Length(sgs)] do
-##             Grels[k] := GENSS_Prod(gens,sgs[k][1]+sb) * gens[sgs[k][2]+sb] * 
-##                         GENSS_Prod(gensi,sgs[k][3]+sb);
-##             x := GENSS_Prod(o!.gens,sgs[k][1]) * o!.gens[sgs[k][2]] * 
-##                  GENSS_Prod(o!.gensi,sgs[k][3]);
-##             if S!.stab <> false then
-##                 slp := SiftGroupElementSLP(S!.stab,x);
-##                 if not(slp.isone) then
-##                     if ace <> false then
-##                         ACEQuit(ace);
-##                     fi;
-##                     return [fail,S!.layer];
-##                 fi;
-##                 Grels[k] := Grels[k] / ResultOfStraightLineProgram(slp.slp,
-##                                                                    subgens);
-##                 sgs[k][4] := slp.slp;
-##             else
-##                 if not(IsOne(x)) then
-##                     return [fail,S!.layer];
-##                 fi;
-##                 sgs[k][4] := false;
-##             fi;
-##         od;
-##         Info(InfoGenSS,2,"Doing ACE coset enumeration with limit ",
-##              cosetnrlimitfactor*Length(o)," and ",Length(Hrels),
-##              "+",Length(Prels),"+",Length(Grels)," relations...");
-##         if ace = false then
-##             ace := ACEStart(gens,Concatenation(Hrels,Prels,Grels),subgens:
-##                             max := cosetnrlimitfactor * Length(o) );
-##         else
-##             ACEAddRelators(ace,Grels{[acenrGrels+1..Length(Grels)]});
-##         fi;
-##         acenrGrels := Length(Grels);
-##         if not(IsCompleteACECosetTable(ace))  then   # did not close!
-##             #cosetnrlimitfactor := QuoInt(cosetnrlimitfactor*3,2);
-##             Info(InfoGenSS,2,"Coset enumeration did not finish!");
-##             if nrschr > Length(sgs) # or
-##                # nrschr > S!.opt.MaxNumberSchreierGens 
-##                then   # we are done!
-##                 # Something is wrong!
-##                 Error();
-##                 ACEQuit(ace);
-##                 return [fail, S!.layer];
-##             fi;
-##         else
-##             nrcosets := ACEStats(ace).index;
-##             Info(InfoGenSS,2,"Coset enumeration found ",nrcosets," cosets.");
-##             if nrcosets = Length(o) then
-##                 ACEQuit(ace);
-##                 # Verification is OK, now build a presentation:
-##                 l := GeneratorsWithMemory(
-##                        ListWithIdenticalEntries(S!.nrstrong,()));
-##                 li := List(l,x->x^-1);
-##                 newpres := ResultOfStraightLineProgram(pres,
-##                                    l{[1..S!.strongbelow]});
-##                 for k in [1..nrgens] do
-##                     Add(newpres,l[k+sb]^ords[k]);
-##                 od;
-##                 for k in [1..Length(sgs)] do
-##                     if sgs[k][4] <> false then
-##                         Add(newpres,
-##                             GENSS_Prod(l,sgs[k][1]+sb)*l[sgs[k][2]+sb]*
-##                             GENSS_Prod(li,sgs[k][3]+sb)*
-##                             ResultOfStraightLineProgram(sgs[k][4],l)^-1);
-##                     else
-##                         Add(newpres,GENSS_Prod(l,sgs[k][1]+sb)*l[sgs[k][2]+sb]*
-##                                     GENSS_Prod(li,sgs[k][3]+sb));
-##                     fi;
-##                 od;
-##                 Info(InfoGenSS,2,"Found presentation for layer ",S!.layer,
-##                      " using ",Length(newpres)," relators.");
-##                 return SLPOfElms(newpres);
-##             fi;
-##         fi;
-##         # nrschr := nrschr + S!.opt.NumberSchreierGens;
-##         nrschr := QuoInt(nrschr*4,3);
-##         MakeSchreierGens(nrschr);
-##     od;
-##   end);
-
-## VerifyStabilizerChainTC3 := 
-##   function( S )
-##     local Grels,Hrels,MakeSchreierGens,Prels,TestGenerationSGens,ace,
-##           acenrGrels,cosetnrlimitfactor,dr,f,gens,gensi,i,j,k,l,li,max,
-##           newpres,nrcosets,nrgens,nrschr,o,ok,ords,pres,sb,sgs,slp,subgens,x;
-##     if S!.stab <> false then
-##         pres := VerifyStabilizerChainTC3(S!.stab);
-##         if IsList(pres) then return pres; fi;
-##     else
-##         pres := StraightLineProgram([[]],0);
-##     fi;
-##     Info(InfoGenSS,1,"Verifying stabilizer chain in layer ",S!.layer);
-##     # First create a few Schreier generators:
-##     sgs := [];
-##     i := 1;
-##     j := 1;
-##     o := S!.orb;
-##     nrgens := Length(o!.gens);
-##     sb := S!.strongbelow;
-##     MakeSchreierGens := function(n)
-##         local sg;
-##         Info(InfoGenSS,3,"Creating ",n," Schreier generators...");
-##         while Length(sgs) < n and
-##               i <= Length(o) do
-##             sg := GENSS_CreateSchreierGenerator(S,i,j);
-##             j := j + 1;
-##             if j > nrgens then
-##                 j := 1;
-##                 i := i + 1;
-##             fi;
-##             if sg <> fail then
-##                 Add(sgs,sg);
-##             fi;
-##         od;
-##     end;
-##     TestGenerationSGens := function()
-##         local SS,g,k,l;
-##         l := [];
-##         for k in [1..Length(sgs)] do
-##             Add(l,GENSS_Prod(o!.gens,sgs[k][1]) * o!.gens[sgs[k][2]] * 
-##                   GENSS_Prod(o!.gensi,sgs[k][3]));
-##         od;
-##         g := Group(l);
-##         SS := StabilizerChain(g,rec( Base := S!.stab, 
-##                                      ErrorBound := 1/3,
-##                                      Projective := S!.opt.Projective ));
-##         Info( InfoGenSS,3,"Schreier gen test gave ",Size(SS)," of ",
-##               Size(S!.stab) );
-##         return Size(SS) = Size(S!.stab);
-##     end;        
-##             
-##     nrschr := S!.opt.NumberSchreierGens;
-##     while true do;
-##         MakeSchreierGens(nrschr);
-##         ok := S!.stab = false or TestGenerationSGens();
-##         if ok then break; fi;
-##         if i > Length(o) then
-##             Error( "this cannot have happenend" );
-##         fi;
-##         nrschr := QuoInt(nrschr*4,3);
-##     od;
-##     # We are now pretty sure that the Schreier generators generate the
-##     # stabilizer, just make some more and then start coset enumeration:
-##     nrschr := nrschr * 2;
-##     MakeSchreierGens(nrschr);
-## 
-##     f := FreeGroup(S!.nrstrong);
-##     gens := GeneratorsOfGroup(f);
-##     gensi := List(gens,x->x^-1);
-##     subgens := gens{[1..S!.strongbelow]};
-##     Hrels := ResultOfStraightLineProgram(pres,subgens);
-##     if S!.opt.Projective then
-##         ords := List([1..nrgens],i->ProjectiveOrder(o!.gens[i]));
-##     else
-##         ords := List([1..nrgens],i->Order(o!.gens[i]));
-##     fi;
-##     Prels := List([1..nrgens],i->gens[i+sb]^ords[i]);
-##     Grels := [];
-##     cosetnrlimitfactor := 4;
-##     ace := false;
-##     # Xrels := [];
-##     while true do   # will be left by return eventually
-##         for k in [Length(Grels)+1..Length(sgs)] do
-##             Grels[k] := GENSS_Prod(gens,sgs[k][1]+sb) * gens[sgs[k][2]+sb] * 
-##                         GENSS_Prod(gensi,sgs[k][3]+sb);
-##             x := GENSS_Prod(o!.gens,sgs[k][1]) * o!.gens[sgs[k][2]] * 
-##                  GENSS_Prod(o!.gensi,sgs[k][3]);
-##             if S!.stab <> false then
-##                 slp := SiftGroupElementSLP(S!.stab,x);
-##                 if not(slp.isone) then
-##                     if ace <> false then
-##                         ACEQuit(ace);
-##                     fi;
-##                     return [fail,S!.layer];
-##                 fi;
-##                 Grels[k] := Grels[k] / ResultOfStraightLineProgram(slp.slp,
-##                                                                    subgens);
-##                 sgs[k][4] := slp.slp;
-##             else
-##                 if not(IsOne(x)) then
-##                     return [fail,S!.layer];
-##                 fi;
-##                 sgs[k][4] := false;
-##             fi;
-##         od;
-##         Info(InfoGenSS,2,"Doing ACE coset enumeration with limit ",
-##              cosetnrlimitfactor*Length(o)," and ",Length(Hrels),
-##              "+",Length(Prels),"+",Length(Grels)," relations...");
-##         if ace = false then
-##             ace := ACEStart(gens,Concatenation(Hrels,Prels,Grels),subgens:
-##                             max := cosetnrlimitfactor * Length(o), hlt );
-##             dr := ACEDataRecord(ace);
-##             nrcosets := dr.stats.index;
-##         else
-##             # k := Random([Length(o)+1..nrcosts]).
-##             if Length(Grels) > acenrGrels then
-##                 ACEAddRelators(ace,Grels{[acenrGrels+1..Length(Grels)]}:
-##                                max := cosetnrlimitfactor * Length(o), hlt );
-##             else
-##                 ACEContinue(ace : max := cosetnrlimitfactor * Length(o));
-##             fi;
-##             dr := ACEDataRecord(ace);
-##             nrcosets := dr.stats.index;
-##         fi;
-##         acenrGrels := Length(Grels);
-##         if not(IsCompleteACECosetTable(ace))  then   # did not close!
-##             cosetnrlimitfactor := QuoInt(cosetnrlimitfactor*3,2);
-##             Info(InfoGenSS,2,"Coset enumeration did not finish!");
-##             #if nrschr > Length(sgs) # or
-##             #   # nrschr > S!.opt.MaxNumberSchreierGens 
-##             #   then   # we are done!
-##             #    # Something is wrong!
-##             #    Error("wrong1");
-##             #    ACEQuit(ace);
-##             #    return [fail, S!.layer];
-##             #fi;
-##         else
-##             Info(InfoGenSS,2,"Coset enumeration found ",nrcosets," cosets.");
-##             if nrcosets = Length(o) then
-##                 ACEQuit(ace);
-##                 # Verification is OK, now build a presentation:
-##                 l := GeneratorsWithMemory(
-##                        ListWithIdenticalEntries(S!.nrstrong,()));
-##                 li := List(l,x->x^-1);
-##                 newpres := ResultOfStraightLineProgram(pres,
-##                                    l{[1..S!.strongbelow]});
-##                 for k in [1..nrgens] do
-##                     Add(newpres,l[k+sb]^ords[k]);
-##                 od;
-##                 for k in [1..Length(sgs)] do
-##                     if sgs[k][4] <> false then
-##                         Add(newpres,
-##                             GENSS_Prod(l,sgs[k][1]+sb)*l[sgs[k][2]+sb]*
-##                             GENSS_Prod(li,sgs[k][3]+sb)*
-##                             ResultOfStraightLineProgram(sgs[k][4],l)^-1);
-##                     else
-##                         Add(newpres,GENSS_Prod(l,sgs[k][1]+sb)*l[sgs[k][2]+sb]*
-##                                     GENSS_Prod(li,sgs[k][3]+sb));
-##                     fi;
-##                 od;
-##                 Info(InfoGenSS,2,"Found presentation for layer ",S!.layer,
-##                      " using ",Length(newpres)," relators.");
-##                 return SLPOfElms(newpres);
-##             fi;
-##         fi;
-##         # nrschr := nrschr + S!.opt.NumberSchreierGens;
-##         nrschr := QuoInt(nrschr*4,3);
-##         MakeSchreierGens(nrschr);
-##     od;
-##   end;
-
-
-## VerifyStabilizerChainTC4 := 
-##   function( S )
-##     local Grels,Hrels,MakeSchreierGen,Prels,ace,cosetlimit,done,dr,f,
-##           gens,gensi,guck1,guck2,hlt,i,j,k,l,li,max,newpres,nrcosets,
-##           nrgens,o,ords,pres,sb,sg,sgs,slp,st,subgens,x,y,y1,y2;
-## 
-##     if S!.stab <> false then
-##         pres := VerifyStabilizerChainTC4(S!.stab);
-##         if IsList(pres) then return pres; fi;
-##     else
-##         pres := StraightLineProgram([[]],0);
-##     fi;
-##     Info(InfoGenSS,1,"Verifying stabilizer chain in layer ",S!.layer);
-## 
-##     # The following are global to "MakeSchreierGen":
-##     i := 1;
-##     j := 1;
-##     MakeSchreierGen := function()
-##         local sg;
-##         Info(InfoGenSS,4,"Creating Schreier generator... i=",i," j=",j);
-##         while i <= Length(o) do
-##             sg := GENSS_CreateSchreierGenerator(S,i,j);
-##             j := j + 1;
-##             if j > nrgens then
-##                 j := 1;
-##                 i := i + 1;
-##             fi;
-##             if sg <> fail then return sg; fi;
-##         od;
-##         return fail;
-##     end;
-## 
-##     o := S!.orb;
-##     nrgens := Length(o!.gens);
-##     sb := S!.strongbelow;
-##             
-##     if S!.nrstrong > 26 then
-##         f := FreeGroup(List([1..S!.nrstrong],String));
-##     else
-##         gens := [];
-##         st := "a";
-##         for k in [1..S!.nrstrong] do
-##             Add(gens,ShallowCopy(st));
-##             st[1] := CHAR_INT(INT_CHAR(st[1])+1);
-##         od;
-##         f := FreeGroup(gens);
-##     fi;
-##     gens := GeneratorsOfGroup(f);
-##     gensi := List(gens,x->x^-1);
-##     subgens := gens{[1..S!.strongbelow]};
-##     Hrels := ResultOfStraightLineProgram(pres,subgens);
-##     if S!.opt.Projective then
-##         ords := List([1..nrgens],i->ProjectiveOrder(o!.gens[i]));
-##     else
-##         ords := List([1..nrgens],i->Order(o!.gens[i]));
-##     fi;
-##     Prels := List([1..nrgens],i->gens[i+sb]^ords[i]);
-##     sgs := [];
-##     Grels := [];
-## 
-##     # Now start up a coset enumeration:
-##     cosetlimit := QuoInt(5 * Length(o),4);
-##     Info(InfoGenSS,2,"Starting ACE coset enumeration with limit ",
-##          cosetlimit," and ",Length(Hrels),
-##          "+",Length(Prels),"+",Length(Grels)," relations...");
-##     ace := ACEStart(gens,Concatenation(Hrels,Prels,Grels),subgens:
-##                     max := cosetlimit, hlt := true );
-##     done := IsCompleteACECosetTable(ace);
-##     if done then
-##         dr := ACEDataRecord(ace);
-##         nrcosets := dr.stats.index;
-##     fi;
-##         
-##     while true do   # will be left by return eventually
-##         if done then
-##             Info(InfoGenSS,2,"Coset enumeration found ",nrcosets," cosets.");
-##             if nrcosets = Length(o) then
-##                 ACEQuit(ace);
-##                 # Verification is OK, now build a presentation:
-##                 l := GeneratorsWithMemory(
-##                        ListWithIdenticalEntries(S!.nrstrong,()));
-##                 li := List(l,x->x^-1);
-##                 newpres := ResultOfStraightLineProgram(pres,
-##                                    l{[1..S!.strongbelow]});
-##                 for k in [1..nrgens] do
-##                     Add(newpres,l[k+sb]^ords[k]);
-##                 od;
-##                 for k in [1..Length(sgs)] do
-##                     if sgs[k][4] <> false then
-##                         Add(newpres,
-##                             GENSS_Prod(l,sgs[k][1]+sb)*l[sgs[k][2]+sb]*
-##                             GENSS_Prod(li,sgs[k][3]+sb)*
-##                             ResultOfStraightLineProgram(sgs[k][4],l)^-1);
-##                     else
-##                         Add(newpres,GENSS_Prod(l,sgs[k][1]+sb)*l[sgs[k][2]+sb]*
-##                                     GENSS_Prod(li,sgs[k][3]+sb));
-##                     fi;
-##                 od;
-##                 Info(InfoGenSS,2,"Found presentation for layer ",S!.layer,
-##                      " using ",Length(newpres)," relators.");
-##                 return SLPOfElms(newpres);
-##             elif nrcosets < Length(o) then
-##                 Error("This cannot possible have happened!");
-##             else   # nrcosets > Length(o)
-##                 Info(InfoGenSS,2,"Too many cosets, we must have forgotten ",
-##                      "another relation!");
-##                 done := false;
-##             fi;
-##         fi;
-##         if not(done) then
-##             while true do    # will be left by break
-##                 sg := MakeSchreierGen();
-##                 if sg = fail then
-##                     Error("Something wrong, have processed all Schreier gens");
-##                 fi;
-##                 # Sift residue:
-##                 x := GENSS_Prod(o!.gens,sg[1]) * o!.gens[sg[2]] * 
-##                      GENSS_Prod(o!.gensi,sg[3]);
-##                 if not(IsOne(x)) then
-##                     if S!.stab <> false then
-##                         slp := SiftGroupElementSLP(S!.stab,x);
-##                         if not(slp.isone) then
-##                             ACEQuit(ace);
-##                             return [fail,S!.layer,x];
-##                         fi;
-##                     fi;
-##                     sg[4] := slp.slp;
-##                 else
-##                     sg[4] := false;
-##                 fi;
-##                 y1 := GENSS_Prod(gens,sg[1]+sb) * gens[sg[2]+sb];
-##                 y2 := GENSS_Prod(gens,Reversed(sg[3]+sb));
-##                 # Now check with ACE:
-##                 guck1 := ACETraceWord(ace,1,y1);
-##                 guck2 := ACETraceWord(ace,1,y2);
-##                 if guck1 = fail or guck2 = fail or guck1 <> guck2 then
-##                     y := y1/y2;
-##                     if sg[4] <> false then
-##                         y := y / ResultOfStraightLineProgram(sg[4],subgens);
-##                     fi;
-##                     Add(sgs,sg);
-##                     Add(Grels,y);
-##                     break;
-##                 fi;
-##                 # Otherwise go to next Schreier generator.
-##             od;
-##             Info(InfoGenSS,2,"Redoing ACE coset enumeration with limit ",
-##                  cosetlimit," and ",Length(Hrels),
-##                  "+",Length(Prels),"+",Length(Grels)," relations...");
-##             ACEAddRelators(ace,[y]);
-##             done := IsCompleteACECosetTable(ace);
-##             if done then
-##                 dr := ACEDataRecord(ace);
-##                 nrcosets := dr.stats.index;
-##             fi;
-##         fi;
-##     od;
-##   end;
 
 GENSS_CosetTableFromGensAndRelsInit :=
 function(fgens,grels,fsgens,limit)
@@ -2346,8 +1878,9 @@ VerifyStabilizerChainTC5 :=
 
 VerifyStabilizerChainMax := 
   function( S )
-    local bl,count,d,gens,i,invtab,j,k,o,p,r,res,s,w1,w2,x,xi,y;
+    local bl,count,d,gens,i,invtab,j,k,o,p,r,res,s,w1,w2,x,xi,y,isone;
 
+    isone := S!.isone;
     if S!.stab <> false then
         res := VerifyStabilizerChainMax(S!.stab);
         if res <> true then return res; fi;
@@ -2386,7 +1919,7 @@ VerifyStabilizerChainMax :=
         if o!.op(o[1],x) = o[1] then
             count := count + 1;
             if S!.stab = false then
-                r := rec( isone := IsOne(x) );
+                r := rec( isone := isone(x) );
             else
                 r := SiftGroupElement(S!.stab,x);
             fi;
@@ -2420,7 +1953,7 @@ VerifyStabilizerChainMax :=
                                  /EvaluateWord(gens,w2);
                             #Print(Length(gens),w1,j,w2,"\n");
                             if S!.stab = false then
-                                r := rec( isone := IsOne(s) );
+                                r := rec( isone := isone(s) );
                             else
                                 r := SiftGroupElement(S!.stab,s);
                             fi;
@@ -2668,12 +2201,12 @@ InstallGlobalFunction( GENSS_FindGensStabilizer,
             el := el * cosetrep;
         fi;
         # now el is an element in the stabilizer of pt 
-        if IsOne(el) then
+        if S!.isone(el) then
             Info(InfoGenSS,3,"Found trivial stabilizer element.");
         else
             Add(stabgens,el);
             stab := GroupWithGenerators(stabgens);
-            SS := StabilizerChain(stab,rec( Base := S ));
+            SS := StabilizerChain(stab,rec( Base := S, isone := S!.isone ));
             Info(InfoGenSS,1,"Have group size ",Size(SS)," (of ",
                  stabsize,")");
             if Size(SS) = size then
@@ -2690,7 +2223,7 @@ InstallGlobalFunction( GENSS_FindGensStabilizer,
         i := i + 1;
         if i < Length(stabgens) then
             stab := Group(stabgens{[i..Length(stabgens)]});
-            SS := StabilizerChain(stab,rec(Base := S));
+            SS := StabilizerChain(stab,rec(Base := S, isone := S!.isone));
             size := Size(SS);
         else
             size := 0;
@@ -2759,12 +2292,12 @@ InstallGlobalFunction( GENSS_FindShortGensStabilizerOld,
             el := el * cosetrep;
         fi;
         # now el is an element in the stabilizer of pt 
-        if IsOne(el) then
+        if S!.isone(el) then
             Info(InfoGenSS,2,"Found trivial stabilizer element.");
         else
             Add(stabgens,el);
             stab := GroupWithGenerators(stabgens);
-            SS := StabilizerChain(stab,rec( Base := S ));
+            SS := StabilizerChain(stab,rec( Base := S, isone := S!.isone ));
             Info(InfoGenSS,1,"Have group size ",Size(SS)," (of ",
                  stabsize,")");
             if Size(SS) = size then
@@ -2781,7 +2314,7 @@ InstallGlobalFunction( GENSS_FindShortGensStabilizerOld,
         i := i + 1;
         if i < Length(stabgens) then
             stab := Group(stabgens{[i..Length(stabgens)]});
-            SS := StabilizerChain(stab,rec(Base := S));
+            SS := StabilizerChain(stab,rec(Base := S, isone := S!.isone));
             size := Size(SS);
         else
             size := 0;
@@ -2836,12 +2369,12 @@ InstallGlobalFunction( GENSS_FindShortGensStabilizer,
             el := randel;
         fi;
         # now el is an element in the stabilizer of pt 
-        if IsOne(el) then
+        if S!.isone(el) then
             Info(InfoGenSS,3,"Found trivial stabilizer element.");
         else
             Add(stabgens,el);
             stab := GroupWithGenerators(stabgens);
-            SS := StabilizerChain(stab,rec( Base := S ));
+            SS := StabilizerChain(stab,rec( Base := S, isone := S!.isone ));
             Info(InfoGenSS,1,"Have group size ",Size(SS)," (of ",
                  stabsize,")");
             if Size(SS) = size then
@@ -2860,7 +2393,7 @@ InstallGlobalFunction( GENSS_FindShortGensStabilizer,
     Info(InfoGenSS,1,"Need ",Length(stabgens)," generators.");
     while i < Length(stabgens) do
        stab := Group(stabgens{Concatenation([1..i-1],[i+1..Length(stabgens)])});
-       SS := StabilizerChain(stab,rec(Base := S));
+       SS := StabilizerChain(stab,rec(Base := S, isone := S!.isone));
        if Size(SS) < stabsize then
            i := i + 1;   # keep generator
        else
@@ -2966,7 +2499,8 @@ InstallGlobalFunction( GENSS_GroupShallowCopy,
 InstallMethod( SetStabilizerChain, "for a group and a stabilizer chain",
   [IsGroup, IsStabilizerChain],
   function(g,S)
-    if HasSize(g) and Size(g) <> Size(S) then
+    if IsIdenticalObj(S!.isone,IsOne) and
+       HasSize(g) and Size(g) <> Size(S) then
       Error("you try to set a stabilizer chain for the wrong group");
       return;
     fi;
@@ -3106,7 +2640,7 @@ InstallMethod( ORB_IsWordInStabilizerChain,
     local x, b, ops, i;
     if Size(S) = 1 then
         x := ORB_ApplyWord(gens[1]^0,word,gens,gensi,OnRight);
-        return IsOne(x);
+        return S!.isone(x);
     fi;
     b := BaseStabilizerChain(S);
     ops := b.ops;

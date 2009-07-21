@@ -5,6 +5,7 @@ g := Group(gens);
 ti := Runtime();
 S := StabilizerChain(g);
 ti2 := Runtime();
+if Size(S) <> Size(CharacterTable("HN")) then Error("wrong size"); fi;
 SetSize(g,Size(CharacterTable("HN")));
 ti3 := Runtime();
 Print("\n");

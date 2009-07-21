@@ -2,13 +2,13 @@ Create CHANGES file
 Create HISTORY file
 Create webpage
 Look after Makefile
-FindVectorsWithShortOrbit: schneller
 opt.isone throughout
 Summarize all options in comments
 Version to 1.0
 Documentation!
 Repair Generic backtrack search
 picklers?
+FindVectorsWithShortOrbit: schneller
 
 AddGeneratorsToStabilizerChain for trivial stabchains testen
 Sort out storing of stabchains (attribute???)

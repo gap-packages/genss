@@ -5,6 +5,7 @@ gg := Group(GeneratorsOfGroup(g));
 ti := Runtime();
 S := StabilizerChain(gg);
 ti2 := Runtime();
+if Size(S) <> Size(g) then Error("wrong size"); fi;
 ti3 := Runtime();
 Print("\n");
 S := StabilizerChain(g);
