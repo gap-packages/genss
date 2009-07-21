@@ -2,9 +2,19 @@ Create webpage
 Look after Makefile
 Summarize all options in comments
 Documentation!
-Repair Generic backtrack search
+Finish Repair Generic backtrack search
 picklers?
 FindVectorsWithShortOrbit: schneller
+AddGeneratorToStabilizerChain:
+  modify pr in top layer?
+  further verification of lower stabilisers?
+  General probabilistic verification routine?
+Test Stab 
+Test setwise
+Test StoredStabilizerChain
+Test/Modify MakeGAPStabChain (maybe only use base and size?)
+Disable or fix deterministic verification
+Partition backtrack stuff?
 
 AddGeneratorsToStabilizerChain for trivial stabchains testen
 Sort out storing of stabchains (attribute???)

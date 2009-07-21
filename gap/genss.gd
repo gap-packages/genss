@@ -118,3 +118,10 @@ DeclareOperation( "Stab", [IsList, IsObject, IsFunction, IsRecord] );
 DeclareOperation( "Stab", [IsGroup, IsObject, IsFunction] );
 DeclareOperation( "Stab", [IsList, IsObject, IsFunction] );
 
+#######################################################
+# The following operations are for backtrack searches: 
+#######################################################
+
+DeclareGlobalFunction( "BacktrackSearchStabilizerChainElement" );
+DeclareGlobalFunction( "BacktrackSearchStabilizerChainSubgroup" );
+

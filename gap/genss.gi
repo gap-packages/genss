@@ -2078,31 +2078,6 @@ InstallMethod( SiftBaseImage,
     return true;
   end );
 
-#############################################################################
-# We can store a stabilizer chain in the (mutable) attribute
-# StabChainMutable, then the following methods for matrix group apply:
-#############################################################################
-
-InstallMethod( Size, "for a finite matrix group with a stabilizer chain",
-  [ IsMatrixGroup and IsFinite and HasStabChainMutable ],
-  function( g )
-    return Size(StabChainMutable(g));
-  end );
-
-InstallMethod( \in, "for a matrix and a finite matrix group with a stabchain",
-  [ IsMatrix and IsFFECollColl, 
-    IsMatrixGroup and IsFinite and HasStabChainMutable ],
-  function( el, g )
-    local S,r;
-    S := StabChainMutable(g);
-    r := SiftGroupElement(S,el);
-    if r.isone then
-        return true;
-    else
-        return false;
-    fi;
-  end );
-
 InstallMethod( IsProved, "for a stabilizer chain",
   [ IsStabilizerChain and IsStabilizerChainByOrb ],
   function( S )
@@ -2496,6 +2471,11 @@ InstallGlobalFunction( GENSS_GroupShallowCopy,
     return GENSS_MakeIterRecord( iter!.Slist[1] );
   end );
 
+#############################################################################
+# We can store a stabilizer chain in the attribute
+# StoredStabilizerChain, then the following methods for matrix group apply:
+#############################################################################
+
 InstallMethod( SetStabilizerChain, "for a group and a stabilizer chain",
   [IsGroup, IsStabilizerChain],
   function(g,S)
@@ -2687,8 +2667,8 @@ InstallMethod( Stab, "by Orb orbit enumeration",
     local S,count,el,errorprob,found,gens,i,j,limit,memperpt,nrrand,o,
           pat,pr,res,stab,stabchain,stabel,stabgens,stabsizeest,w1,w2,y;
     GENSS_CopyDefaultOptions(GENSS,opt);
-    S := StoredStabilizerChain(g);
-    if S <> fail then
+    if HasStoredStabilizerChain(g) then
+      S := StoredStabilizerChain(g);
       if IsIdenticalObj(S!.orb!.op,op) and x in S!.orb then
         Error("not yet implemented, simply return conjugate stabilizer");
         return fail;
@@ -2844,7 +2824,7 @@ InstallMethod( Stab, "by Orb orbit enumeration",
   end );
 
 
-BacktrackSearchStabilizerChainElement :=
+InstallGlobalFunction( BacktrackSearchStabilizerChainElement,
   function( S,     # a stabilizer chain
             P,     # a property function G -> {true,false}
             g,     # a group element
@@ -2878,32 +2858,36 @@ BacktrackSearchStabilizerChainElement :=
         fi;
         if S!.stab = false then
             if P(x) then 
-                return rec( elm := x, vec := [i], word := w );
+                return rec( elm := x, vec := [i], word := S!.layergens{w} );
             fi;
         else
             dotree := true;
             if pruner <> false then
-                dotree := pruner(S!.stab,x);
+                dotree := pruner(S,x,t,w);
             fi;
             if dotree then
                 res := BacktrackSearchStabilizerChainElement(S!.stab,P,x,
                                                              pruner);
                 if res <> fail then
-                    Add(res.vec,i,1);
-                    res.word := Concatenation(res.word,
-                                    w+NrStrongGenerators(S!.stab));
+                    Add(res.vec,ii,1);
+                    res.word := Concatenation(res.word,S!.layergens{w});
                     return res;
                 fi;
             fi;
         fi;
     od;
     return fail;
-  end;
+  end );
 
-BacktrackSearchStabilizerChainSubgroup :=
+InstallGlobalFunction( BacktrackSearchStabilizerChainSubgroup,
   function(S,P,pruner) 
+    # Let G be a group and U being the subgroup defined by S.
+    # Does a backtrack search in U using S for the subgroup H of U
+    # with H := {h \in U | P(h)=true}. P must be such that H is 
+    # a subgroup of U.
+    # pruner is either false or a function taking arguments as seen below.
     local SS,SSS,i,ii,newgens,o,res,t,w,dotree;
-    if S!.stab = false then
+    if S!.stab = false then    # lowest level
         newgens := [];
         o := false;
         for i in [2..Length(S!.orb)] do
@@ -2985,7 +2969,7 @@ BacktrackSearchStabilizerChainSubgroup :=
         o!.gensi := List(o!.gens,x->x^-1);
     fi;
     return SSS;
-  end;
+  end );
 
 InstallMethod( FindShortGeneratorsOfSubgroup, 
   "without option rec or func, permutation group method",
