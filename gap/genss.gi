@@ -2833,6 +2833,7 @@ InstallGlobalFunction( BacktrackSearchStabilizerChainElement,
     # Does a backtrack search in U using S for an element x of U
     # for which P(xg) is true. g not necessarily in U!
     # pruner is either false or a function taking arguments as seen below.
+    
     local cache,gen,i,ii,res,t,w,x,dotree;
 
     cache := WeakPointerObj([[S!.orb!.gens[1]^0,[]]]);
@@ -2842,7 +2843,8 @@ InstallGlobalFunction( BacktrackSearchStabilizerChainElement,
             t := ElmWPObj(cache,S!.orb!.schreierpos[ii]);
             if t <> fail then
                 gen := S!.orb!.schreiergen[ii];
-                w := ShallowCopy(t[2]);
+                w := EmptyPlist(Length(t[2])+1);
+                Append(w,t[2]);
                 Add(w,gen);
                 t := t[1] * S!.orb!.gens[gen];
             else
@@ -2861,11 +2863,7 @@ InstallGlobalFunction( BacktrackSearchStabilizerChainElement,
                 return rec( elm := x, vec := [i], word := S!.layergens{w} );
             fi;
         else
-            dotree := true;
-            if pruner <> false then
-                dotree := pruner(S,x,t,w);
-            fi;
-            if dotree then
+            if pruner = false or pruner(S,x,t,w) then
                 res := BacktrackSearchStabilizerChainElement(S!.stab,P,x,
                                                              pruner);
                 if res <> fail then

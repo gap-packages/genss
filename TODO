@@ -15,6 +15,7 @@ Test StoredStabilizerChain
 Test/Modify MakeGAPStabChain (maybe only use base and size?)
 Disable or fix deterministic verification
 Partition backtrack stuff?
+Proper Random elements from StabChain
 
 AddGeneratorsToStabilizerChain for trivial stabchains testen
 Sort out storing of stabchains (attribute???)
