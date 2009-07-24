@@ -83,6 +83,7 @@ DeclareGlobalFunction( "GENSS_FindShortGensStabilizerOld" );
 DeclareGlobalFunction( "GENSS_FindShortGensStabilizer" );
 DeclareGlobalFunction( "SLPChainStabilizerChain" );
 DeclareGlobalFunction( "GENSS_Prod" );
+DeclareOperation( "VerifyStabilizerChainMC", [ IsStabilizerChain, IsInt ] );
 DeclareGlobalFunction( "VerifyStabilizerChainTC" );
 DeclareGlobalFunction( "VerifyStabilizerChainTC2" );
 DeclareGlobalFunction( "GENSS_ImageElm" );

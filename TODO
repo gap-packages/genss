@@ -5,10 +5,6 @@ Documentation!
 Finish Repair Generic backtrack search
 picklers?
 FindVectorsWithShortOrbit: schneller
-AddGeneratorToStabilizerChain:
-  modify pr in top layer?
-  further verification of lower stabilisers?
-  General probabilistic verification routine?
 Test Stab 
 Test setwise
 Test StoredStabilizerChain

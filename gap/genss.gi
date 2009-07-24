@@ -922,6 +922,25 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup ],
     return StabilizerChain( grp, rec() );
   end );
 
+InstallMethod(VerifyStabilizerChainMC, 
+  "for a stabilizer chain and a positive integer",
+  [ IsStabilizerChainByOrb, IsInt ],
+  function( S, nrels )
+    local i,x;
+
+    Info(InfoGenSS,2,"Doing randomized verification...");
+    i := 0; 
+    while i < nrels do
+        i := i + 1;
+        x := Next(S!.opt.pr);
+        if AddGeneratorToStabilizerChain(S,x) then
+            Info( InfoGenSS, 2, "Verification found error ... ",
+                  "new size ", Size(S) );
+            i := 0;
+        fi;
+    od;
+  end );
+
 InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
   function( grp, opt )
     # Computes a stabilizer chain for the group grp
@@ -1101,7 +1120,7 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
     # Now a possible verification phase:
     if S!.size <> false then   # we knew the size in advance
         Info(InfoGenSS,2,"Doing verification via known size...");
-        while Size(S) < Size(grp) do
+        while Size(S) < S!.size do
             Info(InfoGenSS,2,"Known size not reached, throwing in a random ",
                  "element...");
             x := Next(opt.pr);
@@ -1116,17 +1135,7 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
         fi;
     else
         # Do some verification here:
-        Info(InfoGenSS,2,"Doing randomized verification...");
-        i := 0; 
-        while i < opt.VerifyElements do
-            i := i + 1;
-            x := Next(opt.pr);
-            if AddGeneratorToStabilizerChain(S,x) then
-                Info( InfoGenSS, 2, "Verification found error ... ",
-                      "new size ", Size(S) );
-                i := 0;
-            fi;
-        od;
+        VerifyStabilizerChainMC(S,opt.VerifyElements);
     fi;
     # Now clean up the random element pools to save memory:
     SS := S;
@@ -1144,7 +1153,7 @@ InstallMethod( AddGeneratorToStabilizerChain,
   [ IsStabilizerChain and IsStabilizerChainByOrb, IsObject ],
   function( S, el )
     # Increases the set represented by S by the generator el.
-    local SS, r, n;
+    local SS, r, n, pr, i;
     if IsBound(S!.trivialgroup) and S!.trivialgroup then
         if S!.isone(el) then
             return false;
@@ -1206,13 +1215,23 @@ InstallMethod( AddGeneratorToStabilizerChain,
     # shallower:
     while S!.layer < SS!.layer do
         Info(InfoGenSS,2,"Adding new generator to orbit in layer ",S!.layer);
-        if S!.layer > 1 then   # not at the top layer!
-            Add(S!.layergens,Length(S!.stronggens));
-            AddGeneratorsToOrbit(S!.orb,[r.rem]);
-            Add(S!.orb!.gensi,r.rem^-1);
-        fi;
+        Add(S!.layergens,Length(S!.stronggens));
+        AddGeneratorsToOrbit(S!.orb,[r.rem]);
+        Add(S!.orb!.gensi,r.rem^-1);
         S := S!.stab;
     od;
+    # Finally, we have to add it to the product replacer!
+    # This is somewhat dirty: we fumble it into the product replacer:
+    pr := S!.opt.pr;
+    Add(pr!.gens,r.rem);
+    pr!.nrgens := pr!.nrgens + 1;
+    for i in [1..Length(pr!.state)] do
+        pr!.state[i] := pr!.state[i] * r.rem^Random(0,7);
+    od;
+    Add(pr!.state,r.rem);
+    pr!.slots := pr!.slots + 1;
+    Add(pr!.settled,0);
+    
     return true;
   end );
 
@@ -2784,6 +2803,7 @@ InstallMethod( Stab, "by Orb orbit enumeration",
                         else
                             Info(InfoGenSS,2,
                                  "Added generator to stabilizer...");
+                            VerifyStabilizerChainMC(stabchain,10);
                             errorprob := 1;
                         fi;
                     fi;
