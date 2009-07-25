@@ -213,7 +213,8 @@ InstallGlobalFunction( GENSS_FindShortOrbit,
     o := [];
     hashlen := NextPrimeInt(QuoInt(opt.ShortOrbitsOrbLimit * 3,2));
     for i in [1..nrorbs] do
-        Add(o,Orb(gens,ShallowCopy(wb[i]),OnLines,hashlen));
+        Add(o,Orb(gens,ShallowCopy(wb[i]),OnLines,
+                  rec( hashlen := hashlen )));
     od;
     limit := opt.ShortOrbitsInitialLimit;
     i := 1;               # we start to work on the first one
@@ -366,7 +367,7 @@ InstallMethod( FindBasePointCandidates,
     Add(v,vv);
     # Now investigate these up to a certain limit:
     for j in [1..Length(v)] do
-        o := Orb(gens,v[j],OnRight);
+        o := Orb(gens,v[j],OnRight, rec(hashlen := 2*opt.VeryShortOrbLimit+1));
         Enumerate(o,opt.VeryShortOrbLimit);
         if Length(o) > 1 and Length(o) < opt.VeryShortOrbLimit then
             Info( InfoGenSS, 3, "Found orbit of length ",Length(o) );
