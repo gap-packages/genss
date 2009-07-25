@@ -2885,7 +2885,7 @@ InstallGlobalFunction( BacktrackSearchStabilizerChainElement,
                 return rec( elm := x, vec := [i], word := S!.layergens{w} );
             fi;
         else
-            if pruner = false or pruner(S,x,t,w) then
+            if pruner = false or pruner(S,ii,x,t,w) then
                 res := BacktrackSearchStabilizerChainElement(S!.stab,P,x,
                                                              pruner);
                 if res <> fail then
@@ -2917,15 +2917,33 @@ InstallGlobalFunction( BacktrackSearchStabilizerChainSubgroup,
     # with H := {h \in U | P(h)=true}. P must be such that H is 
     # a subgroup of U.
     # pruner is either false or a function taking arguments as seen below.
-    local SS,SSS,i,ii,newgens,o,res,t,w,dotree;
+
+    local SS,SSS,cache,dotree,gen,i,ii,newgens,o,res,t,w,T;
+
+    cache := WeakPointerObj([[S!.orb!.gens[1]^0,[]]]);
     if S!.stab = false then    # lowest level
         newgens := [];
         o := false;
         for i in [2..Length(S!.orb)] do
             ii := S!.orb!.orbind[i];
             if o = false or not(S!.orb[ii] in o) then
-                w := TraceSchreierTreeForward(S!.orb,ii);
-                t := Product(S!.orb!.gens{w});
+                if ii > 1 then
+                    t := ElmWPObj(cache,S!.orb!.schreierpos[ii]);
+                    if t <> fail then
+                        gen := S!.orb!.schreiergen[ii];
+                        w := EmptyPlist(Length(t[2])+1);
+                        Append(w,t[2]);
+                        Add(w,gen);
+                        t := t[1] * S!.orb!.gens[gen];
+                    else
+                        w := TraceSchreierTreeForward(S!.orb,ii);
+                        t := Product(S!.orb!.gens{w});
+                    fi;
+                    SetElmWPObj(cache,ii,[t,w]);
+                else
+                    w := [];
+                    t := S!.orb!.gens[1]^0;
+                fi;
                 if P(t) then
                     Add(newgens,t);
                     if Length(newgens) = 1 then
@@ -2947,11 +2965,17 @@ InstallGlobalFunction( BacktrackSearchStabilizerChainSubgroup,
         fi;
         SSS := rec( stab := false, size := Length(o), base := [o[1]],
                     opt := ShallowCopy(S!.opt), layer := S!.layer,
-                    orb := o, nrstrong := Length(newgens),
-                    strongbelow := 0 );
+                    orb := o, stronggens := newgens, 
+                    layergens := [1..Length(newgens)], randpool := [], 
+                    isone := S!.opt.isone, proof := true,
+                    parentS := false);
         Objectify( StabChainByOrbType, SSS );
+        SSS!.opt.pr := ProductReplacer(SSS!.stronggens);
+        SSS!.topS := SSS;   # this will be changed further up!
         o!.stabilizerchain := SSS;
         o!.gensi := List(o!.gens,x->x^-1);
+        Info(InfoGenSS,2,"Layer ",SSS!.layer," completed, size ",Size(SSS));
+        return SSS;
     else   # S!.stab <> false
         # First go down in tree, essentially trying coset rep 1 first:
         SS := BacktrackSearchStabilizerChainSubgroup(S!.stab,P,pruner);
@@ -2960,13 +2984,24 @@ InstallGlobalFunction( BacktrackSearchStabilizerChainSubgroup,
         for i in [2..Length(S!.orb)] do
             ii := S!.orb!.orbind[i];
             if o = false or not(S!.orb[ii] in o) then
-                w := TraceSchreierTreeForward(S!.orb,ii);
-                t := Product(S!.orb!.gens{w});
-                dotree := true;
-                if pruner <> false then
-                    dotree := pruner(S!.stab,t);
+                if ii > 1 then
+                    t := ElmWPObj(cache,S!.orb!.schreierpos[ii]);
+                    if t <> fail then
+                        gen := S!.orb!.schreiergen[ii];
+                        w := EmptyPlist(Length(t[2])+1);
+                        Append(w,t[2]);
+                        Add(w,gen);
+                        t := t[1] * S!.orb!.gens[gen];
+                    else
+                        w := TraceSchreierTreeForward(S!.orb,ii);
+                        t := Product(S!.orb!.gens{w});
+                    fi;
+                    SetElmWPObj(cache,ii,[t,w]);
+                else
+                    w := [];
+                    t := S!.orb!.gens[1]^0;
                 fi;
-                if dotree then
+                if pruner = false or pruner(S,ii,t,t,w) then
                     res := BacktrackSearchStabilizerChainElement(S!.stab,P,t,
                                                                  pruner);
                     if res <> fail then
@@ -2990,16 +3025,27 @@ InstallGlobalFunction( BacktrackSearchStabilizerChainSubgroup,
             Enumerate(o);
         fi;
         SSS := rec( stab := SS, size := Length(o)*Size(SS), 
-                    base := SS!.base,
-                    opt := ShallowCopy(S!.opt), layer := S!.layer,
-                    orb := o, nrstrong := Length(o!.gens)+SS!.nrstrong,
-                    strongbelow := SS!.nrstrong );
+                    base := SS!.base, opt := ShallowCopy(S!.opt), 
+                    layer := S!.layer,
+                    orb := o, stronggens := SS!.stronggens, 
+                    layergens := [1..Length(SS!.stronggens)+Length(newgens)],
+                    randpool := [], isone := SS!.opt.isone, proof := true,
+                    parentS := false );
         Add(SSS.base,o[1],1);
+        Append(SSS.stronggens,newgens);
+        SSS.opt.pr := ProductReplacer(ShallowCopy(SSS.stronggens));
         Objectify( StabChainByOrbType, SSS );
+        SS!.parentS := SSS;
+        T := SSS;
+        while T <> false do
+            T!.topS := SSS;
+            T := T!.stab;
+        od;
         o!.stabilizerchain := SSS;
         o!.gensi := List(o!.gens,x->x^-1);
+        Info(InfoGenSS,2,"Layer ",SSS!.layer," completed, size ",Size(SSS));
+        return SSS;
     fi;
-    return SSS;
   end );
 
 InstallMethod( FindShortGeneratorsOfSubgroup, 
