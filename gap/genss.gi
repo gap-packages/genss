@@ -1223,6 +1223,7 @@ InstallMethod( AddGeneratorToStabilizerChain,
     # Finally, we have to add it to the product replacer!
     # This is somewhat dirty: we fumble it into the product replacer:
     pr := S!.opt.pr;
+    if not(IsMutable(pr!.gens)) then pr!.gens := ShallowCopy(pr!.gens); fi;
     Add(pr!.gens,r.rem);
     pr!.nrgens := pr!.nrgens + 1;
     for i in [1..Length(pr!.state)] do
@@ -2841,6 +2842,7 @@ InstallMethod( Stab, "by Orb orbit enumeration",
             Info(InfoGenSS,3,"No stabiliser element found!");
         fi;
     until Length(o) > opt.StabOrbitLimit;
+    return fail;
   end );
 
 
@@ -2895,6 +2897,17 @@ InstallGlobalFunction( BacktrackSearchStabilizerChainElement,
         fi;
     od;
     return fail;
+  end );
+
+InstallGlobalFunction( ComputeSuborbitsForStabilizerChain,
+  function( S )
+    local SS,gens;
+    SS := S;
+    while SS!.stab <> false do
+        gens := StrongGenerators(S){SS!.stab!.layergens};
+        SS!.suborbs := FindSuborbits(S!.orb,gens);
+        SS := SS!.stab;
+    od;
   end );
 
 InstallGlobalFunction( BacktrackSearchStabilizerChainSubgroup,

@@ -124,5 +124,6 @@ DeclareOperation( "Stab", [IsList, IsObject, IsFunction] );
 #######################################################
 
 DeclareGlobalFunction( "BacktrackSearchStabilizerChainElement" );
+DeclareGlobalFunction( "ComputeSuborbitsForStabilizerChain" );
 DeclareGlobalFunction( "BacktrackSearchStabilizerChainSubgroup" );
 
