@@ -2526,6 +2526,15 @@ InstallMethod( Size, "for a group with a stored stabilizer chain",
   end );
 
 InstallMethod( \in, "for a group elm and a group with stored stabilizer chain",
+  [IsPerm, IsPermGroup and HasStoredStabilizerChain], 1,
+  function(x, g)
+    local S,r;
+    S := StoredStabilizerChain(g);
+    r := SiftGroupElement(S,x);
+    return r.isone;
+  end );
+
+InstallMethod( \in, "for a group elm and a group with stored stabilizer chain",
   [IsObject, IsMatrixGroup and HasStoredStabilizerChain and 
              IsHandledByNiceMonomorphism],
   function(x, g)
@@ -2685,13 +2694,23 @@ InstallMethod( Stab, "by Orb orbit enumeration",
   [IsGroup, IsObject, IsFunction, IsRecord],
   function( g, x, op, opt )
     local S,count,el,errorprob,found,gens,i,j,limit,memperpt,nrrand,o,
-          pat,pr,res,stab,stabchain,stabel,stabgens,stabsizeest,w1,w2,y;
+          pat,pos,pr,res,stab,stabchain,stabel,stabgens,stabsizeest,w1,w2,y;
     GENSS_CopyDefaultOptions(GENSS,opt);
     if HasStoredStabilizerChain(g) then
       S := StoredStabilizerChain(g);
       if IsIdenticalObj(S!.orb!.op,op) and x in S!.orb then
-        Error("not yet implemented, simply return conjugate stabilizer");
-        return fail;
+        if S!.stab = false then
+            y := rec( stab := TrivialSubgroup(g), size := 1, proof := true );
+            y.stabilizerchain := StabilizerChain(y.stab);
+            return y;
+        fi;
+        pos := Position(S!.orb,x);
+        w1 := TraceSchreierTreeForward(S!.orb,pos);
+        y := GENSS_Prod(S!.orb!.gens,w1);
+        stab := Group(List(S!.stab!.orb!.gens,a->y^-1*a*y));
+        return rec( stab := stab, size := Size(S!.stab),
+                    stabilizerchain := StabilizerChain(stab,rec( Base := S)),
+                    proof := true );
       fi;
     fi;
     # Now we have to do it ourselves:

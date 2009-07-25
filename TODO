@@ -2,11 +2,7 @@ Create webpage
 Look after Makefile
 Summarize all options in comments
 Documentation!
-Finish Repair Generic backtrack search
-picklers?
 FindVectorsWithShortOrbit: schneller
-Test Stab 
-Test setwise
 Test StoredStabilizerChain
 Test/Modify MakeGAPStabChain (maybe only use base and size?)
 Disable or fix deterministic verification
@@ -19,6 +15,7 @@ Random element generation with pools etc. besser testen
 spaeter:
 
 Verification in Ordnung mit strongbelow
+picklers?
 
 
 Add benchmark tests like in matrixss.
