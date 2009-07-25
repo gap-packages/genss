@@ -2718,7 +2718,8 @@ InstallMethod( Stab, "by Orb orbit enumeration",
         if not(HasSize(g)) then
             # We are basically stuffed, unless we want to check all
             # Schreier generators of an orbit!
-            Error("I do not want to check all Schreier generators");
+            Error("I do not want to check all Schreier generators, ",
+                  "need size of group or ErrorBound option!");
             return fail;
         fi;
     else
