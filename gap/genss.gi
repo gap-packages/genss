@@ -2554,9 +2554,10 @@ InstallMethod( \in, "for a group elm and a group with stored stabilizer chain",
     return r.isone;
   end );
 
-tmpfunc := function(g)
-    local S,x,pos,w;
-    S := StoredStabilizerChain(g);
+InstallOtherMethod( Random, "for a stabilizer chain",
+  [ IsStabilizerChainByOrb ],
+  function(S)
+    local x,pos,w;
     x := One(g);
     while S <> false do
         pos := Random(1,Length(S!.orb));
@@ -2565,20 +2566,20 @@ tmpfunc := function(g)
         S := S!.stab;
     od;
     return x;
-  end;
+  end );
 
 InstallMethod( Random, "for a group with a stored stabilizer chain",
   [ IsGroup and HasStoredStabilizerChain ],
-  tmpfunc );
+  function(g) return Random(StoredStabilizerChain(g)) );
 
 InstallMethod( Random, "for a permgroup with a stored stabilizer chain",
   [ IsPermGroup and HasStoredStabilizerChain ], 10,
-  tmpfunc );
+  function(g) return Random(StoredStabilizerChain(g)) );
 
 InstallMethod( Random, "for a matrixgroup with a stored stabilizer chain",
   [ IsMatrixGroup and IsHandledByNiceMonomorphism and 
     HasStoredStabilizerChain ],
-  tmpfunc );
+  function(g) return Random(StoredStabilizerChain(g)) );
 
 InstallMethod( SizeMC, "for a group and an error bound",
   [IsGroup, IsRat],
