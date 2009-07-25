@@ -1,10 +1,6 @@
-Disable or fix deterministic verification
 Documentation!
 Look after Makefile
 Create webpage
-
-AddGeneratorsToStabilizerChain for trivial stabchains testen
-Random element generation with pools etc. besser testen
 
 spaeter:
 
@@ -13,6 +9,9 @@ picklers?
 Test/Modify MakeGAPStabChain (maybe only use base and size?)
 Summarize all options in comments
 FindVectorsWithShortOrbit: schneller
+Repair deterministic verification with new layout
+AddGeneratorsToStabilizerChain for trivial stabchains testen
+Random element generation with pools etc. besser testen
 
 
 Add benchmark tests like in matrixss.

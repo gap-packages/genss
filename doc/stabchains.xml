@@ -57,8 +57,10 @@ StrongGenerators
 NrStrongGenerators
 SLPChainStabilizerChain
 VerifyStabilizerChainTC
+VerifyStabilizerChainMC
 GroupHomomorphismByImagesNCStabilizerChain
 Size
+Random (grp and stabchain)
 \in
 IsProved
 MakeGAPStabChain

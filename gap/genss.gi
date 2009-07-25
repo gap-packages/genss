@@ -1354,125 +1354,138 @@ InstallGlobalFunction( GENSS_Prod,
   end );
   
 InstallGlobalFunction( VerifyStabilizerChainTC,
-  function( S )
-    local Grels,Hrels,Prels,MakeSchreierGens,ct,f,gens,gensi,i,j,k,l,li,max,
-          newpres,nrgens,nrschr,o,ords,pres,sb,sgs,slp,subgens,v,w,x,
-          cosetnrlimitfactor;
-    if S!.stab <> false then
-        pres := VerifyStabilizerChainTC(S!.stab);
-        if IsList(pres) then return pres; fi;
-    else
-        pres := StraightLineProgram([[]],0);
-    fi;
-    Info(InfoGenSS,1,"Verifying stabilizer chain in layer ",S!.layer);
-    # First create a few Schreier generators:
-    sgs := [];
-    i := 1;
-    j := 1;
-    o := S!.orb;
-    nrgens := Length(o!.gens);
-    sb := S!.strongbelow;
-    MakeSchreierGens := function(n)
-        local sg;
-        Info(InfoGenSS,3,"Creating ",n," Schreier generators...");
-        while Length(sgs) < n and
-              i <= Length(o) do
-            sg := GENSS_CreateSchreierGenerator(S,i,j);
-            j := j + 1;
-            if j > nrgens then
-                j := 1;
-                i := i + 1;
-            fi;
-            if sg <> fail then
-                Add(sgs,sg);
-            fi;
-        od;
-    end;
-
-    nrschr := S!.opt.NumberSchreierGens;
-    MakeSchreierGens(nrschr);
-    f := FreeGroup(S!.nrstrong);
-    gens := GeneratorsOfGroup(f);
-    gensi := List(gens,x->x^-1);
-    subgens := gens{[1..S!.strongbelow]};
-    Hrels := ResultOfStraightLineProgram(pres,subgens);
-    if S!.opt.Projective then
-        ords := List([1..nrgens],i->ProjectiveOrder(o!.gens[i]));
-    else
-        ords := List([1..nrgens],i->Order(o!.gens[i]));
-    fi;
-    Prels := List([1..nrgens],i->gens[i+sb]^ords[i]);
-    Grels := [];
-    cosetnrlimitfactor := 4;
-    while true do   # will be left by return eventually
-        for k in [Length(Grels)+1..Length(sgs)] do
-            Grels[k] := GENSS_Prod(gens,sgs[k][1]+sb) * gens[sgs[k][2]+sb] * 
-                        GENSS_Prod(gensi,sgs[k][3]+sb);
-            x := GENSS_Prod(o!.gens,sgs[k][1]) * o!.gens[sgs[k][2]] * 
-                 GENSS_Prod(o!.gensi,sgs[k][3]);
-            if S!.stab <> false then
-                slp := SiftGroupElementSLP(S!.stab,x);
-                if not(slp.isone) then
-                    return [fail,S!.layer];
-                fi;
-                Grels[k] := Grels[k] / ResultOfStraightLineProgram(slp.slp,
-                                                                   subgens);
-                sgs[k][4] := slp.slp;
-            else
-                if not(S!.isone(x)) then
-                    return [fail,S!.layer];
-                fi;
-                sgs[k][4] := false;
-            fi;
-        od;
-        Info(InfoGenSS,2,"Doing coset enumeration with limit ",
-             cosetnrlimitfactor*Length(o));
-        ct := CosetTableFromGensAndRels(gens,Concatenation(Prels,Hrels,Grels),
-                   subgens:max := cosetnrlimitfactor*Length(o),silent);
-        if ct = fail then   # did not close!
-            cosetnrlimitfactor := QuoInt(cosetnrlimitfactor*3,2);
-            Info(InfoGenSS,2,"Coset enumeration did not finish!");
-        #Error(1);
-            if nrschr > Length(sgs) # or
-               # nrschr > S!.opt.MaxNumberSchreierGens 
-               then   # we are done!
-                # Something is wrong!
-                return [fail, S!.layer];
-            fi;
-        else
-            Info(InfoGenSS,2,"Coset enumeration found ",Length(ct[1]),
-                 " cosets.");
-        #Error(2);
-            if Length(ct[1]) = Length(o) then
-                # Verification is OK, now build a presentation:
-                l := GeneratorsWithMemory(
-                       ListWithIdenticalEntries(S!.nrstrong,()));
-                li := List(l,x->x^-1);
-                newpres := ResultOfStraightLineProgram(pres,
-                                   l{[1..S!.strongbelow]});
-                for k in [1..nrgens] do
-                    Add(newpres,l[k+sb]^ords[k]);
-                od;
-                for k in [1..Length(sgs)] do
-                    if sgs[k][4] <> false then
-                        Add(newpres,
-                            GENSS_Prod(l,sgs[k][1]+sb)*l[sgs[k][2]+sb]*
-                            GENSS_Prod(li,sgs[k][3]+sb)*
-                            ResultOfStraightLineProgram(sgs[k][4],l)^-1);
-                    else
-                        Add(newpres,GENSS_Prod(l,sgs[k][1]+sb)*l[sgs[k][2]+sb]*
-                                    GENSS_Prod(li,sgs[k][3]+sb));
-                    fi;
-                od;
-                Info(InfoGenSS,2,"Found presentation for layer ",S!.layer,
-                     " using ",Length(newpres)," relators.");
-                return SLPOfElms(newpres);
-            fi;
-        fi;
-        nrschr := QuoInt(nrschr*4,2);
-        MakeSchreierGens(nrschr);
-    od;
-  end);
+  function( S ) Error("Currently not functional!"); return fail; end );
+##    function( S )
+##      local Grels,Hrels,Prels,MakeSchreierGens,ct,f,gens,gensi,i,j,k,l,li,max,
+##            newpres,nrgens,nrschr,o,ords,pres,sb,sgs,slp,subgens,v,w,x,
+##            cosetnrlimitfactor;
+##  
+##      allstrong := function(S)
+##        st := Set(S!.layergens);
+##        while S!.stab <> false do
+##            S := S!.stab;
+##            UniteSet(st,S!.layergens);
+##        od;
+##        return st;
+##      end;
+##      if S!.stab <> false then
+##          pres := VerifyStabilizerChainTC(S!.stab);
+##          if IsList(pres) then return pres; fi;
+##          strongbelow := allstrong(S!.stab);
+##      else
+##          pres := StraightLineProgram([[]],0);
+##          strongbelow := [];
+##      fi;
+##      strong := allstrong(S);
+##      Info(InfoGenSS,1,"Verifying stabilizer chain in layer ",S!.layer);
+##  
+##      # First create a few Schreier generators:
+##      sgs := [];
+##      i := 1;
+##      j := 1;
+##      o := S!.orb;
+##      nrgens := Length(o!.gens);
+##      MakeSchreierGens := function(n)
+##          local sg;
+##          Info(InfoGenSS,3,"Creating ",n," Schreier generators...");
+##          while Length(sgs) < n and
+##                i <= Length(o) do
+##              sg := GENSS_CreateSchreierGenerator(S,i,j);
+##              j := j + 1;
+##              if j > nrgens then
+##                  j := 1;
+##                  i := i + 1;
+##              fi;
+##              if sg <> fail then
+##                  Add(sgs,sg);
+##              fi;
+##          od;
+##      end;
+##  
+##      nrschr := S!.opt.NumberSchreierGens;
+##      MakeSchreierGens(nrschr);
+##      f := FreeGroup(Length(strong));
+##      gens := GeneratorsOfGroup(f);
+##      gensi := List(gens,x->x^-1);
+##      subgens := gens{List(strongbelow,i->Position(strong,i))};
+##      Hrels := ResultOfStraightLineProgram(pres,subgens);
+##      if S!.opt.Projective then
+##          ords := List([1..nrgens],i->ProjectiveOrder(o!.gens[i]));
+##      else
+##          ords := List([1..nrgens],i->Order(o!.gens[i]));
+##      fi;
+##      Prels := List([1..nrgens],i->gens[i+sb]^ords[i]);
+##      Grels := [];
+##      cosetnrlimitfactor := 4;
+##      while true do   # will be left by return eventually
+##          for k in [Length(Grels)+1..Length(sgs)] do
+##              Grels[k] := GENSS_Prod(gens,sgs[k][1]+sb) * gens[sgs[k][2]+sb] * 
+##                          GENSS_Prod(gensi,sgs[k][3]+sb);
+##              x := GENSS_Prod(o!.gens,sgs[k][1]) * o!.gens[sgs[k][2]] * 
+##                   GENSS_Prod(o!.gensi,sgs[k][3]);
+##              if S!.stab <> false then
+##                  slp := SiftGroupElementSLP(S!.stab,x);
+##                  if not(slp.isone) then
+##                      return [fail,S!.layer];
+##                  fi;
+##                  Grels[k] := Grels[k] / ResultOfStraightLineProgram(slp.slp,
+##                                                                     subgens);
+##                  sgs[k][4] := slp.slp;
+##              else
+##                  if not(S!.isone(x)) then
+##                      return [fail,S!.layer];
+##                  fi;
+##                  sgs[k][4] := false;
+##              fi;
+##          od;
+##          Info(InfoGenSS,2,"Doing coset enumeration with limit ",
+##               cosetnrlimitfactor*Length(o));
+##          ct := CosetTableFromGensAndRels(gens,Concatenation(Prels,Hrels,Grels),
+##                     subgens:max := cosetnrlimitfactor*Length(o),silent);
+##          if ct = fail then   # did not close!
+##              cosetnrlimitfactor := QuoInt(cosetnrlimitfactor*3,2);
+##              Info(InfoGenSS,2,"Coset enumeration did not finish!");
+##          #Error(1);
+##              if nrschr > Length(sgs) # or
+##                 # nrschr > S!.opt.MaxNumberSchreierGens 
+##                 then   # we are done!
+##                  # Something is wrong!
+##                  return [fail, S!.layer];
+##              fi;
+##          else
+##              Info(InfoGenSS,2,"Coset enumeration found ",Length(ct[1]),
+##                   " cosets.");
+##          #Error(2);
+##              if Length(ct[1]) = Length(o) then
+##                  # Verification is OK, now build a presentation:
+##                  l := GeneratorsWithMemory(
+##                         ListWithIdenticalEntries(S!.nrstrong,()));
+##                  li := List(l,x->x^-1);
+##                  newpres := ResultOfStraightLineProgram(pres,
+##                                     l{[1..S!.strongbelow]});
+##                  for k in [1..nrgens] do
+##                      Add(newpres,l[k+sb]^ords[k]);
+##                  od;
+##                  for k in [1..Length(sgs)] do
+##                      if sgs[k][4] <> false then
+##                          Add(newpres,
+##                              GENSS_Prod(l,sgs[k][1]+sb)*l[sgs[k][2]+sb]*
+##                              GENSS_Prod(li,sgs[k][3]+sb)*
+##                              ResultOfStraightLineProgram(sgs[k][4],l)^-1);
+##                      else
+##                          Add(newpres,GENSS_Prod(l,sgs[k][1]+sb)*l[sgs[k][2]+sb]*
+##                                      GENSS_Prod(li,sgs[k][3]+sb));
+##                      fi;
+##                  od;
+##                  Info(InfoGenSS,2,"Found presentation for layer ",S!.layer,
+##                       " using ",Length(newpres)," relators.");
+##                  return SLPOfElms(newpres);
+##              fi;
+##          fi;
+##          nrschr := QuoInt(nrschr*4,2);
+##          MakeSchreierGens(nrschr);
+##      od;
+##    end);
 
 
 GENSS_CosetTableFromGensAndRelsInit :=
@@ -1714,288 +1727,288 @@ GENSS_TCAddRelators := function(r,newrels)
 end;
 
 
-VerifyStabilizerChainTC5 := 
-  function( S )
-    local FindTwoWords,Grels,Hrels,Prels,allgens,cosetlimit,done,el,f,
-          gens,gensi,hom,k,l,li,newpres,newrel,nrcosets,nrgens,o,opgens,
-          ords,pres,r,rels,sb,stronggens,strongi,subgens,tc,words;
-
-    if S!.stab <> false then
-        pres := VerifyStabilizerChainTC5(S!.stab);
-        if IsList(pres) then return pres; fi;
-    else
-        pres := StraightLineProgram([[]],0);
-    fi;
-    Info(InfoGenSS,1,"Verifying stabilizer chain in layer ",S!.layer);
-
-    o := S!.orb;
-    nrgens := Length(o!.gens);
-    sb := S!.strongbelow;
-            
-    f := FreeGroup(sb+nrgens);
-    gens := GeneratorsOfGroup(f);
-    gensi := List(gens,x->x^-1);
-    allgens := 0*[1..2*Length(gens)];
-    allgens{[1,3..2*Length(gens)-1]} := gens;
-    allgens{[2,4..2*Length(gens)]} := gensi;
-    subgens := gens{[1..S!.strongbelow]};
-    Hrels := ResultOfStraightLineProgram(pres,subgens);
-    if S!.opt.Projective then
-        ords := List([1..nrgens],i->ProjectiveOrder(o!.gens[i]));
-    else
-        ords := List([1..nrgens],i->Order(o!.gens[i]));
-    fi;
-    Prels := List([1..nrgens],i->gens[i+sb]^ords[i]);
-    Grels := [];
-    stronggens := StrongGenerators(S);
-    strongi := List(stronggens,x->x^-1);
-    opgens := 0*[1..2*Length(stronggens)];
-    opgens{[1,3..2*Length(stronggens)-1]} := stronggens;
-    opgens{[2,4..2*Length(stronggens)]} := strongi;
-
-    # Now start up a coset enumeration:
-    cosetlimit := Maximum(QuoInt(7 * Length(o),6),Length(o)+5);
-    Info(InfoGenSS,2,"Starting coset enumeration with limit ",
-         cosetlimit," and ",Length(Hrels),
-         "+",Length(Prels),"+",Length(Grels)," relations...");
-    rels := Concatenation(Hrels,Prels);
-    tc := GENSS_CosetTableFromGensAndRelsInit(gens,rels,subgens,cosetlimit);
-    done := GENSS_DoToddCoxeter(tc);
-        
-    FindTwoWords := function(o,opgens,table)
-        local TraceWord,cosets,cosetsrevtab,i,j,new,nrcosets,pt,pts,
-              ptsrev,schgen,schpt,w1,w2,x,y;
-        nrcosets := Length(table[1]);
-        cosets := [1];
-        cosetsrevtab := 0*[1..nrcosets];
-        cosetsrevtab[1] := 1;
-        pts := [o[1]];
-        ptsrev := 0*[1..Length(o)];
-        ptsrev[1] := 1;
-        schpt := [fail];    # the Schreier tree
-        schgen := [fail];
-        i := 1;
-        TraceWord := function(pos)
-            local w;
-            w := [];
-            while pos > 1 do
-                Add(w,schgen[pos]);
-                pos := schpt[pos];
-            od;
-            return Reversed(w);
-        end;
-        while i <= Length(cosets) do
-            for j in [1..Length(opgens)] do
-                x := table[j][cosets[i]];
-                if x <> 0 then   # image is defined:
-                    if cosetsrevtab[x] = 0 then   # not visited
-                        Add(cosets,x);
-                        new := Length(cosets);
-                        cosetsrevtab[x] := new;
-                        schpt[new] := i;
-                        schgen[new] := j;
-                        pt := o!.op(pts[i],opgens[j]);
-                        y := Position(o,pt);
-                        if ptsrev[y] = 0 then
-                            Add(pts,pt);
-                            ptsrev[y] := new;
-                        else
-                            # We have reached a new coset by a word that
-                            # maps the starting point of the orbit to the 
-                            # same point as the one of another coset!
-                            w1 := TraceWord(ptsrev[y]);
-                            w2 := TraceWord(new);
-                            return [w1,w2];
-                        fi;
-                    fi;
-                fi;
-            od;
-            i := i + 1;
-        od;
-        Error("Bad, this should never have been reached!");
-        return fail;
-    end;
-
-    while true do   # will be left by return eventually
-        if done = true then
-            nrcosets := Length(tc.table[1]);
-            Info(InfoGenSS,2,"Coset enumeration found ",nrcosets," cosets.");
-            if nrcosets = Length(o) then
-                # Verification is OK, now build a presentation:
-                l := GeneratorsWithMemory(
-                       ListWithIdenticalEntries(S!.nrstrong,()));
-                newpres := ResultOfStraightLineProgram(pres,
-                                   l{[1..S!.strongbelow]});
-                for k in [1..nrgens] do
-                    Add(newpres,l[k+sb]^ords[k]);
-                od;
-                hom := GroupHomomorphismByImagesNC(f,Group(l),gens,l);
-                for k in Grels do
-                    Add(newpres,ImageElm(hom,k));
-                od;
-                Info(InfoGenSS,2,"Found presentation for layer ",S!.layer,
-                     " using ",Length(newpres)," relators.");
-                return SLPOfElms(newpres);
-            elif nrcosets < Length(o) then
-                Error("This cannot possibly have happened!");
-                return [fail,S!.layer];
-            else   # nrcosets > Length(o)
-                Info(InfoGenSS,2,"Too many cosets, we must have forgotten ",
-                     "another relation!");
-                Error("This cannot possibly have happened2!");
-                return [fail,S!.layer];
-            fi;
-        fi;
-        # Now we have to find another relation, we do a breadth-first
-        # search through the already defined cosets to find two cosets
-        # that are still different but ought to be equal because the
-        # corresponding orbit points are equal:
-        words := FindTwoWords(o,opgens,tc.table);
-        el := EvaluateWord(opgens,words[1])/EvaluateWord(opgens,words[2]);
-        r := SiftGroupElementSLP(S,el);
-        if not(r.isone) then
-            # Error, we found a new stabilizer element!
-            return [fail,S!.layer,el];
-        fi;
-        newrel := [(EvaluateWord(allgens,words[1])
-                    /EvaluateWord(allgens,words[2]))
-                   / ResultOfStraightLineProgram(r.slp,gens)];
-        GENSS_TCAddRelators(tc,newrel);
-        Add(Grels,newrel[1]);
-        if Length(words[1]) > 0 then
-            tc.app[10] := words[1][1];
-        else
-            # More difficult:
-            words := ExtRepOfObj(newrel[1]);
-            if words[2] > 0 then
-                tc.app[10] := 2*words[1]-1;
-            else
-                tc.app[10] := 2*words[1];
-            fi;
-        fi;
-        #Print("<\c");
-        #for i in [1..tc.limit] do
-        #    for j in [1..Length(allgens)] do
-        #        if tc.table[j][i] <> 0 then
-        #            tc.app[11] := i;
-        #            tc.app[10] := j;
-        #            tc.nrdel := tc.nrdel + MakeConsequences( tc.app );
-        #        fi;
-        #    od;
-        #od;
-        tc.app[11] := 1;
-        tc.nrdel := tc.nrdel + MakeConsequences( tc.app );
-        #Print("-\c");
-        done := GENSS_DoToddCoxeter(tc);
-        #Print(">\c");
-        if Length(Grels) mod 100 = 0 then
-            #Print("\n");
-            Info(InfoGenSS,2,"Currently using ",Length(Hrels),"+",
-                 Length(Prels),"+",Length(Grels)," relations.");
-        fi;
-    od;
-  end;
-
-VerifyStabilizerChainMax := 
-  function( S )
-    local bl,count,d,gens,i,invtab,j,k,o,p,r,res,s,w1,w2,x,xi,y,isone;
-
-    isone := S!.isone;
-    if S!.stab <> false then
-        res := VerifyStabilizerChainMax(S!.stab);
-        if res <> true then return res; fi;
-    fi;
-    Info(InfoGenSS,1,"Verifying stabilizer chain in layer ",S!.layer,
-         " (orbit of length ",Length(S!.orb),")");
-
-    count := 0;
-    gens := ShallowCopy(Set(S!.orb!.gens));
-    invtab := [];
-    k := Length(gens);
-    for i in [1..k] do
-        x := gens[i];
-        xi := x^-1;
-        p := Position(gens,xi);
-        if p = fail then
-            Add(gens,xi);
-            invtab[i] := Length(gens);
-            invtab[Length(gens)] := i;
-        else
-            invtab[i] := p;
-        fi;
-    od;
-    o := Orb(gens,S!.orb[1],S!.orb!.op,rec(schreier := true, log := true));
-    Enumerate(o);
-
-    if Length(o) <> Length(S!.orb) then
-        Error("something is fishy, orbits do not have the same length");
-        return fail;
-    fi;
-
-    # Now we have a nice breadth-first orbit such that all inverses of 
-    # generators are again generators.
-    # First check whether the generators fix the first point:
-    for x in gens do
-        if o!.op(o[1],x) = o[1] then
-            count := count + 1;
-            if S!.stab = false then
-                r := rec( isone := isone(x) );
-            else
-                r := SiftGroupElement(S!.stab,x);
-            fi;
-            if not(r.isone) then
-                return [fail,S!.layer,x,"generator"];
-            fi;
-        fi;
-    od;
-
-    bl := BlistList([1..Length(o)],[]);
-    for d in [1..o!.depth] do
-        Info(InfoGenSS,2,"Testing in depth ",d," (of ",o!.depth,") checking ",
-             o!.depthmarks[d+1]-o!.depthmarks[d]," points (of ",Length(o),")");
-        for i in [o!.depthmarks[d]..o!.depthmarks[d+1]-1] do
-            # These indices contain points in depth d
-            if bl[o!.schreierpos[i]] then
-                # this subtree does not need to be done!
-                bl[i] := true;   # mark subtree as done
-            else
-                x := o[i];
-                for j in [1..Length(gens)] do
-                    if j <> invtab[o!.schreiergen[i]] then
-                        y := o!.op(x,gens[j]);
-                        p := Position(o,y);
-                        # if p > i then this is a new point, do nothing
-                        if p <= i then
-                            count := count + 1;
-                            w1 := TraceSchreierTreeForward(o,i);
-                            w2 := TraceSchreierTreeForward(o,p);
-                            s := (EvaluateWord(gens,w1)*gens[j])
-                                 /EvaluateWord(gens,w2);
-                            #Print(Length(gens),w1,j,w2,"\n");
-                            if S!.stab = false then
-                                r := rec( isone := isone(s) );
-                            else
-                                r := SiftGroupElement(S!.stab,s);
-                            fi;
-                            if not(r.isone) then
-                                return [fail,S!.layer,s,"schreier gen"];
-                            fi;
-                        fi;
-                        if p < o!.depthmarks[d] then
-                            # this goes up in the tree, this means, if this
-                            # Schreier generator is OK, we do not have to
-                            # look below!
-                            bl[i] := true;
-                            break;
-                        fi;
-                    fi;
-                od;
-            fi;
-        od;
-    od;
-    Info(InfoGenSS,2,"Have sifted ",count," elements.");
-    return true;
-  end;
+##  VerifyStabilizerChainTC5 := 
+##    function( S )
+##      local FindTwoWords,Grels,Hrels,Prels,allgens,cosetlimit,done,el,f,
+##            gens,gensi,hom,k,l,li,newpres,newrel,nrcosets,nrgens,o,opgens,
+##            ords,pres,r,rels,sb,stronggens,strongi,subgens,tc,words;
+##  
+##      if S!.stab <> false then
+##          pres := VerifyStabilizerChainTC5(S!.stab);
+##          if IsList(pres) then return pres; fi;
+##      else
+##          pres := StraightLineProgram([[]],0);
+##      fi;
+##      Info(InfoGenSS,1,"Verifying stabilizer chain in layer ",S!.layer);
+##  
+##      o := S!.orb;
+##      nrgens := Length(o!.gens);
+##      sb := S!.strongbelow;
+##              
+##      f := FreeGroup(sb+nrgens);
+##      gens := GeneratorsOfGroup(f);
+##      gensi := List(gens,x->x^-1);
+##      allgens := 0*[1..2*Length(gens)];
+##      allgens{[1,3..2*Length(gens)-1]} := gens;
+##      allgens{[2,4..2*Length(gens)]} := gensi;
+##      subgens := gens{[1..S!.strongbelow]};
+##      Hrels := ResultOfStraightLineProgram(pres,subgens);
+##      if S!.opt.Projective then
+##          ords := List([1..nrgens],i->ProjectiveOrder(o!.gens[i]));
+##      else
+##          ords := List([1..nrgens],i->Order(o!.gens[i]));
+##      fi;
+##      Prels := List([1..nrgens],i->gens[i+sb]^ords[i]);
+##      Grels := [];
+##      stronggens := StrongGenerators(S);
+##      strongi := List(stronggens,x->x^-1);
+##      opgens := 0*[1..2*Length(stronggens)];
+##      opgens{[1,3..2*Length(stronggens)-1]} := stronggens;
+##      opgens{[2,4..2*Length(stronggens)]} := strongi;
+##  
+##      # Now start up a coset enumeration:
+##      cosetlimit := Maximum(QuoInt(7 * Length(o),6),Length(o)+5);
+##      Info(InfoGenSS,2,"Starting coset enumeration with limit ",
+##           cosetlimit," and ",Length(Hrels),
+##           "+",Length(Prels),"+",Length(Grels)," relations...");
+##      rels := Concatenation(Hrels,Prels);
+##      tc := GENSS_CosetTableFromGensAndRelsInit(gens,rels,subgens,cosetlimit);
+##      done := GENSS_DoToddCoxeter(tc);
+##          
+##      FindTwoWords := function(o,opgens,table)
+##          local TraceWord,cosets,cosetsrevtab,i,j,new,nrcosets,pt,pts,
+##                ptsrev,schgen,schpt,w1,w2,x,y;
+##          nrcosets := Length(table[1]);
+##          cosets := [1];
+##          cosetsrevtab := 0*[1..nrcosets];
+##          cosetsrevtab[1] := 1;
+##          pts := [o[1]];
+##          ptsrev := 0*[1..Length(o)];
+##          ptsrev[1] := 1;
+##          schpt := [fail];    # the Schreier tree
+##          schgen := [fail];
+##          i := 1;
+##          TraceWord := function(pos)
+##              local w;
+##              w := [];
+##              while pos > 1 do
+##                  Add(w,schgen[pos]);
+##                  pos := schpt[pos];
+##              od;
+##              return Reversed(w);
+##          end;
+##          while i <= Length(cosets) do
+##              for j in [1..Length(opgens)] do
+##                  x := table[j][cosets[i]];
+##                  if x <> 0 then   # image is defined:
+##                      if cosetsrevtab[x] = 0 then   # not visited
+##                          Add(cosets,x);
+##                          new := Length(cosets);
+##                          cosetsrevtab[x] := new;
+##                          schpt[new] := i;
+##                          schgen[new] := j;
+##                          pt := o!.op(pts[i],opgens[j]);
+##                          y := Position(o,pt);
+##                          if ptsrev[y] = 0 then
+##                              Add(pts,pt);
+##                              ptsrev[y] := new;
+##                          else
+##                              # We have reached a new coset by a word that
+##                              # maps the starting point of the orbit to the 
+##                              # same point as the one of another coset!
+##                              w1 := TraceWord(ptsrev[y]);
+##                              w2 := TraceWord(new);
+##                              return [w1,w2];
+##                          fi;
+##                      fi;
+##                  fi;
+##              od;
+##              i := i + 1;
+##          od;
+##          Error("Bad, this should never have been reached!");
+##          return fail;
+##      end;
+##  
+##      while true do   # will be left by return eventually
+##          if done = true then
+##              nrcosets := Length(tc.table[1]);
+##              Info(InfoGenSS,2,"Coset enumeration found ",nrcosets," cosets.");
+##              if nrcosets = Length(o) then
+##                  # Verification is OK, now build a presentation:
+##                  l := GeneratorsWithMemory(
+##                         ListWithIdenticalEntries(S!.nrstrong,()));
+##                  newpres := ResultOfStraightLineProgram(pres,
+##                                     l{[1..S!.strongbelow]});
+##                  for k in [1..nrgens] do
+##                      Add(newpres,l[k+sb]^ords[k]);
+##                  od;
+##                  hom := GroupHomomorphismByImagesNC(f,Group(l),gens,l);
+##                  for k in Grels do
+##                      Add(newpres,ImageElm(hom,k));
+##                  od;
+##                  Info(InfoGenSS,2,"Found presentation for layer ",S!.layer,
+##                       " using ",Length(newpres)," relators.");
+##                  return SLPOfElms(newpres);
+##              elif nrcosets < Length(o) then
+##                  Error("This cannot possibly have happened!");
+##                  return [fail,S!.layer];
+##              else   # nrcosets > Length(o)
+##                  Info(InfoGenSS,2,"Too many cosets, we must have forgotten ",
+##                       "another relation!");
+##                  Error("This cannot possibly have happened2!");
+##                  return [fail,S!.layer];
+##              fi;
+##          fi;
+##          # Now we have to find another relation, we do a breadth-first
+##          # search through the already defined cosets to find two cosets
+##          # that are still different but ought to be equal because the
+##          # corresponding orbit points are equal:
+##          words := FindTwoWords(o,opgens,tc.table);
+##          el := EvaluateWord(opgens,words[1])/EvaluateWord(opgens,words[2]);
+##          r := SiftGroupElementSLP(S,el);
+##          if not(r.isone) then
+##              # Error, we found a new stabilizer element!
+##              return [fail,S!.layer,el];
+##          fi;
+##          newrel := [(EvaluateWord(allgens,words[1])
+##                      /EvaluateWord(allgens,words[2]))
+##                     / ResultOfStraightLineProgram(r.slp,gens)];
+##          GENSS_TCAddRelators(tc,newrel);
+##          Add(Grels,newrel[1]);
+##          if Length(words[1]) > 0 then
+##              tc.app[10] := words[1][1];
+##          else
+##              # More difficult:
+##              words := ExtRepOfObj(newrel[1]);
+##              if words[2] > 0 then
+##                  tc.app[10] := 2*words[1]-1;
+##              else
+##                  tc.app[10] := 2*words[1];
+##              fi;
+##          fi;
+##          #Print("<\c");
+##          #for i in [1..tc.limit] do
+##          #    for j in [1..Length(allgens)] do
+##          #        if tc.table[j][i] <> 0 then
+##          #            tc.app[11] := i;
+##          #            tc.app[10] := j;
+##          #            tc.nrdel := tc.nrdel + MakeConsequences( tc.app );
+##          #        fi;
+##          #    od;
+##          #od;
+##          tc.app[11] := 1;
+##          tc.nrdel := tc.nrdel + MakeConsequences( tc.app );
+##          #Print("-\c");
+##          done := GENSS_DoToddCoxeter(tc);
+##          #Print(">\c");
+##          if Length(Grels) mod 100 = 0 then
+##              #Print("\n");
+##              Info(InfoGenSS,2,"Currently using ",Length(Hrels),"+",
+##                   Length(Prels),"+",Length(Grels)," relations.");
+##          fi;
+##      od;
+##    end;
+##  
+##  VerifyStabilizerChainMax := 
+##    function( S )
+##      local bl,count,d,gens,i,invtab,j,k,o,p,r,res,s,w1,w2,x,xi,y,isone;
+##  
+##      isone := S!.isone;
+##      if S!.stab <> false then
+##          res := VerifyStabilizerChainMax(S!.stab);
+##          if res <> true then return res; fi;
+##      fi;
+##      Info(InfoGenSS,1,"Verifying stabilizer chain in layer ",S!.layer,
+##           " (orbit of length ",Length(S!.orb),")");
+##  
+##      count := 0;
+##      gens := ShallowCopy(Set(S!.orb!.gens));
+##      invtab := [];
+##      k := Length(gens);
+##      for i in [1..k] do
+##          x := gens[i];
+##          xi := x^-1;
+##          p := Position(gens,xi);
+##          if p = fail then
+##              Add(gens,xi);
+##              invtab[i] := Length(gens);
+##              invtab[Length(gens)] := i;
+##          else
+##              invtab[i] := p;
+##          fi;
+##      od;
+##      o := Orb(gens,S!.orb[1],S!.orb!.op,rec(schreier := true, log := true));
+##      Enumerate(o);
+##  
+##      if Length(o) <> Length(S!.orb) then
+##          Error("something is fishy, orbits do not have the same length");
+##          return fail;
+##      fi;
+##  
+##      # Now we have a nice breadth-first orbit such that all inverses of 
+##      # generators are again generators.
+##      # First check whether the generators fix the first point:
+##      for x in gens do
+##          if o!.op(o[1],x) = o[1] then
+##              count := count + 1;
+##              if S!.stab = false then
+##                  r := rec( isone := isone(x) );
+##              else
+##                  r := SiftGroupElement(S!.stab,x);
+##              fi;
+##              if not(r.isone) then
+##                  return [fail,S!.layer,x,"generator"];
+##              fi;
+##          fi;
+##      od;
+##  
+##      bl := BlistList([1..Length(o)],[]);
+##      for d in [1..o!.depth] do
+##          Info(InfoGenSS,2,"Testing in depth ",d," (of ",o!.depth,") checking ",
+##               o!.depthmarks[d+1]-o!.depthmarks[d]," points (of ",Length(o),")");
+##          for i in [o!.depthmarks[d]..o!.depthmarks[d+1]-1] do
+##              # These indices contain points in depth d
+##              if bl[o!.schreierpos[i]] then
+##                  # this subtree does not need to be done!
+##                  bl[i] := true;   # mark subtree as done
+##              else
+##                  x := o[i];
+##                  for j in [1..Length(gens)] do
+##                      if j <> invtab[o!.schreiergen[i]] then
+##                          y := o!.op(x,gens[j]);
+##                          p := Position(o,y);
+##                          # if p > i then this is a new point, do nothing
+##                          if p <= i then
+##                              count := count + 1;
+##                              w1 := TraceSchreierTreeForward(o,i);
+##                              w2 := TraceSchreierTreeForward(o,p);
+##                              s := (EvaluateWord(gens,w1)*gens[j])
+##                                   /EvaluateWord(gens,w2);
+##                              #Print(Length(gens),w1,j,w2,"\n");
+##                              if S!.stab = false then
+##                                  r := rec( isone := isone(s) );
+##                              else
+##                                  r := SiftGroupElement(S!.stab,s);
+##                              fi;
+##                              if not(r.isone) then
+##                                  return [fail,S!.layer,s,"schreier gen"];
+##                              fi;
+##                          fi;
+##                          if p < o!.depthmarks[d] then
+##                              # this goes up in the tree, this means, if this
+##                              # Schreier generator is OK, we do not have to
+##                              # look below!
+##                              bl[i] := true;
+##                              break;
+##                          fi;
+##                      fi;
+##                  od;
+##              fi;
+##          od;
+##      od;
+##      Info(InfoGenSS,2,"Have sifted ",count," elements.");
+##      return true;
+##    end;
 
 #############################################################################
 # The following operations apply to stabilizer chains:
@@ -2558,7 +2571,7 @@ InstallOtherMethod( Random, "for a stabilizer chain",
   [ IsStabilizerChainByOrb ],
   function(S)
     local x,pos,w;
-    x := One(g);
+    x := One(S!.orb!.gens[1]);
     while S <> false do
         pos := Random(1,Length(S!.orb));
         w := TraceSchreierTreeForward(S!.orb,pos);
@@ -2570,16 +2583,16 @@ InstallOtherMethod( Random, "for a stabilizer chain",
 
 InstallMethod( Random, "for a group with a stored stabilizer chain",
   [ IsGroup and HasStoredStabilizerChain ],
-  function(g) return Random(StoredStabilizerChain(g)) );
+  function(g) return Random(StoredStabilizerChain(g)); end );
 
 InstallMethod( Random, "for a permgroup with a stored stabilizer chain",
   [ IsPermGroup and HasStoredStabilizerChain ], 10,
-  function(g) return Random(StoredStabilizerChain(g)) );
+  function(g) return Random(StoredStabilizerChain(g)); end );
 
 InstallMethod( Random, "for a matrixgroup with a stored stabilizer chain",
   [ IsMatrixGroup and IsHandledByNiceMonomorphism and 
     HasStoredStabilizerChain ],
-  function(g) return Random(StoredStabilizerChain(g)) );
+  function(g) return Random(StoredStabilizerChain(g)); end );
 
 InstallMethod( SizeMC, "for a group and an error bound",
   [IsGroup, IsRat],
