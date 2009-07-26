@@ -85,20 +85,70 @@ points and actions specified in the <C>Cand</C> component are tried as
 possible base points for <A>G</A> (and its stabilisers) first before other
 points are guessed (see <Ref Oper="FindBasePointCandidates"/>). If a point
 is fixed under all generators it is not used, unless the component
-<C>Reduced</C> is set to false.
+<C>Reduced</C> is explicitly set to <K>false</K> (see below). If the component
+<C>StrictlyUseCandidates</C> is <K>false</K> (the default, see below), the
+algorithm tries to use other points of an already found orbit before
+considering the next candidate specified by <C>Cand</C>. This is usually 
+sensible because for an already enumerated orbit we have a natural bound
+on the length of the suborbits for the point stabiliser in this orbit.
 </Item>
 <Mark><C>DeterministicVerification</C></Mark>
-<Item></Item>
+<Item>
+Set this component to <K>true</K> to switch on a deterministic verification
+routine after the randomised Schreier-Sims procedure. This is not yet
+implemented.
+</Item>
 <Mark><C>ErrorBound</C></Mark>
-<Item></Item>
+<Item>
+Set this component to a rational number between 0 and 1. It will be an
+upper bound for the error probability. That is, the error probability of
+the Monte Carlo verification at the end will be less than this rational
+number. This component overrides everything you specify in the
+<C>random</C> or <C>VerifyElements</C> components.
+</Item>
 <Mark><C>FailInsteadOfError</C></Mark>
-<Item></Item>
+<Item>
+If no short enough orbit is found during the computation, the procedure
+stops with an error message. If you would rather like it to return
+<K>fail</K> then set this component to <K>true</K>. This option can be used
+to try an stabiliser chain computation automatically and give up before you
+run out of memory.
+</Item>
 <Mark><C>ImmediateVerificationElements</C></Mark>
-<Item></Item>
+<Item>Whenever the randomised Schreier-Sims procedure has first computed
+generators for a stabiliser in the chain and has computed a stabiliser
+chain for that stabiliser recursively, 
+an immediate verification is done. This is to spot early on that the
+group found is in fact a proper subgroup of the stabiliser. This
+verification is done by creating a few more random elements of that
+stabiliser and sifting them through the newly created stabiliser chain.
+Each such element has a chance of at least <M>1/2</M> to spot this. The
+number of random elements used is stored in the component
+<C>ImmediateVerificationElements</C>.
+</Item>
 <Mark><C>InitialHashSize</C></Mark>
-<Item></Item>
+<Item>
+Set this component to the initial hash size for orbit computations in the
+stabiliser chain.
+</Item>
 <Mark><C>IsOne</C></Mark>
-<Item></Item>
+<Item>
+The default for this computation is the <Ref Oper="IsOne" BookName="Ref"/>
+operation in the &GAP; library. Whenever in the stabiliser chain
+computation a group element has to be tested whether or not it is equal to
+the identity, the function stored in the <C>IsOne</C> component is called.
+The rationale behind this is that you can compute a stabiliser chain for a
+factor group of the group object <A>G</A>. For example, if you set the
+<C>IsOne</C> component to <Ref Func="GENSS_IsOneProjective"/> for a matrix
+group <A>G</A> scalar multiples of the identity are considered to be
+equal to the identity. You will have to specify the base points
+explicitly using the <C>Cand</C> and <C>StrictlyUseCandidates</C>
+component (see above and below) to only use actions
+having the normal subgroup in its kernel. A shortcut for computing
+stabiliser chains of projective groups (matrix group modulo scalars) is
+to set the <C>Projective</C> component (see below) and switch to projective
+mode.
+</Item>
 <Mark><C>LimitShortOrbCandidates</C></Mark>
 <Item></Item>
 <Mark><C>MaxNumberSchreierGens</C></Mark>
