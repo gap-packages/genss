@@ -715,7 +715,7 @@ InstallGlobalFunction( GENSS_CreateStabChainRecord,
     S := rec( stab := false, orb := orb, cand := cand, base := base,
               opt := opt, layer := layer, parentS := parentS,
               stronggens := stronggens, layergens := layergens,
-              size := size, randpool := [], isone := opt.isone );
+              size := size, randpool := [], IsOne := opt.IsOne );
     if parentS = false then
         S!.topS := S;
     else
@@ -857,7 +857,7 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
     stabgens := EmptyPlist(opt.RandomStabGens);
     for i in [1..opt.RandomStabGens] do
         x := GENSS_RandomElementFromAbove(S,layer);
-        if not(S!.isone(x)) then
+        if not(S!.IsOne(x)) then
             Add(stabgens,x);
         fi;
     od;
@@ -942,7 +942,8 @@ InstallMethod(VerifyStabilizerChainMC,
     od;
   end );
 
-InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
+InstallMethod( StabilizerChain, "for a group object and a record", 
+  [ IsGroup, IsRecord ],
   function( grp, opt )
     # Computes a stabilizer chain for the group grp
     # Possible options:
@@ -1000,18 +1001,18 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
         fi;
     fi;
     if IsBound(opt.Projective) and opt.Projective then
-        opt.isone := GENSS_IsOneProjective;
-    elif not(IsBound(opt.isone)) then
-        opt.isone := IsOne;
+        opt.IsOne := GENSS_IsOneProjective;
+    elif not(IsBound(opt.IsOne)) then
+        opt.IsOne := IsOne;
     fi;
-    # Now opt.isone is set to a function to check whether or not a group
+    # Now opt.IsOne is set to a function to check whether or not a group
     # element is equal to the identity.
     GENSS_CopyDefaultOptions(GENSS,opt);
 
     # Check for the identity group:
     gens := GeneratorsOfGroup(grp);
     if Length(gens) = 0 or 
-       ForAll(gens,opt.isone) then
+       ForAll(gens,opt.IsOne) then
         # Set up a trivial stabilizer chain record:
         S := GENSS_CreateStabChainRecord(false,gens,1,1,GENSS_TrivialOp,
                                          rec( points := [], ops := [],
@@ -1022,7 +1023,7 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
         S!.trivialgroup := true;
         if (not(IsBound(opt.Projective)) or
             opt.Projective = false) and
-           IsIdenticalObj(opt.isone,IsOne) then
+           IsIdenticalObj(opt.IsOne,IsOne) then
             SetStoredStabilizerChain(grp,S);
         fi;
         return S;
@@ -1042,6 +1043,8 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
             opt.VerifyElements := 0;
         elif opt.random = 1000 then
             opt.DeterministicVerification := true;
+            Info(InfoGenSS,1,"Warning: Deterministic verification not yet ",
+                 "implemented!");
         else
             prob := 1/2;
             opt.VerifyElements := 1;
@@ -1131,7 +1134,7 @@ InstallMethod( StabilizerChain, "for a group object", [ IsGroup, IsRecord ],
         od;
         S!.proof := true;
         if (not(IsBound(opt.Projective)) or opt.Projective = false) and
-           IsIdenticalObj(opt.isone,IsOne) then
+           IsIdenticalObj(opt.IsOne,IsOne) then
             SetStoredStabilizerChain(grp,S);
         fi;
     else
@@ -1156,7 +1159,7 @@ InstallMethod( AddGeneratorToStabilizerChain,
     # Increases the set represented by S by the generator el.
     local SS, r, n, pr, i;
     if IsBound(S!.trivialgroup) and S!.trivialgroup then
-        if S!.isone(el) then
+        if S!.IsOne(el) then
             return false;
         fi;
         SS := StabilizerChain(Group(el),S!.opt);
@@ -1241,7 +1244,7 @@ InstallMethod( SiftGroupElement, "for a stabilizer chain and a group element",
   [ IsStabilizerChain and IsStabilizerChainByOrb, IsObject ],
   function( S, x )
     local o,p,po,preS,r,isone;
-    isone := S!.isone;
+    isone := S!.IsOne;
     preS := false;
     while S <> false do
         o := S!.orb;
@@ -1272,7 +1275,7 @@ InstallMethod( SiftGroupElementSLP,
   function( S, x )
     local preS, nrstrong, slp, o, p, po, r, isone;
     preS := false;
-    isone := S!.isone;
+    isone := S!.IsOne;
     nrstrong := Length(S!.stronggens);
     slp := [];     # will be reversed in the end
     while S <> false do
@@ -1433,7 +1436,7 @@ InstallGlobalFunction( VerifyStabilizerChainTC,
 ##                                                                     subgens);
 ##                  sgs[k][4] := slp.slp;
 ##              else
-##                  if not(S!.isone(x)) then
+##                  if not(S!.IsOne(x)) then
 ##                      return [fail,S!.layer];
 ##                  fi;
 ##                  sgs[k][4] := false;
@@ -1914,7 +1917,7 @@ end;
 ##    function( S )
 ##      local bl,count,d,gens,i,invtab,j,k,o,p,r,res,s,w1,w2,x,xi,y,isone;
 ##  
-##      isone := S!.isone;
+##      isone := S!.IsOne;
 ##      if S!.stab <> false then
 ##          res := VerifyStabilizerChainMax(S!.stab);
 ##          if res <> true then return res; fi;
@@ -2211,12 +2214,12 @@ InstallGlobalFunction( GENSS_FindGensStabilizer,
             el := el * cosetrep;
         fi;
         # now el is an element in the stabilizer of pt 
-        if S!.isone(el) then
+        if S!.IsOne(el) then
             Info(InfoGenSS,3,"Found trivial stabilizer element.");
         else
             Add(stabgens,el);
             stab := GroupWithGenerators(stabgens);
-            SS := StabilizerChain(stab,rec( Base := S, isone := S!.isone ));
+            SS := StabilizerChain(stab,rec( Base := S, IsOne := S!.IsOne ));
             Info(InfoGenSS,1,"Have group size ",Size(SS)," (of ",
                  stabsize,")");
             if Size(SS) = size then
@@ -2233,7 +2236,7 @@ InstallGlobalFunction( GENSS_FindGensStabilizer,
         i := i + 1;
         if i < Length(stabgens) then
             stab := Group(stabgens{[i..Length(stabgens)]});
-            SS := StabilizerChain(stab,rec(Base := S, isone := S!.isone));
+            SS := StabilizerChain(stab,rec(Base := S, IsOne := S!.IsOne));
             size := Size(SS);
         else
             size := 0;
@@ -2302,12 +2305,12 @@ InstallGlobalFunction( GENSS_FindShortGensStabilizerOld,
             el := el * cosetrep;
         fi;
         # now el is an element in the stabilizer of pt 
-        if S!.isone(el) then
+        if S!.IsOne(el) then
             Info(InfoGenSS,2,"Found trivial stabilizer element.");
         else
             Add(stabgens,el);
             stab := GroupWithGenerators(stabgens);
-            SS := StabilizerChain(stab,rec( Base := S, isone := S!.isone ));
+            SS := StabilizerChain(stab,rec( Base := S, IsOne := S!.IsOne ));
             Info(InfoGenSS,1,"Have group size ",Size(SS)," (of ",
                  stabsize,")");
             if Size(SS) = size then
@@ -2324,7 +2327,7 @@ InstallGlobalFunction( GENSS_FindShortGensStabilizerOld,
         i := i + 1;
         if i < Length(stabgens) then
             stab := Group(stabgens{[i..Length(stabgens)]});
-            SS := StabilizerChain(stab,rec(Base := S, isone := S!.isone));
+            SS := StabilizerChain(stab,rec(Base := S, IsOne := S!.IsOne));
             size := Size(SS);
         else
             size := 0;
@@ -2379,12 +2382,12 @@ InstallGlobalFunction( GENSS_FindShortGensStabilizer,
             el := randel;
         fi;
         # now el is an element in the stabilizer of pt 
-        if S!.isone(el) then
+        if S!.IsOne(el) then
             Info(InfoGenSS,3,"Found trivial stabilizer element.");
         else
             Add(stabgens,el);
             stab := GroupWithGenerators(stabgens);
-            SS := StabilizerChain(stab,rec( Base := S, isone := S!.isone ));
+            SS := StabilizerChain(stab,rec( Base := S, IsOne := S!.IsOne ));
             Info(InfoGenSS,1,"Have group size ",Size(SS)," (of ",
                  stabsize,")");
             if Size(SS) = size then
@@ -2403,7 +2406,7 @@ InstallGlobalFunction( GENSS_FindShortGensStabilizer,
     Info(InfoGenSS,1,"Need ",Length(stabgens)," generators.");
     while i < Length(stabgens) do
        stab := Group(stabgens{Concatenation([1..i-1],[i+1..Length(stabgens)])});
-       SS := StabilizerChain(stab,rec(Base := S, isone := S!.isone));
+       SS := StabilizerChain(stab,rec(Base := S, IsOne := S!.IsOne));
        if Size(SS) < stabsize then
            i := i + 1;   # keep generator
        else
@@ -2514,7 +2517,7 @@ InstallGlobalFunction( GENSS_GroupShallowCopy,
 InstallMethod( SetStabilizerChain, "for a group and a stabilizer chain",
   [IsGroup, IsStabilizerChain],
   function(g,S)
-    if IsIdenticalObj(S!.isone,IsOne) and
+    if IsIdenticalObj(S!.IsOne,IsOne) and
        HasSize(g) and Size(g) <> Size(S) then
       Error("you try to set a stabilizer chain for the wrong group");
       return;
@@ -2691,7 +2694,7 @@ InstallMethod( ORB_IsWordInStabilizerChain,
     local x, b, ops, i;
     if Size(S) = 1 then
         x := ORB_ApplyWord(gens[1]^0,word,gens,gensi,OnRight);
-        return S!.isone(x);
+        return S!.IsOne(x);
     fi;
     b := BaseStabilizerChain(S);
     ops := b.ops;
@@ -3029,7 +3032,7 @@ InstallGlobalFunction( BacktrackSearchStabilizerChainSubgroup,
                     opt := ShallowCopy(S!.opt), layer := S!.layer,
                     orb := o, stronggens := newgens, 
                     layergens := [1..Length(newgens)], randpool := [], 
-                    isone := S!.opt.isone, proof := true,
+                    IsOne := S!.opt.IsOne, proof := true,
                     parentS := false);
         Objectify( StabChainByOrbType, SSS );
         SSS!.opt.pr := ProductReplacer(SSS!.stronggens);
@@ -3091,7 +3094,7 @@ InstallGlobalFunction( BacktrackSearchStabilizerChainSubgroup,
                     layer := S!.layer,
                     orb := o, stronggens := SS!.stronggens, 
                     layergens := [1..Length(SS!.stronggens)+Length(newgens)],
-                    randpool := [], isone := SS!.opt.isone, proof := true,
+                    randpool := [], IsOne := SS!.opt.IsOne, proof := true,
                     parentS := false );
         Add(SSS.base,o[1],1);
         Append(SSS.stronggens,newgens);

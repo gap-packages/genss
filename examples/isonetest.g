@@ -5,5 +5,5 @@ if Size(S) <> Factorial(10)*2 then Error("wrong size"); fi;
 f := function ( x )
     return OnTuples( [ 1 .. 10 ], x ) = [ 1 .. 10 ];
 end;
-S := StabilizerChain(g,rec(isone := f));
+S := StabilizerChain(g,rec(IsOne := f));
 if Size(S) <> Factorial(10) then Error("wrong size"); fi;

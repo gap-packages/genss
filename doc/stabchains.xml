@@ -27,6 +27,20 @@ It has many options and can be customised in a very flexible way.
 <Oper Name="StabilizerChain" Arg="G [, opt]"/>
 <Returns>a stabiliser chain object or <K>fail</K></Returns>
 <Description>
+This operation computes a stabiliser chain for the group <A>G</A> using a
+randomised Schreier-Sims algorithm. The
+second argument <A>opt</A> is an optional options record. See Section <Ref
+Sect="StabChainOpts"/> below for an
+explanation of the possible components. 
+<P/>
+Note that this is a Monte Carlo algorithm in most cases, so there is a
+small error probability. However, the only error possible is that some of
+the subgroups in the stabiliser chain are subgroups of the actual point
+stabilisers. So the resulting group order is always a divisor of the actual
+group order and if the two are equal, then the stabiliser chain is proved
+to be correct. In particular, if the group object <A>G</A> for some reason
+already knows the group order, then this procedure always returns a correct
+and proven stabiliser chain for <A>G</A>.
 </Description>
 </ManSection>
 
@@ -36,10 +50,122 @@ It has many options and can be customised in a very flexible way.
 <Heading>Options for the computation of stabiliser chains</Heading>
 
 The options record for the <Ref Oper="StabilizerChain"/> can contain the
-following components:
+following components, which are used to control the behaviour of the
+computation of a stabiliser chain for the group <A>G</A>.
+Note that for most of these components there are default values to be found
+in the global <C>GENSS</C> record. You can change these defaults there if
+you want but you should know what you are doing. An explicitly given value
+in the options record always takes precedence over the default value.
 
 <List>
-<Mark></Mark>
+<Mark><C>Base</C></Mark>
+<Item>This component can either be bound to an existing stabilizer chain
+object or to a list of points. In both cases this indicates that the
+base of the stabilizer chain or the list of points respectively are
+known to be a base for the group <A>G</A>. In the first case the
+corresponding action functions are taken from the stabiliser chain, in
+the second case one should usually bind the component <C>BaseOps</C> to
+a list of equal length containing the action functions corresponding to
+the base points.
+</Item>
+<Mark><C>BaseOps</C></Mark>
+<Item>If the <C>Base</C> component is bound to a list of points the
+<C>BaseOps</C> component must be a list of equal length containing the
+corresponding action functions. If the <C>BaseOps</C> component is unbound,
+a list with identical entries <C>OnLines</C> is used in projective mode and
+<C>OnPoints</C> in non-projective mode (see component <C>Projective</C>
+below).
+</Item>
+<Mark><C>Cand</C></Mark>
+<Item>The <C>Cand</C> component can be bound to a record <C>r</C>which contains
+candidates for base points in the following way. The <C>r.points</C>
+component contains the list of points, the <C>r.ops</C> component contains
+a list of equal length with the corresponding action functions. The
+points and actions specified in the <C>Cand</C> component are tried as
+possible base points for <A>G</A> (and its stabilisers) first before other
+points are guessed (see <Ref Oper="FindBasePointCandidates"/>). If a point
+is fixed under all generators it is not used, unless the component
+<C>Reduced</C> is set to false.
+</Item>
+<Mark><C>DeterministicVerification</C></Mark>
+<Item></Item>
+<Mark><C>ErrorBound</C></Mark>
+<Item></Item>
+<Mark><C>FailInsteadOfError</C></Mark>
+<Item></Item>
+<Mark><C>ImmediateVerificationElements</C></Mark>
+<Item></Item>
+<Mark><C>InitialHashSize</C></Mark>
+<Item></Item>
+<Mark><C>IsOne</C></Mark>
+<Item></Item>
+<Mark><C>LimitShortOrbCandidates</C></Mark>
+<Item></Item>
+<Mark><C>MaxNumberSchreierGens</C></Mark>
+<Item></Item>
+<Mark><C>NrRandElsBirthdayParadox</C></Mark>
+<Item></Item>
+<Mark><C>NumberPrevOrbitPoints</C></Mark>
+<Item></Item>
+<Mark><C>NumberSchreierGens</C></Mark>
+<Item></Item>
+<Mark><C>OrbitLengthLimit</C></Mark>
+<Item></Item>
+<Mark><C>OrbitLimitBirthdayParadox</C></Mark>
+<Item></Item>
+<Mark><C>OrbitLimitImmediatelyTake</C></Mark>
+<Item></Item>
+<Mark><C>Projective</C></Mark>
+<Item></Item>
+<Mark><C>random</C></Mark>
+<Item></Item>
+<Mark><C>RandomStabGens</C></Mark>
+<Item></Item>
+<Mark><C>Reduced</C></Mark>
+<Item></Item>
+<Mark><C>Report</C></Mark>
+<Item></Item>
+<Mark><C>ShortOrbitsInitialLimit</C></Mark>
+<Item></Item>
+<Mark><C>ShortOrbitsNrRandoms</C></Mark>
+<Item></Item>
+<Mark><C>ShortOrbitsOrbLimit</C></Mark>
+<Item></Item>
+<Mark><C>Size</C></Mark>
+<Item></Item>
+<Mark><C>StabAddSlots</C></Mark>
+<Item></Item>
+<Mark><C>StabAssumeCompleteLimit</C></Mark>
+<Item></Item>
+<Mark><C>StabGenAddSlots</C></Mark>
+<Item></Item>
+<Mark><C>StabGenMaxDepth</C></Mark>
+<Item></Item>
+<Mark><C>StabGenScrambleFactor</C></Mark>
+<Item></Item>
+<Mark><C>StabGenScramble</C></Mark>
+<Item></Item>
+<Mark><C>StabInitialLimit</C></Mark>
+<Item></Item>
+<Mark><C>StabInitialPatience</C></Mark>
+<Item></Item>
+<Mark><C>StabMaxDepth</C></Mark>
+<Item></Item>
+<Mark><C>StabOrbitLimit</C></Mark>
+<Item></Item>
+<Mark><C>StabScrambleFactor</C></Mark>
+<Item></Item>
+<Mark><C>StabScramble</C></Mark>
+<Item></Item>
+<Mark><C>StrictlyUseCandidates</C></Mark>
+<Item></Item>
+<Mark><C>TryBirthdayParadox</C></Mark>
+<Item></Item>
+<Mark><C>TryShortOrbit</C></Mark>
+<Item></Item>
+<Mark><C>VerifyElements</C></Mark>
+<Item></Item>
+<Mark><C>VeryShortOrbLimit</C></Mark>
 <Item></Item>
 </List>
 
