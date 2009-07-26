@@ -150,75 +150,184 @@ to set the <C>Projective</C> component (see below) and switch to projective
 mode.
 </Item>
 <Mark><C>LimitShortOrbCandidates</C></Mark>
-<Item></Item>
-<Mark><C>MaxNumberSchreierGens</C></Mark>
-<Item></Item>
+<Item>
+The integer value of this component limits the number of candidates
+considered for the finding of short orbits. See the <C>TryShortOrbit</C>
+and <C>TryBirthdayParadox</C> components.
+</Item>
 <Mark><C>NrRandElsBirthdayParadox</C></Mark>
-<Item></Item>
+<Item>
+The method using the birthday paradox to find short orbits uses at most
+as many random group elements to estimate the orbit size as this
+component says. See the <C>TryBirthdayParadox</C> component.
+</Item>
 <Mark><C>NumberPrevOrbitPoints</C></Mark>
+<Item>
+After an orbit for the stabiliser chain has been enumerated, the randomised
+Schreier-Sims method first tries <C>NumberPrevOrbitPoints</C> from this
+orbit as next base points. Note that this is not done if the
+<C>StrictlyUseCandidates</C> component is set to <K>true</K>.
+</Item>
+<Mark><C>OrbitLengthLimit</C></Mark>
+<Item>This component is an absolute upper bound for the length of all
+orbits in the stabiliser chain. If an orbit enumeration reaches this limit,
+the stabiliser chain computation is aborted.
+</Item>
+<Mark><C>OrbitLimitBirthdayParadox</C></Mark>
+<Item>
+During the method to find short orbits using the birthday paradox (see
+component <C>TryBirthdayParadox</C>) only orbits whose final estimated
+length is less than <C>OrbitLimitBirthdayParadox</C> are used.
+</Item>
+<Mark><C>OrbitLimitImmediatelyTake</C></Mark>
+<Item>
+During the method to find short orbits using the birthday paradox (see
+component <C>TryBirthdayParadox</C>) an orbit is immediately used
+if its currently estimated length is less than
+<C>OrbitLimitImmediatelyTake</C>, even if the estimate is not yet very
+reliable.
+</Item>
+<Mark><C>Projective</C></Mark>
+<Item>
+Set this component to <K>true</K> if you want to compute a stabiliser chain
+for a projective group given as a matrix group. Elements which are scalar
+multiples of each other will be considered to be equal. This is achieved by
+only considering projective actions. Note that in this case a known size 
+of the group object cannot be used, since this size is the order of the
+matrix group!
+</Item>
+<Mark><C>random</C></Mark>
+<Item>
+The <C>random</C> component is there as a compatibility option. It behaves
+exactly as for the stabiliser chain methods in the &GAP; library. It must
+be set to a number between <M>0</M> and <M>1000</M> indicating a lower
+bound for the probability of a correct answer, where the value <M>a</M> means
+<M>a/10</M>&percent;. Note that currently <M>1000</M> is not yet
+implemented since there is no working deterministic verification routine.
+</Item>
+<Mark><C>RandomStabGens</C></Mark>
+<Item>
+This component contains the number of random stabiliser elements that are
+generated initially to generate a new stabiliser in the chain.
+</Item>
+<Mark><C>Reduced</C></Mark>
+<Item>
+If this component is bound to <K>true</K>, then no orbits of length <M>1</M>
+are allowed in the stabiliser chain. That is, no points are taken as base
+points that are fixed under all generators of the current stabiliser.
+Set this component to <K>false</K> to allow for orbits of length <M>1</M>,
+for example if you want the stabiliser chain to run through a prescribed
+base.
+</Item>
+<Mark><C>Report</C></Mark>
+<Item>
+The number in the <C>Report</C> component is taken as the <C>report</C>
+component in all orbit enumerations. That is, every <C>Report</C> 
+newly found elements in the orbit a message is printed saying how 
+far the computation has gone.
+</Item>
+<Mark><C>ShortOrbitsInitialLimit</C></Mark>
+<Item>
+See the <C>TryShortOrbit</C> component.
+</Item>
+<Mark><C>ShortOrbitsNrRandoms</C></Mark>
+<Item>
+See the <C>TryShortOrbit</C> component.
+</Item>
+<Mark><C>ShortOrbitsOrbLimit</C></Mark>
+<Item>
+See the <C>TryShortOrbit</C> component.
+</Item>
+<Mark><C>Size</C></Mark>
+<Item>
+If the <C>Size</C> component is set to a positive integer it is taken as
+the size of the group <A>G</A>. This information allows to verify the
+stabiliser chain simply by looking at its size. If the group object
+knows its size already (and the <C>Projective</C> component was not set to
+<K>true</K>), then the stored size of the group is automatically taken into
+account, such that one does not have to use this option.
+</Item>
+<Mark><C>StabGenAddSlots</C></Mark>
+<Item>
+The value of the <C>StabGenAddSlots</C> component is directly handed over
+to the product replacer object which is used to generate random elements to
+find stabiliser generators.
+</Item>
+<Mark><C>StabGenMaxDepth</C></Mark>
+<Item>
+The value of the <C>StabGenMaxDepth</C> component is directly handed over
+to the product replacer object which is used to generate random elements to
+find stabiliser generators.
+</Item>
+<Mark><C>StabGenScrambleFactor</C></Mark>
+<Item>
+The value of the <C>StabGenScrambleFactor</C> component is directly handed over
+to the product replacer object which is used to generate random elements to
+find stabiliser generators.
+</Item>
+<Mark><C>StabGenScramble</C></Mark>
+<Item>
+The value of the <C>StabGenScramble</C> component is directly handed over
+to the product replacer object which is used to generate random elements to
+find stabiliser generators.
+</Item>
+<Mark><C>StrictlyUseCandidates</C></Mark>
+<Item>
+If this component is set to <K>true</K> (default is <K>false</K>) then
+only the given candidate points are taken as possible base points. In
+particular, the procedure does not take additional points of the previous
+orbit as candidates for base points (see component
+<C>NumberPrevOrbitPoints</C> ). Use this option in combination to
+<C>Reduced</C> set to <K>false</K> to enforce a certain known base.
+</Item>
+<Mark><C>TryBirthdayParadox</C></Mark>
+<Item>
+The method to try to find short orbits using the birthday paradox is
+used up to <C>TryBirthdayParadox</C> times for each new base point. This
+method uses the Murray/O'Brien heuristics to find candidates for short
+orbits and then uses statistics using the birthday paradox to estimate the
+orbit lengths. As soon as a point is found whose orbit is either estimated
+to be smaller than <C>OrbitLimitBirthdayParadox</C> with a solid
+statistical estimate or is estimated to be smaller than
+<C>OrbitLimitImmediatelyTake</C> with a weak statistical estimate, this
+point is taken as the next base point.
+</Item>
+<Mark><C>TryShortOrbit</C></Mark>
+<Item>
+The method to try to find short orbits using the standard Murray/O'Brien
+heuristics is used up to <C>TryShortOrbit</C> times for each new base
+point. This method uses the heuristics to find candicates for short orbits
+using <C>ShortOrbitsNrRandoms</C> random group elements.
+It then enumerates all these orbits up to the limit
+<C>ShortOrbitsInitialLimit</C>. If any of them closes the corresponding 
+candidate is taken as the next base point. Otherwise half of the points are
+thrown away and the limit is doubled. This goes on until either an orbit
+closes or the limit grows over <C>ShortOrbitsOrbLimit</C>.
+</Item>
+<Mark><C>VerifyElements</C></Mark>
+<Item>
+This component can be used to set it to the number of random elements that
+are used in the end to verify the stabiliser chain statistically.
+Usually the user specifies the component <C>ErrorBound</C> instead
+and <C>VerifyElements</C> is then computed automatically from that. 
+However, if no <C>ErrorBound</C> is given, the <C>VerifyElements</C>
+component takes precedence over the <C>random</C> component.
+</Item>
+<Mark><C>VeryShortOrbLimit</C></Mark>
+<Item>
+The very first method tried to find the next base point is to enumerate the
+orbit of the first and the last basis vector and of one random vector
+up to the limit <C>VeryShortOrbLimit</C>. If the orbit closes before this
+limit is reached, the corresponding vector is immediately taken.
+</Item>
+</List>
+
+<!-- This is an option for deterministic verification. Not yet active.
+<Mark><C>MaxNumberSchreierGens</C></Mark>
 <Item></Item>
 <Mark><C>NumberSchreierGens</C></Mark>
 <Item></Item>
-<Mark><C>OrbitLengthLimit</C></Mark>
-<Item></Item>
-<Mark><C>OrbitLimitBirthdayParadox</C></Mark>
-<Item></Item>
-<Mark><C>OrbitLimitImmediatelyTake</C></Mark>
-<Item></Item>
-<Mark><C>Projective</C></Mark>
-<Item></Item>
-<Mark><C>random</C></Mark>
-<Item></Item>
-<Mark><C>RandomStabGens</C></Mark>
-<Item></Item>
-<Mark><C>Reduced</C></Mark>
-<Item></Item>
-<Mark><C>Report</C></Mark>
-<Item></Item>
-<Mark><C>ShortOrbitsInitialLimit</C></Mark>
-<Item></Item>
-<Mark><C>ShortOrbitsNrRandoms</C></Mark>
-<Item></Item>
-<Mark><C>ShortOrbitsOrbLimit</C></Mark>
-<Item></Item>
-<Mark><C>Size</C></Mark>
-<Item></Item>
-<Mark><C>StabAddSlots</C></Mark>
-<Item></Item>
-<Mark><C>StabAssumeCompleteLimit</C></Mark>
-<Item></Item>
-<Mark><C>StabGenAddSlots</C></Mark>
-<Item></Item>
-<Mark><C>StabGenMaxDepth</C></Mark>
-<Item></Item>
-<Mark><C>StabGenScrambleFactor</C></Mark>
-<Item></Item>
-<Mark><C>StabGenScramble</C></Mark>
-<Item></Item>
-<Mark><C>StabInitialLimit</C></Mark>
-<Item></Item>
-<Mark><C>StabInitialPatience</C></Mark>
-<Item></Item>
-<Mark><C>StabMaxDepth</C></Mark>
-<Item></Item>
-<Mark><C>StabOrbitLimit</C></Mark>
-<Item></Item>
-<Mark><C>StabScrambleFactor</C></Mark>
-<Item></Item>
-<Mark><C>StabScramble</C></Mark>
-<Item></Item>
-<Mark><C>StrictlyUseCandidates</C></Mark>
-<Item></Item>
-<Mark><C>TryBirthdayParadox</C></Mark>
-<Item></Item>
-<Mark><C>TryShortOrbit</C></Mark>
-<Item></Item>
-<Mark><C>VerifyElements</C></Mark>
-<Item></Item>
-<Mark><C>VeryShortOrbLimit</C></Mark>
-<Item></Item>
-</List>
-
+-->
 </Section>
 
 
