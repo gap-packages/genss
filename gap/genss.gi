@@ -1157,7 +1157,7 @@ InstallMethod( AddGeneratorToStabilizerChain,
   [ IsStabilizerChain and IsStabilizerChainByOrb, IsObject ],
   function( S, el )
     # Increases the set represented by S by the generator el.
-    local SS, r, n, pr, i;
+    local SS, r, n, pr, i, newstrongnr;
     if IsBound(S!.trivialgroup) and S!.trivialgroup then
         if S!.IsOne(el) then
             return false;
@@ -1188,6 +1188,7 @@ InstallMethod( AddGeneratorToStabilizerChain,
         Add(SS!.layergens,Length(SS!.stronggens));
         AddGeneratorsToOrbit(SS!.orb,[r.rem]);
         Add(SS!.orb!.gensi,r.rem^-1);
+        newstrongnr := Length(SS!.stronggens);
         Info( InfoGenSS, 4, "Entering orbit enumeration layer ",SS!.layer,
               "..." );
         repeat
@@ -1206,6 +1207,7 @@ InstallMethod( AddGeneratorToStabilizerChain,
         # Note that we do not create a pr instance here for one
         # generator, this will be done later on as needed...
         SS := r.preS;
+        newstrongnr := Length(SS!.stronggens)+1;  # r.rem will end up there !
         SS!.stab := GENSS_StabilizerChainInner([r.rem],false,
                            SS!.layer+1,SS!.cand, SS!.opt, SS );
         if IsString(SS!.stab) then return SS!.stab; fi; 
@@ -1219,7 +1221,7 @@ InstallMethod( AddGeneratorToStabilizerChain,
     # shallower:
     while S!.layer < SS!.layer do
         Info(InfoGenSS,2,"Adding new generator to orbit in layer ",S!.layer);
-        Add(S!.layergens,Length(S!.stronggens));
+        Add(S!.layergens,newstrongnr);
         AddGeneratorsToOrbit(S!.orb,[r.rem]);
         Add(S!.orb!.gensi,r.rem^-1);
         S := S!.stab;
