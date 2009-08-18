@@ -2639,14 +2639,14 @@ InstallGlobalFunction( GroupHomomorphismByImagesNCStabilizerChain,
     gm := GroupWithMemory(g);
     Sg := StabilizerChain(gm,opt1);
     strongg := StrongGenerators(Sg);
-    ForgetMemory(Sg);
     slpstrongg := SLPOfElms(strongg);
+    ForgetMemory(Sg);
     stronggims := ResultOfStraightLineProgram(slpstrongg,images);
     im := GroupWithMemory(images);
     Si := StabilizerChain(im,opt2);
     strongi := StrongGenerators(Si);
-    ForgetMemory(Si);
     slpstrongi := SLPOfElms(strongi);
+    ForgetMemory(Si);
     strongipre := ResultOfStraightLineProgram(slpstrongi,GeneratorsOfGroup(g));
     data := rec( Sg := Sg, stronggims := stronggims,
                  Si := Si, strongipre := strongipre,
