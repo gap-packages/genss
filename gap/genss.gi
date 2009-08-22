@@ -1227,18 +1227,7 @@ InstallMethod( AddGeneratorToStabilizerChain,
         S := S!.stab;
     od;
     # Finally, we have to add it to the product replacer!
-    # This is somewhat dirty: we fumble it into the product replacer:
-    pr := S!.opt.pr;
-    if not(IsMutable(pr!.gens)) then pr!.gens := ShallowCopy(pr!.gens); fi;
-    Add(pr!.gens,r.rem);
-    pr!.nrgens := pr!.nrgens + 1;
-    for i in [1..Length(pr!.state)] do
-        pr!.state[i] := pr!.state[i] * r.rem^Random(0,7);
-    od;
-    Add(pr!.state,r.rem);
-    pr!.slots := pr!.slots + 1;
-    Add(pr!.settled,0);
-    
+    AddGeneratorToProductReplacer(S!.opt!.pr,r.rem);
     return true;
   end );
 
