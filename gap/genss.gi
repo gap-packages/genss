@@ -16,7 +16,7 @@
 #############################################################################
 
 # Initial hash size for orbits:
-GENSS.InitialHashSize := NextPrimeInt(20000);
+GENSS.InitialHashSize := NextPrimeInt(1000);
 # Number of points to process before reporting:
 GENSS.Report := 30000;
 # Number of random elements to consider for the determination of short orbits:
@@ -211,10 +211,10 @@ InstallGlobalFunction( GENSS_FindShortOrbit,
     nrorbs := Minimum(Length(wb),64);  # take only the 64 first
     gens := GeneratorsOfGroup(g);
     o := [];
-    hashlen := NextPrimeInt(QuoInt(opt.ShortOrbitsOrbLimit * 3,2));
+    hashlen := NextPrimeInt(QuoInt(opt.ShortOrbitsOrbLimit,2));
     for i in [1..nrorbs] do
         Add(o,Orb(gens,ShallowCopy(wb[i]),OnLines,
-                  rec( hashlen := hashlen )));
+                  rec( treehashsize := hashlen )));
     od;
     limit := opt.ShortOrbitsInitialLimit;
     i := 1;               # we start to work on the first one
@@ -367,7 +367,8 @@ InstallMethod( FindBasePointCandidates,
     Add(v,vv);
     # Now investigate these up to a certain limit:
     for j in [1..Length(v)] do
-        o := Orb(gens,v[j],OnRight, rec(hashlen := 2*opt.VeryShortOrbLimit+1));
+        o := Orb(gens,v[j],OnRight, 
+                 rec(treehashsize := QuoInt(opt.VeryShortOrbLimit,2)+1));
         Enumerate(o,opt.VeryShortOrbLimit);
         if Length(o) > 1 and Length(o) < opt.VeryShortOrbLimit then
             Info( InfoGenSS, 3, "Found orbit of length ",Length(o) );
@@ -710,7 +711,7 @@ InstallGlobalFunction( GENSS_CreateStabChainRecord,
         hashsize := opt.InitialHashSize;
     fi;
     orb := Orb( gens, nextpoint, nextop,
-                rec( hashlen := hashsize, schreier := true, log := true,
+                rec( treehashsize := hashsize, schreier := true, log := true,
                      report := opt.Report ) );
     S := rec( stab := false, orb := orb, cand := cand, base := base,
               opt := opt, layer := layer, parentS := parentS,
@@ -2767,7 +2768,8 @@ InstallMethod( Stab, "by Orb orbit enumeration",
     errorprob := 1;
     limit := opt.StabInitialLimit;
     pat := opt.StabInitialPatience;
-    o := Orb(g,x,op,rec( report := opt.Report, hashlen := opt.InitialHashSize,
+    o := Orb(g,x,op,rec( report := opt.Report, 
+                         treehashsize := opt.InitialHashSize,
                          schreier := true ) );
     stabgens := [];
     stabsizeest := 1;
@@ -3004,7 +3006,7 @@ InstallGlobalFunction( BacktrackSearchStabilizerChainSubgroup,
                     Add(newgens,t);
                     if Length(newgens) = 1 then
                         o := Orb(ShallowCopy(newgens),S!.orb[1],S!.orb!.op,
-                                 rec( hashlen := 200, schreier := true,
+                                 rec( treehashsize := 200, schreier := true,
                                       log := true ));
                     else
                         AddGeneratorsToOrbit(o,[t]);
@@ -3065,7 +3067,8 @@ InstallGlobalFunction( BacktrackSearchStabilizerChainSubgroup,
                       if Length(newgens) = 1 then
                         o := Orb(Concatenation(StrongGenerators(SS),newgens),
                                  S!.orb[1],S!.orb!.op,
-                        rec( hashlen := Maximum(100,QuoInt(Length(S!.orb),3)), 
+                        rec( treehashsize := 
+                                    Maximum(100,QuoInt(Length(S!.orb),3)), 
                              schreier := true, log := true ));
                       else
                         AddGeneratorsToOrbit(o,[res.elm]);
