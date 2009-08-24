@@ -153,7 +153,7 @@ Print("\n");
 
 name := "Fi23";
 Print(name,": \c"); 
-for r in [1,2,3,4] do
+for r in [1,2,3] do    # 4 taken out since it used too much memory
   if r = 4 then
       g := GetAtlasGroup(name,r,0);
       h := GetAtlasGroup(name,r,1);
