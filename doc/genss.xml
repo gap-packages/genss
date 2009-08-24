@@ -62,6 +62,7 @@ Germany
 <#Include SYSTEM "intro.xml">
 <#Include SYSTEM "install.xml">
 <#Include SYSTEM "stabchains.xml">
+<#Include SYSTEM "backtrack.xml">
 <#Include SYSTEM "examples.xml">
 </Body>
 

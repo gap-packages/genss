@@ -97,7 +97,7 @@ DeclareGlobalFunction( "GroupHomomorphismByImagesNCStabilizerChain" );
 
 DeclareAttribute( "Size", IsStabilizerChain );
 DeclareOperation( "IsProved", [IsStabilizerChain] );
-DeclareOperation( "MakeGAPStabChain", [IsStabilizerChain] );
+DeclareOperation( "StabChainOp", [IsPermGroup, IsStabilizerChain] );
 DeclareOperation( "GroupIteratorByStabilizerChain", [IsStabilizerChain] );
 DeclareGlobalFunction( "GENSS_GroupNextIterator" );
 DeclareGlobalFunction( "GENSS_GroupIsDoneIterator" );

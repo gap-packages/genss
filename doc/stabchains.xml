@@ -128,12 +128,12 @@ number of random elements used is stored in the component
 </Item>
 <Mark><C>InitialHashSize</C></Mark>
 <Item>
-Set this component to the initial hash size for orbit computations in the
+Set this component to the initial tree hash size for orbit computations in the
 stabiliser chain.
 </Item>
 <Mark><C>IsOne</C></Mark>
 <Item>
-The default for this computation is the <Ref Oper="IsOne" BookName="Ref"/>
+The default for this computation is the <Ref Prop="IsOne" BookName="Ref"/>
 operation in the &GAP; library. Whenever in the stabiliser chain
 computation it has to be tested whether or not a group element is equal to
 the identity, the function stored in the <C>IsOne</C> component is called.
@@ -328,8 +328,82 @@ limit is reached, the corresponding vector is immediately taken.
 <Mark><C>NumberSchreierGens</C></Mark>
 <Item></Item>
 -->
+
+<ManSection>
+<Func Name="GENSS_IsOneProjective" Arg="x"/>
+<Returns><C>true</C> or <C>false</C></Returns>
+<Description>
+This function tests whether or not the matrix <A>x</A> is a scalar multiple
+of the identity matrix. This function is useful for projective
+action.
+</Description>
+</ManSection>
 </Section>
 
+<Section Label="ChooseBasePoints">
+<Heading>How base points are chosen</Heading>
+
+This section explains some internal details of how base points are chosen
+during a stabiliser chain computations. As a user, you can probably safely
+skip this section and ignore it altogether. However, in situations where
+thes stabiliser chain computation is more difficult (for example if
+it is difficult to find short orbits), then it can be helpful to know
+about these details.
+
+<P/>
+Whenever the stabiliser chain computation needs to set up a new layer
+in the stabiliser chain it needs a new base point. The first method
+it tries is to take a point in the previous orbit one layer up, since
+for these points we have a natural upper limit for the orbit length,
+namely the orbit length in the layer above. If this does not work
+(either there is no higher layer or more than the first
+<C>NumberPrevOrbitPoints</C>
+(see stabiliser chain options in Section <Ref Sect="StabChainOpts"/>)
+in that orbit are fixed by the current group or <C>StrictlyUseCandidates</C>
+is <K>true</K>), it is checked whether or not there is another
+known candidate for a base point.
+
+<P/>
+Note that if the user supplies candidates for the base points and
+operations (see component <C>Cand</C> in the stabiliser chain options in
+Section <Ref Sect="StabChainOpts"/>), then it is entirely possible that
+all base points come from these candidates and the mechanisms described
+in this sections are not used at all.
+
+<P/>
+However, if the procedure runs out of base points, it needs a way to find
+new candidates. This is done using the following operation:
+
+<ManSection>
+<Oper Name="FindBasePointCandidates" Arg="g, opt, i, S"/>
+<Returns>a <C>Cand</C> record</Returns>
+<Description>
+This operation returns base point candidates in the form of a record
+as for the <C>Cand</C> option for stabiliser chain computations
+(see Section <Ref Sect="StabChainOpts"/>).
+</Description>
+</ManSection>
+
+There are various methods installed to this end which all might fail
+and call <C>TryNextMethod();</C>. We do not document the details of
+these methods here but only give an overview. For permutation groups
+the choice of candidates is very straightforward, one simply takes a
+few integers with the usual action <C>OnPoints</C>. For matrix group
+finding a reasonably short orbit is more difficult. The system first
+handles the case of a scalar group which is easy. Then it hopes to
+find a <Q>very short orbit</Q> defined by the component 
+<C>VeryShortOrbLimit</C> in the stabiliser chain computation options.
+If this fails the birthday paradoxon method is used to find an
+estimate for a reasonably short orbit amoung candidates coming from
+the Murray and O'Brien heuristics. If this fails the same heuristics
+are used but various orbits are enumerated up to a certain point
+decreasing the number of orbits as the limit goes up. If all fails
+some of the candidates from the heuristics are simply tried
+with brute force. The whole computation can fail if some upper orbit
+length limit is reached (see component <C>OrbitLengthLimit</C> in the
+stabiliser chain computation options).
+
+</Section>
 
 <Section Label="UseStabChain">
 <Heading>Using stabiliser chains</Heading>
@@ -348,7 +422,8 @@ of the sifting process. The component <C>rem</C> contains the remainder of
 the sifting process. If <A>el</A> is contained in the group described by
 <A>S</A>, then the remainder is equal to the identity. Note that if
 the <C>IsOne</C>-component of the options record for the stabiliser chain 
-<A>S</A> is different from the <Ref Oper="IsOne"/> operation then the 
+<A>S</A> is different from the <Ref Prop="IsOne" BookName="Ref"/> 
+operation then the 
 <C>rem</C> component is equal to the identity according to that test.
 The result of this test (<K>true</K> or <K>false</K>) is stored in the
 component <C>isone</C> of the resulting record. This means, that this
@@ -395,38 +470,236 @@ This operation returns the number of strong generators of the stabiliser chain
 </Description>
 </ManSection>
 
-<!--
-
-BaseStabilizerChain
-Size
-Random (grp and stabchain)
-\in
-IsProved
-MakeGAPStabChain
-GroupIteratorByStabilizerChain
-SetStabilizerChain
-StoredStabilizerChain
-SiftBaseImage
-Stab
-SetwiseStabilizer
-SetwiseStabilizerPartitionBacktrack
-FindShortGeneratorsOfSubgroup
-BacktrackSearchStabilizerChainSubgroup
-ComputeSuborbitsForStabilizerChain
-BacktrackSearchStabilizerChainElement
-FindBasePointCandidates
-GENSS_IsOneProjective
-SLPChainStabilizerChain
-GroupHomomorphismByImagesNCStabilizerChain
-VerifyStabilizerChainTC
-VerifyStabilizerChainMC
-
 <ManSection>
-<Oper Name="" Arg=""/>
-<Returns></K></Returns>
+<Oper Name="BaseStabilizerChain" Arg="S"/>
+<Returns>a record</Returns>
 <Description>
+This operation returns the base of the stabiliser chain <A>S</A> in form 
+of a record, which can be used as the <C>Cand</C> component for a stabiliser 
+chain computation. That is, two components are bound, the <C>points</C> 
+component is a list of base points and the <C>ops</C> component is a
+corresponding list of action functions.
 </Description>
 </ManSection>
+
+<ManSection>
+<Oper Name="Size" Arg="S"/>
+<Returns>a positive integer</Returns>
+<Description>
+This operation returns the size (i.e. order) of the group described by
+the stabiliser chain <A>S</A>. This is simply the product of the lengths
+of the orbits in the chain.
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="Random" Arg="S"/>
+<Returns>a group element</Returns>
+<Description>
+This operation can be called with a stabiliser chain object <A>S</A>
+or with a group object, if this group object has a stored stabiliser
+chain (see <Ref Oper="SetStabilizerChain"/>). The method will randomly
+choose transversal elements and thus produce a uniformly distributed
+random element of the group.
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="\in" Arg="x, S"/>
+<Returns><C>true</C> or <C>false</C></Returns>
+<Description>
+This operation tests whether or not the group element <A>x</A> lies in the
+group described by the stabiliser chain <A>S</A> by sifting
+(see <Ref Oper="SiftGroupElement"/>). The argument <A>S</A> can also
+be a group object with a stored stabiliser chain 
+(see <Ref Oper="SetStabilizerChain"/>). Note that this operation can be
+called with the <K>in</K> keyword using infix notation.
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="IsProved" Arg="S"/>
+<Returns><C>true</C> or <C>false</C></Returns>
+<Description>
+This operation returns whether or not the stabiliser chain <A>S</A>
+is proved to be correct. If it has only been verified by randomised methods,
+<C>false</C> is returned. At the time of this writing the only possible
+deterministic verification is if the size of the group is known 
+before the stabiliser chain computation begins.
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="GroupIteratorByStabilizerChain" Arg="S"/>
+<Returns>an iterator</Returns>
+<Description>
+This operation returns an iterator object which runs through the
+elements of the group described by the stabiliser chain object <A>S</A>.
+The usual operations <Ref Oper="NextIterator" BookName="Ref"/> and
+<Ref Oper="IsDoneIterator" BookName="Ref"/> as well as the <K>for</K>
+loop construction can be used with this object. The iterator is
+implemented using the stored transversals in the Schreier trees
+of the stabiliser chain.
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="SetStabilizerChain" Arg="g, S"/>
+<Returns>nothing</Returns>
+<Description>
+Once the user is convinced that the stabiliser chain <A>S</A> describes
+the group <A>g</A> correctly, he can call this operation to store the
+stabiliser chain together with the group object. From then on, additional
+methods using the stabiliser chain (for example <Ref Oper="Size"/>,
+<Ref Oper="Random"/> and
+<Ref Oper="\in"/> above) become applicable for the group object.
+Note that if a stabiliser chain is known to be correct (for example if
+the group knew its size beforehand), then the stabiliser chain is
+stored with the group automatically when it is constructed, which 
+makes the explicit storing of the stabiliser chain unnecessary.
+<P/>
+The stored stabiliser chain of a group object can be used using
+<Ref Oper="StoredStabilizerChain"/>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Attr Name="StoredStabilizerChain" Arg="g"/>
+<Returns>a stabiliser chain</Returns>
+<Description>
+This attribute for a group object <A>g</A> contains a stored stabiliser
+chain for the group. See <Ref Oper="SetStabilizerChain"/> for details.
+</Description>
+</ManSection>
+
+<ManSection>
+<Meth Name="StabChainOp" Arg="p, S"/>
+<Returns>a &GAP; stabiliser chain </Returns>
+<Description>
+This method computes a standard &GAP; library stabiliser chain for
+the permutation group <A>p</A> using the fact that <A>S</A> is a known
+correct stabiliser chain for <A>p</A>. If all base points in <A>S</A>
+are positive integers and all actions are equal to <C>OnPoints</C>,
+then the same base points are taken for the new stabiliser chain.
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="SiftBaseImage" Arg="S, l"/>
+<Returns><C>true</C> or <C>false</C></Returns>
+<Description>
+This operation sifts an image <A>l</A> of the base points of the stabiliser
+chain <A>S</A>. This means that the elements of the list <A>l</A> must be
+images of the base points under the actions in the various layers of
+the stabiliser chain. The sifting procedure using the orbits and Schreier
+trees in the stabiliser chain decides if this base image is one for a
+group element of the group described by <A>S</A> and returns <C>true</C> or
+<C>false</C> accordingly.
+<P/>
+This operation is mostly used internally.
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="SLPChainStabilizerChain" Arg="S, gens"/>
+<Returns>a record</Returns>
+<Description>
+This operation assumes that <A>S</A> is a stabiliser chain that correctly
+describes the group generated by the generators <A>gens</A>. It
+returns a list of straight line programs expressing successively
+the stabilisers in the chain, each in terms of the generators of
+the previous, the first in terms of <A>gens</A>. This list is
+stored in the component <C>slps</C> of the resulting record. The sizes
+of the groups in the chain are stored in the component <C>sizes</C> of
+the resulting record.
+</Description>
+</ManSection>
+
+The operations, functions and methods described below use stabiliser
+chains internally:
+
+<ManSection>
+<Func Name="GroupHomomorphismByImagesNCStabilizerChain"
+      Arg="g, h, images, opt1, opt2"/>
+<Returns>a group homomorphism</Returns>
+<Description>
+This function creates a group homomorphism object from the group <A>g</A> 
+into the group object <A>h</A>, mapping the generators of the group <A>g</A>
+to the elements <A>images</A> which must lie in <A>h</A>. This mapping must
+be a group homomorphism, note that this is not checked!
+<P/>
+The homomorphism is computed by computing stabiliser chains on both sides
+such that elements can be mapped in both directions simply be sifting and
+expressing them in terms of the strong generators. This is where the
+two arguments <A>opts1</A> and <A>opts2</A> come into play. The former
+is used as the options record for the stabiliser computation in <A>g</A> and
+the latter for the one in the group generated by <A>images</A>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Meth Name="FindShortGeneratorsOfSubgroup" Arg="g, u"/>
+<Returns>a record</Returns>
+<Description>
+This is an additional method for matrix or permutation groups implementing
+the operation <Ref Oper="FindShortGeneratorsOfSubgroup" BookName="orb"/>
+from the <Package>orb</Package> package
+using stabiliser chains. Both arguments must be groups and
+<A>u</A> must be a subgroup of <A>g</A>.
+The resulting record contains two components
+<C>gens</C> and <C>slp</C>, where the first is a list of generators
+for the group <A>u</A> and the second is a straight line program expressing
+<C>gens</C> in terms of the generators of <A>g</A>. This operation aims
+to find short words in the generators of <A>g</A> to use as generators
+for <A>u</A>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="Stab" Arg="g, x, op [,opt]"/>
+<Returns>a record or <K>fail</K></Returns>
+<Description>
+This operation aims to compute the point stabiliser of the group <A>g</A> 
+acting via the action function <A>op</A> of the point <A>x</A>. The optional
+last argument is an options record. The general approach of this procedure
+is to go back and forth between enumerating a part of the orbit 
+and trying to produce random elements in the stabiliser using the
+already enumerated part of the orbit. Random elements in the stabiliser
+are produced by using product replacement in <A>g</A> to produce random
+elements of <A>g</A> and then using the Schreier tree of the orbit to
+map them back into the stabiliser. If this works, the resulting random
+elements are distributed uniformly in the point stabiliser.
+<P/>
+This routine is a Monte Carlo procedure. If sufficiently many random
+elements of the stabiliser have been produced and did not increase
+its size, the program concludes that the whole stabiliser is found
+and returns a record describing it. Otherwise it returns <K>fail</K>
+after some time.
+<P/>
+The resulting record has the stabiliser in the component <C>stab</C>,
+its size estimate in the component <C>size</C>, a stabiliser chain
+for <C>stab</C> in the component <C>stabilizerchain</C> and a boolean value
+in the component <C>proof</C> indicating whether or not the result is
+certain.
+<P/>
+We do not document all possible options in the options record here, since
+we want to allow for the possibility to change these in later versions.
+The most important component in the options record is the component
+<C>ErrorBound</C> which must be bound to a rational number between 0 and
+1 and which is an upper bound for the error probability.
+<P/>
+Please note again that two types of errors can occur in this program: The
+first is that the correct point stabiliser is not found but only a proper
+subgroup of it. The second is that the stabiliser chain computation to
+estimate its size went wrong and returns an incorrect stabiliser chain.
+</Description>
+</ManSection>
+
+<!--
+Later:
+
+VerifyStabilizerChainTC
+VerifyStabilizerChainMC
 
 -->
 
