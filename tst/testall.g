@@ -95,6 +95,79 @@ Print("\n");
 
 Print("GL(6,3): \c");
 g := Group(GeneratorsOfGroup(GL(6,3)));
-Print(TestGroup(g,Size(GL(6,3)),false),"\n");
+Print(TestGroup(g,Size(GL(6,3)),false),"\c");
+Print(TestGroup(g,Size(GL(6,3))/2,rec( Projective := true)),"\n");
+
+Print("SL(4,5): \c");
+g := Group(GeneratorsOfGroup(SL(4,5)));
+Print(TestGroup(g,Size(SL(4,5)),false),"\c");
+Print(TestGroup(g,Size(SL(4,5))/4,rec( Projective := true)),"\n");
+
+Print("SL(6,5): \c");
+g := Group(GeneratorsOfGroup(SL(6,5)));
+Print(TestGroup(g,Size(SL(6,5)),false),"\c");
+Print(TestGroup(g,Size(SL(6,5))/2,rec( Projective := true)),"\n");
+
+Print("SL(7,5): \c");
+g := Group(GeneratorsOfGroup(SL(7,5)));
+Print(TestGroup(g,Size(SL(7,5)),false),"\c");
+Print(TestGroup(g,Size(SL(7,5)),rec( Projective := true)),"\n");
+
+name := "J2";
+Print(name,": \c"); 
+for r in [1,2,3,4,5,6,7,8,11,16,17,19,20] do
+  for m in [0..9] do
+    g := GetAtlasGroup(name,r,m); Print(TestGroup(g,g!.mysize,false),"\c");
+  od;
+od;
+Print("\n");
+
+name := "J3";
+Print(name,": \c"); 
+for r in [1,2,4,9] do
+  for m in [0..9] do
+    g := GetAtlasGroup(name,r,m); Print(TestGroup(g,g!.mysize,false),"\c");
+  od;
+od;
+Print("\n");
+
+name := "Fi22";
+Print(name,": \c"); 
+for r in [1,2,4,6] do
+  if r = 6 then
+      g := GetAtlasGroup(name,r,0);
+      h := GetAtlasGroup(name,r,1);
+      m := GModuleByMats(GeneratorsOfGroup(h),FieldOfMatrixGroup(g));
+      b := MutableCopyMat(MTX.BasesCompositionSeries(m)[2]);
+      TriangulizeMat(b);
+      opt := rec( Cand := rec(points := [b], 
+                              ops := [OnSubspacesByCanonicalBasis] ) );
+  else
+      opt := false;
+  fi;
+  for m in [0..14] do
+    g := GetAtlasGroup(name,r,m); Print(TestGroup(g,g!.mysize,opt),"\c");
+  od;
+od;
+Print("\n");
+
+name := "Fi23";
+Print(name,": \c"); 
+for r in [1,2,3,4] do
+  if r = 4 then
+      g := GetAtlasGroup(name,r,0);
+      h := GetAtlasGroup(name,r,1);
+      m := GModuleByMats(GeneratorsOfGroup(h),FieldOfMatrixGroup(g));
+      v := MutableCopyMat(MTX.BasesCompositionSeries(m)[2])[1];
+      opt := rec( Cand := rec(points := [v], 
+                              ops := [OnRight] ) );
+  else
+      opt := false;
+  fi;
+  for m in [0,1,2,3,4,5,6,9,10,13,14] do
+    g := GetAtlasGroup(name,r,m); Print(TestGroup(g,g!.mysize,opt),"\c");
+  od;
+od;
+Print("\n");
 
 
