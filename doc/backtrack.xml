@@ -68,13 +68,24 @@ the interfaces and calling conventions.
 <Oper Name="BacktrackSearchStabilizerChainElement" Arg="S, P, g, pruner"/>
 <Returns><K>fail</K> or a group element</Returns>
 <Description>
-    This operation implements a generic backtrack search in the
-    stabiliser chain <A>S</A> looking for an element <M>x</M> in the
-    group <M>G</M> described by <A>S</A> such that <A>P</A><M>(x<A>g</A>)</M>
-    is <K>true</K> where <A>P</A> is a function on <M>G</M> taking
-    values <K>true</K> or <K>false</K>. The element <A>g</A> has to be
-    contained in <M>G</M> as well. The operation returns the group
+    Let <M>G</M> be the group described by the stabiliser chain <A>S</A>.
+    The group element <A>g</A> must be some element in an overgroup 
+    <M>\hat G</M>of
+    <M>G</M> such that the function <A>P</A> described below is defined
+    on the whole of <M>\hat G</M>
+    <P/>
+    This operation implements a generic backtrack search in the coset
+    <M>G<A>g</A></M> looking for an element <M>x\ in G</M>
+    such that <A>P</A><M>(x<A>g</A>)</M>
+    is <K>true</K> where <A>P</A> is a function on <M>\hat G</M>taking
+    values <K>true</K> and <K>false</K>.
+    The operation returns the group
     element <M>x</M> if one is found or <K>fail</K> if none was found.
+    <P/>
+    The search tree is given by the stabiliser chain, each node corresponds
+    to a right coset of one of the stabilisers in the chain. The leaves
+    correspond to right cosets of the identity group, i.e. to group
+    elements in <M>G<A>g</A></M>
     <P/>
     To make this backtrack search efficient some pruning of the search
     tree has to be done. To this end there is the fourth argument 
@@ -97,13 +108,15 @@ the interfaces and calling conventions.
     <Math> G = S_0 > S_1 > S_2 > \cdots > S_m > S_{{m+1}} = \{1\}
     </Math> be the stabiliser chain and let 
     <Math> O_1, O_2, \ldots, O_m </Math> be the basic orbits. Then for the 
-    node corresponding to the coset <M>S_i t</M> for <M>i \ge 1</M> and
+    node corresponding to the coset <M>S_i t<A>g</A></M> 
+    for <M>i \ge 1</M> and
     some transversal element <M>t</M> contained in <M>S_{{i-1}}</M>
     the arguments with which the <A>pruner</A> function is called
     are the following: The first argument is the stabiliser chain
     object corresponding to <M>S_{{i-1}}</M>. The second argument is
     the index of the element in <M>O_i</M> corresponding to the
-    transversal element <M>t</M>. The third and fourth arguments are
+    transversal element <M>t</M>. The third argument is the group
+    element <M>t<A>g</A></M> and the fourth argument is
     equal to the actual transversal element <M>t</M>. The fifth
     argument is a word in the generators used to enumerate <M>O_i</M>
     expressing <M>t</M>, the word comes as a list of integers which
@@ -113,8 +126,9 @@ the interfaces and calling conventions.
 
 <ManSection>
 <Oper Name="BacktrackSearchStabilizerChainSubgroup" Arg="S, P, pruner"/>
-<Returns><K>fail</K> or a group element</Returns>
+<Returns><K>fail</K> or a stabiliser chain</Returns>
 <Description>
+    Let <M>G</M> be the group described by the stabiliser chain <A>S</A>.
     This operation implements a generic backtrack search in the
     stabiliser chain <A>S</A> looking for the subgroup <M>H</M> of
     the group <M>G</M> described by <A>S</A> of all
@@ -124,8 +138,13 @@ the interfaces and calling conventions.
     be such that <M>H</M> is actually a subgroup! 
     The operation returns a stabiliser chain describing the group <M>H</M>.
     <P/>
+    The search tree is given by the stabiliser chain, each node corresponds
+    to a right coset of one of the stabilisers in the chain. The leaves
+    correspond to right cosets of the identity group, i.e. to group
+    elements in <M>G</M>
+    <P/>
     To make this backtrack search efficient some pruning of the search
-    tree has to be done. To this end there is the third argument 
+    tree has to be done. To this end there is the fourth argument 
     <A>pruner</A> which can either be <K>false</K> (in which case no
     pruning at all happens) or a &GAP; function taking 5 arguments and
     returning either <K>true</K> or <K>false</K>. The function
@@ -140,19 +159,20 @@ the interfaces and calling conventions.
     which it is told by its arguments.
     <P/>
     Each node in the search tree corresponds to a coset of some
-    stabiliser of the stabiliser chain in some bigger one. To set up
+    stabiliser of the stabiliser chain in its previous one. To set up
     some notation, let 
     <Math> G = S_0 > S_1 > S_2 > \cdots > S_m > S_{{m+1}} = \{1\}
     </Math> be the stabiliser chain and let 
     <Math> O_1, O_2, \ldots, O_m </Math> be the basic orbits. Then for the 
-    node corresponding to the coset <M>S_i t</M> for <M>i \ge 1</M> and
+    node corresponding to the coset <M>S_i t<A>g</A></M> 
+    for <M>i \ge 1</M> and
     some transversal element <M>t</M> contained in <M>S_{{i-1}}</M>
     the arguments with which the <A>pruner</A> function is called
     are the following: The first argument is the stabiliser chain
     object corresponding to <M>S_{{i-1}}</M>. The second argument is
     the index of the element in <M>O_i</M> corresponding to the
-    transversal element <M>t</M>. The third and fourth arguments are
-    equal to the actual transversal element <M>t</M>. The fifth
+    transversal element <M>t</M>. The third and fourth arguments are the
+    transversal element <M>t</M>. The fifth
     argument is a word in the generators used to enumerate <M>O_i</M>
     expressing <M>t</M>, the word comes as a list of integers which
     are the generator numbers.
@@ -160,10 +180,6 @@ the interfaces and calling conventions.
 </ManSection>
 
 </Section>
-
-<!-- BacktrackSearchStabilizerChainElement
-BacktrackSearchStabilizerChainSubgroup -->
-    
 
 <!-- ############################################################ -->
 
