@@ -1,15 +1,9 @@
-Documentation!
+Later:
+
 Known left and right subgroups for BacktrackSearch
 Intersection of stabilizer chains???
-Look after Makefile
-Create webpage
-
-spaeter:
-
 Verification in Ordnung mit strongbelow
 picklers?
-Test/Modify MakeGAPStabChain (maybe only use base and size?)
-Summarize all options in comments
 FindVectorsWithShortOrbit: schneller
 Repair deterministic verification with new layout
 AddGeneratorsToStabilizerChain for trivial stabchains testen
@@ -24,22 +18,3 @@ Later:
  * Soluble-Method
  * MeatAxe method
 
-Test:
-
-
-LoadPackage("genss");
-LoadPackage("chop");
-
-gens := AtlasGenerators("Fi22",6).generators;
-g := Group(gens);
-SetInfoLevel(InfoGenSS,3);
-S := StabilizerChain(g);
-s := AtlasStraightLineProgram("Fi22",1).program;
-hgens := ResultOfStraightLineProgram(s,gens);
-cgens := List(hgens,CMat);
-m := Module(cgens);
-r := Chop(m);
-soc := SocleSeries(m,r.db);
-v := Unpack(soc.basis[1]);
-ConvertToVectorRep(v);
-S := StabilizerChain(g,rec( Cand := rec( points := [v], ops := [OnRight])));
