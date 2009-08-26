@@ -94,9 +94,9 @@ the interfaces and calling conventions.
     Each node in the search tree corresponds to a coset of some
     stabiliser of the stabiliser chain in its previous one. To set up
     some notation, let 
-    <Math> G = S_0 > S_1 > S_2 > \cdots > S_k > S_{{k+1}} = \{1\}
+    <Math> G = S_0 > S_1 > S_2 > \cdots > S_m > S_{{m+1}} = \{1\}
     </Math> be the stabiliser chain and let 
-    <Math> O_1, O_2, \ldots, O_k </Math> be the basic orbits. Then for the 
+    <Math> O_1, O_2, \ldots, O_m </Math> be the basic orbits. Then for the 
     node corresponding to the coset <M>S_i t</M> for <M>i \ge 1</M> and
     some transversal element <M>t</M> contained in <M>S_{{i-1}}</M>
     the arguments with which the <A>pruner</A> function is called
@@ -142,9 +142,9 @@ the interfaces and calling conventions.
     Each node in the search tree corresponds to a coset of some
     stabiliser of the stabiliser chain in some bigger one. To set up
     some notation, let 
-    <Math> G = S_0 > S_1 > S_2 > \cdots > S_k > S_{{k+1}} = \{1\}
+    <Math> G = S_0 > S_1 > S_2 > \cdots > S_m > S_{{m+1}} = \{1\}
     </Math> be the stabiliser chain and let 
-    <Math> O_1, O_2, \ldots, O_k </Math> be the basic orbits. Then for the 
+    <Math> O_1, O_2, \ldots, O_m </Math> be the basic orbits. Then for the 
     node corresponding to the coset <M>S_i t</M> for <M>i \ge 1</M> and
     some transversal element <M>t</M> contained in <M>S_{{i-1}}</M>
     the arguments with which the <A>pruner</A> function is called
