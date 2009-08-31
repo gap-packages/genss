@@ -28,13 +28,13 @@ Subtitle := "genss - generic Schreier-Sims",
 ##  See '?Extending: Version Numbers' in GAP help for an explanation
 ##  of valid version numbers. For an automatic package distribution update
 ##  you must provide a new version number even after small changes.
-Version := "1.0",
+Version := "1.1",
 ##  Please adjust also the VERSION file in the package directory when
 ##  changing this.
 
 ##  Release date of the current version in dd/mm/yyyy format.
 # 
-Date := "26/08/2009",  # not yet released
+Date := "31/08/2009",  # not yet released
 
 ##  URL of the archive(s) of the current package release, but *without*
 ##  the format extension(s), like '.zoo', which are given next.
@@ -46,7 +46,7 @@ Date := "26/08/2009",  # not yet released
 # 
 ArchiveURL := Concatenation( 
   "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/",
-  "genss/genss-1.0"),
+  "genss/genss-1.1"),
 
 ##  All provided formats as list of file extensions, separated by white
 ##  space or commas.
@@ -199,13 +199,10 @@ PackageInfoURL := Concatenation(
 ##  Please, use '<span class="pkgname">GAP</span>' and
 ##  '<span class="pkgname">MyPKG</span>' for specifing package names.
 ##  
-# AbstractHTML := "This package provides  a collection of functions for \
-# computing the Smith normal form of integer matrices and some related \
-# utilities.",
-#AbstractHTML := 
-#  "The <span class=\"pkgname\">Example</span> package, as its name suggests, \
-#   is an example of how to create a <span class=\"pkgname\">GAP</span> \
-#   package. It has little functionality except for being a package",
+AbstractHTML := 
+  "The <span class=\"pkgname\">genss</span> package implements the \
+   randomised Schreier-Sims algorithm to compute a stabiliser chain \
+   and a base and strong generating set for arbitrary finite groups.",
 #
 PackageWWWHome := Concatenation(
   "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/",
@@ -270,7 +267,7 @@ Dependencies := rec(
   # insensitive, least version denoted with '>=' prepended to version string.
   # without these, the package will not load
   NeededOtherPackages := [["GAPDoc", ">= 1.2"],["IO", ">= 3.0"],
-                          ["orb", ">= 3.1"]],
+                          ["orb", ">= 3.2"]],
   # without these the package will issue a warning while loading
   # SuggestedOtherPackages := [],
   SuggestedOtherPackages := [],
@@ -285,31 +282,7 @@ Dependencies := rec(
                       
 ),
 
-##  Provide a test function for the availability of this package.
-##  For packages which will not fully work, use 'Info(InfoWarning, 1,
-##  ".....")' statements. For packages containing nothing but GAP code,
-##  just say 'ReturnTrue' here.
-##  With the new package loading mechanism (GAP >=4.4)  the availability
-##  tests of other packages, as given under .Dependencies above, will be 
-##  done automatically and need not be included in this function.
-#AvailabilityTest := ReturnTrue,
-AvailabilityTest := function()
-    return true;
-  end,
-
-##  The LoadPackage mechanism can produce a default banner from the info
-##  in this file. If you are not happy with it, you can provide a string
-##  here that is used as a banner. GAP decides when the banner is shown and
-##  when it is not shown. *optional* (note the ~-syntax in this example)
-#BannerString := Concatenation( 
-#  "----------------------------------------------------------------\n",
-#  "Loading  genss ", ~.Version, "\n",
-#  "by ", ~.Persons[1].FirstNames, " ", ~.Persons[1].LastName,
-#        " (", ~.Persons[1].WWWHome, ")\n",
-#  "   ", ~.Persons[2].FirstNames, " ", ~.Persons[2].LastName,
-#        " (", ~.Persons[2].WWWHome, ")\n",
-#  "For help, type: ?genss package \n",
-#  "----------------------------------------------------------------\n" ),
+AvailabilityTest := ReturnTrue,
 
 ##  Suggest here if the package should be *automatically loaded* when GAP is 
 ##  started.  This should usually be 'false'. Say 'true' only if your package 
@@ -319,7 +292,7 @@ Autoload := false,
 
 ##  *Optional*, but recommended: path relative to package root to a file which 
 ##  contains as many tests of the package functionality as sensible.
-#TestFile := "tst/testall.g",
+TestFile := "tst/testall.g",
 
 ##  *Optional*: Here you can list some keyword related to the topic 
 ##  of the package.

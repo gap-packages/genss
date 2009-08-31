@@ -6,4 +6,6 @@
  Changes from 1.0 -> 1.1:
 ==========================
 
-  * ...
+  * Fix a small issue in PackageInfo.g for the release process.
+  * Require orb 3.2.
+
