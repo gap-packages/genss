@@ -38,7 +38,7 @@ GENSS.RandomStabGens := 3;
 GENSS.StabGenScramble := 30;
 GENSS.StabGenScrambleFactor := 6;
 GENSS.StabGenAddSlots := 3;
-GENSS.StabGenMaxDepth := 300;
+GENSS.StabGenMaxDepth := 400;
 # Number of random elements used for verification,
 # note that this is changed by the "random" and "ErrorBound" options!
 GENSS.VerifyElements := 10;   # this amounts to an error bound of 1/1024
@@ -763,7 +763,11 @@ InstallGlobalFunction( GENSS_RandomElementFromAbove,
             break;
         fi;
         if SS!.parentS = false then   # we have reached the top
-            x := Next(SS!.opt.pr);
+            if IsBound(SS!.opt.RandomElmFunc) then
+                x := SS!.opt.RandomElmFunc();
+            else
+                x := Next(SS!.opt.pr);
+            fi;
             topS := SS;   # remember top
             break;
         fi;
@@ -935,7 +939,11 @@ InstallMethod(VerifyStabilizerChainMC,
     i := 0; 
     while i < nrels do
         i := i + 1;
-        x := Next(S!.opt.pr);
+        if IsBound(S!.opt.RandomElmFunc) then
+            x := S!.opt.RandomElmFunc();
+        else
+            x := Next(S!.opt.pr);
+        fi;
         if AddGeneratorToStabilizerChain(S,x) then
             Info( InfoGenSS, 2, "Verification found error ... ",
                   "new size ", Size(S) );
@@ -1129,7 +1137,11 @@ InstallMethod( StabilizerChain, "for a group object and a record",
         while Size(S) < S!.size do
             Info(InfoGenSS,2,"Known size not reached, throwing in a random ",
                  "element...");
-            x := Next(opt.pr);
+            if IsBound(opt.RandomElmFunc) then
+                x := opt.RandomElmFunc();
+            else
+                x := Next(opt.pr);
+            fi;
             if AddGeneratorToStabilizerChain(S,x) then
                 Info( InfoGenSS, 2, "Increased size to ",Size(S) );
             fi;

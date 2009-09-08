@@ -205,6 +205,14 @@ bound for the probability of a correct answer, where the value <M>a</M> means
 <M>a/10</M>&percent;. Note that currently <M>1000</M> is not yet
 implemented since there is no working deterministic verification routine.
 </Item>
+<Mark><C>RandomElmFunc</C></Mark>
+<Item>
+If this component is bound then it must be bound to a function taking
+no arguments and returning uniformly distributed random elements in
+the group for which the stabiliser chain is to be computed. All random
+elements used for the stabiliser chain will then be created by calling 
+this function.
+</Item>
 <Mark><C>RandomStabGens</C></Mark>
 <Item>
 This component contains the number of random stabiliser elements that are
