@@ -1,5 +1,7 @@
 # Test file for the genss package:
 
+LoadPackage("atlasrep");
+
 SetInfoLevel(InfoOrb,0);
 SetInfoLevel(InfoGenSS,0);
 
