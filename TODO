@@ -1,3 +1,5 @@
+Fix manual by using 5th argument of MakeGAPDocDoc.
+
 Later:
 
 Known left and right subgroups for BacktrackSearch
