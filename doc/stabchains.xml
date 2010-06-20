@@ -187,6 +187,17 @@ if its currently estimated length is less than
 <C>OrbitLimitImmediatelyTake</C>, even if the estimate is not yet very
 reliable.
 </Item>
+<Mark><C>OrbitsWithLog</C></Mark>
+<Item>
+This component defaults to <K>true</K> in which case the orbit objects
+for the stabiliser chain have a log to allow to make the Schreier
+trees shallow by adding generators. If you set this to <K>false</K>,
+no logs are written and the Schreier trees could potentially be deep.
+This will make sifting slower. Usually you should not touch this
+option. The only reason for setting it to <K>false</K> could be if you
+need that the Schreier trees are not changed after their initial
+creation, even if new generators are added to the stabiliser chain.
+</Item>
 <Mark><C>Projective</C></Mark>
 <Item>
 Set this component to <K>true</K> if you want to compute a stabiliser chain

@@ -84,6 +84,10 @@ GENSS.StabOrbitLimit := 1000000;
 # If the probability of a wrong stabiliser is smaller than this, do no
 # longer try to create stabiliser elements:
 GENSS.StabAssumeCompleteLimit := 1/(10^7);
+# The following switches off the log used in all orbits for stabilizer
+# chains if set to false. Do not do this unless you know what you are
+# doing since since could prevent Schreier trees from being shallow.
+GENSS.OrbitsWithLog := true;
 
 #############################################################################
 # A few helper functions needed elsewhere:
@@ -712,7 +716,8 @@ InstallGlobalFunction( GENSS_CreateStabChainRecord,
         hashsize := opt.InitialHashSize;
     fi;
     orb := Orb( gens, nextpoint, nextop,
-                rec( treehashsize := hashsize, schreier := true, log := true,
+                rec( treehashsize := hashsize, schreier := true, 
+                     log := opt.OrbitsWithLog,
                      report := opt.Report ) );
     S := rec( stab := false, orb := orb, cand := cand, base := base,
               opt := opt, layer := layer, parentS := parentS,
@@ -838,7 +843,8 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
         parentS!.stab := S;   # such that from now on random element
                               # generation works!
     else
-        if Length(S!.orb) > 50 or S!.orb!.depth > 5 then
+        if (Length(S!.orb) > 50 or S!.orb!.depth > 5) and
+           S!.opt.OrbitsWithLog then
             Info(InfoGenSS, 3, "Trying to make Schreier tree shallower (depth=",
                  S!.orb!.depth,")...");
             merk := Length(S!.orb!.gens);
