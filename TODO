@@ -1,3 +1,5 @@
+Bug: StrongGenerators for Sub-StabilizerCHains gives all strong generators!
+
 Fix manual by using 5th argument of MakeGAPDocDoc.
 
 Later:
