@@ -89,7 +89,8 @@ DeclareGlobalFunction( "VerifyStabilizerChainTC2" );
 DeclareGlobalFunction( "GENSS_ImageElm" );
 DeclareGlobalFunction( "GENSS_PreImagesRepresentative" );
 DeclareGlobalFunction( "GroupHomomorphismByImagesNCStabilizerChain" );
-
+DeclareOperation( "AddNormalizingGenToLayer", 
+                  [ IsStabilizerChain, IsObject, IsPosInt ] );
 
 #############################################################################
 # The following operations apply to stabilizer chains:
