@@ -1361,6 +1361,7 @@ InstallMethod( AddNormalizingGenToLayer,
     # a group which is p times as big as the previous one (p a prime)
     # it is known that the orbit in the given layer will become
     # p times as big and we can enumerate it relatively cheaply.
+    local lmp,o,oldnrgens;
     o := S!.orb;
     oldnrgens := Length(o!.gens);
     Add(o!.gens,x);
