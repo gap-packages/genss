@@ -8,6 +8,7 @@
 
   * New option "OrbitsWithLog".
   * New internal function AddNormalizingGenToLayer
+  * New method ORB_IsElementInStabilizerChain for bysuborbit stuff
 
 
 ==========================

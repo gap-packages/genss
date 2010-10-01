@@ -2754,6 +2754,12 @@ InstallMethod( ORB_IsWordInStabilizerChain,
     return SiftBaseImage(S,b);
   end );
 
+InstallMethod( ORB_IsElementInStabilizerChain,
+  "GENSS method for arbitrary groups",
+  [IsObject, IsStabilizerChain],
+  function(el, S)
+    return el in S;
+  end );
 
 
 #############################################################################
