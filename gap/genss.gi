@@ -417,7 +417,7 @@ InstallMethod( FindBasePointCandidates,
         gens := StripMemory(gens);
     fi;
     for round in [1..opt.TryBirthdayParadox] do
-        v := GENSS_FindVectorsWithShortOrbit(grp,opt,parentS);
+        v := Set(GENSS_FindVectorsWithShortOrbit(grp,opt,parentS));
         if round = 1 then
             Append(v,data.vecs);   # take previously tried ones as well
         fi;
@@ -425,6 +425,8 @@ InstallMethod( FindBasePointCandidates,
         l := Length(v);
         if l = 0 then
             v := MutableCopyMat(One(gens[1]));
+	    # at least one basis vector needs to be moved
+	    v := Filtered(v,vv->ForAny(gens,x-> vv <> op(vv,x)));
             l := Length(v);
         fi;
         c := 0*[1..l];    # the number of coincidences
@@ -1388,8 +1390,10 @@ InstallMethod( AddNormalizingGenToLayer,
     o!.genstoapply := [1..Length(o!.gens)];
 
     # Now fix up the stabilizer chain record:
-    Add(S!.stronggens,x);
-    Add(S!.layergens,Length(S!.stronggens));
+    if not x in S!.stronggens then
+      Add(S!.stronggens,x);
+      Add(S!.layergens,Length(S!.stronggens));
+    fi;
     Unbind(S!.size);   # whatever we knew before, we know no longer
  
   end );
