@@ -12,6 +12,7 @@
   * Remove "tst/testall.g" from PackageInfo.g
   * New operation StabMC
   * Some bugfixes to Stab if the stabilizer is trivial
+  * Fix MakeGAPDocDoc with 5th argument
 
 
 ==========================
