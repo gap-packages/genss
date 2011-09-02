@@ -10,6 +10,8 @@
   * New internal function AddNormalizingGenToLayer
   * New method ORB_IsElementInStabilizerChain for bysuborbit stuff
   * Remove "tst/testall.g" from PackageInfo.g
+  * New operation StabMC
+  * Some bugfixes to Stab if the stabilizer is trivial
 
 
 ==========================

@@ -119,6 +119,10 @@ DeclareOperation( "Stab", [IsGroup, IsObject, IsFunction, IsRecord] );
 DeclareOperation( "Stab", [IsList, IsObject, IsFunction, IsRecord] );
 DeclareOperation( "Stab", [IsGroup, IsObject, IsFunction] );
 DeclareOperation( "Stab", [IsList, IsObject, IsFunction] );
+DeclareOperation( "StabMC", [IsGroup, IsObject, IsFunction, IsRecord] );
+DeclareOperation( "StabMC", [IsGroup, IsObject, IsFunction] );
+DeclareOperation( "StabMC", [IsList, IsObject, IsFunction, IsRecord] );
+DeclareOperation( "StabMC", [IsList, IsObject, IsFunction] );
 
 #######################################################
 # The following operations are for backtrack searches: 

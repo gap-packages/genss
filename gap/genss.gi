@@ -2859,10 +2859,15 @@ InstallMethod( Stab, "by Orb orbit enumeration",
                2 * Length(o) * stabsizeest > Size(g) then
                 # Done!
                 #stab := Subgroup(g,stabgens);
-                stab := Group(stabgens);
-                SetParent(g,stab);
-                SetSize(stab,stabsizeest);
-                SetStabilizerChain(stab,stabchain);
+                if Length(stabgens) > 0 then
+                    stab := Group(stabgens);
+                    SetParent(g,stab);
+                    SetSize(stab,stabsizeest);
+                    SetStabilizerChain(stab,stabchain);
+                else
+                    stab := TrivialSubgroup(g);
+                    stabchain := StabilizerChain(stab);
+                fi;
                 return rec( stab := stab, size := stabsizeest, 
                             stabilizerchain := stabchain,
                             proof := true );
@@ -2904,8 +2909,8 @@ InstallMethod( Stab, "by Orb orbit enumeration",
             w2 := TraceSchreierTreeForward(o,j);
             stabel := EvaluateWord(gens,w1)*el/EvaluateWord(gens,w2);
             if IsOne(stabel) then
-                errorprob := errorprob / 2;
-                Info(InfoGenSS,3,"... which was the identity.");
+                    errorprob := errorprob / 2;
+                    Info(InfoGenSS,3,"... which was the identity.");
             else
                 Add(stabgens,stabel);
                 if Length(stabgens) < 2 then
@@ -2939,11 +2944,15 @@ InstallMethod( Stab, "by Orb orbit enumeration",
                     if HasSize(g) and
                        2 * Length(o) * stabsizeest > Size(g) then
                         # Done!
-                        #stab := Subgroup(g,stabgens);
-                        stab := Group(stabgens);
-                        SetParent(g,stab);
-                        SetSize(stab,stabsizeest);
-                        SetStabilizerChain(stab,stabchain);
+                        if Length(stabgens) > 0 then
+                            stab := Group(stabgens);
+                            SetParent(g,stab);
+                            SetSize(stab,stabsizeest);
+                            SetStabilizerChain(stab,stabchain);
+                        else
+                            stab := TrivialSubgroup(g);
+                            stabchain := StabilizerChain(stab);
+                        fi;
                         return rec( stab := stab, size := stabsizeest, 
                                     stabilizerchain := stabchain,
                                     proof := true );
@@ -2951,8 +2960,13 @@ InstallMethod( Stab, "by Orb orbit enumeration",
                     if IsBound(opt.ErrorBound) and
                        errorprob < opt.ErrorBound then
                         #stab := Subgroup(g,stabgens);
-                        stab := Group(stabgens);
-                        SetParent(g,stab);
+                        if Length(stabgens) > 0 then
+                            stab := Group(stabgens);
+                            SetParent(g,stab);
+                        else
+                            stab := TrivialSubgroup(g);
+                            stabchain := StabilizerChain(stab);
+                        fi;
                         return rec( stab := stab, size := stabsizeest,
                                     stabilizerchain := stabchain,
                                     proof := false );
@@ -2964,6 +2978,36 @@ InstallMethod( Stab, "by Orb orbit enumeration",
         fi;
     until Length(o) > opt.StabOrbitLimit;
     return fail;
+  end );
+
+InstallMethod( StabMC, "add empty options record",
+  [IsGroup, IsObject, IsFunction],
+  function( g, x, op )
+    return StabMC(g,x,op,rec());
+  end );
+
+InstallMethod( StabMC, "add empty options record",
+  [IsList, IsObject, IsFunction],
+  function( l, x, op )
+    return StabMC(l,x,op,rec());
+  end );
+
+InstallMethod( StabMC, "create group from list of generators",
+  [IsList, IsObject, IsFunction, IsRecord],
+  function( l, x, op, opt )
+    return StabMC(GroupWithGenerators(l),x,op,opt);
+  end );
+
+InstallMethod( StabMC, "call Stab with errorbound",
+  [IsGroup, IsObject, IsFunction, IsRecord],
+  function( g, x, op, opt )
+    if not(IsBound(opt.ErrorBound)) then
+        opt.ErrorBound := 1/1025;
+    fi;
+    if not(IsBound(opt.DoEstimate)) then
+        opt.DoEstimate := 1000;   # try for 1 second
+    fi;
+    return Stab(g,x,op,opt);
   end );
 
 
