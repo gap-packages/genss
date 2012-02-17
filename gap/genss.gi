@@ -372,7 +372,7 @@ InstallMethod( FindBasePointCandidates,
     Add(v,vv);
     # Now investigate these up to a certain limit:
     for j in [1..Length(v)] do
-        o := Orb(gens,v[j],OnRight, 
+        o := Orb(gens,v[j],op, 
                  rec(treehashsize := QuoInt(opt.VeryShortOrbLimit,2)+1));
         Enumerate(o,opt.VeryShortOrbLimit);
         if Length(o) > 1 and Length(o) < opt.VeryShortOrbLimit then
