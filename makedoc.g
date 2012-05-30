@@ -6,7 +6,7 @@
 
 RequirePackage("GAPDoc");
 
-MakeGAPDocDoc("doc", "genss", [], "genss", "../..");
+MakeGAPDocDoc("doc", "genss", [], "genss", "../../..");
 
 GAPDocManualLab("genss");
 
