@@ -367,7 +367,13 @@ InstallMethod( FindBasePointCandidates,
     od;
     # Pick a random vector:
     vv := ZeroMutable( gens[1][1] );
-    Randomize(vv);
+    if IsPlistRep(vv) then
+        for j in [1..Length(vv)] do
+            vv[j] := Random(F);
+        od;
+    else
+        Randomize(vv);
+    fi;
     ORB_NormalizeVector(vv);
     Add(v,vv);
     # Now investigate these up to a certain limit:

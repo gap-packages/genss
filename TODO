@@ -1,7 +1,5 @@
-Take out doc/.cvsignore out of archive.
 Fix bug reported by Alexander H if base point is over smaller field
   and generators over larger field
-Fix manual by using 5th argument of MakeGAPDocDoc.
 
 Later:
 
