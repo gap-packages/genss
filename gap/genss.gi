@@ -314,7 +314,7 @@ InstallMethod( FindBasePointCandidates,
         TryNextMethod();
     fi;
     v := ZeroMutable(gens[1][1]);
-    v[1] := One(F);
+    v[1] := PrimitiveRoot(F);   # to indicate the field!
     return rec( points := [v], ops := [OnRight], used := 0 );
   end );
 
@@ -430,18 +430,19 @@ InstallMethod( FindBasePointCandidates,
         v := Filtered(v,vv->ForAny(gens,x-> vv <> op(vv,x)));
         l := Length(v);
         if l = 0 then
-            v := MutableCopyMat(One(gens[1]));
+            v := OneMutable(gens[1]);
 	    # at least one basis vector needs to be moved
 	    v := Filtered(v,vv->ForAny(gens,x-> vv <> op(vv,x)));
             l := Length(v);
         fi;
         c := 0*[1..l];    # the number of coincidences
         e := ListWithIdenticalEntries(l,infinity);   # the current estimates
-        ht := NewHT(v[1],NextPrimeInt(l * randels * 4));
+        ht := HTCreate(v[1]*PrimitiveRoot(F),
+                       rec(hashlen := NextPrimeInt(l * randels * 4)));
         for i in [1..l] do
-            val := ValueHT(ht,v[i]);
+            val := HTValue(ht,v[i]);
             if val = fail then
-                AddHT(ht,v[i],[i]);
+                HTAdd(ht,v[i],[i]);
             else
                 AddSet(val,i);
             fi;
@@ -459,7 +460,7 @@ InstallMethod( FindBasePointCandidates,
                 else
                     w := op(v[j],x);
                 fi;
-                val := ValueHT(ht,w);
+                val := HTValue(ht,w);
                 if val <> fail then   # we know this point!
                     if j in val then    # a coincidence!
                         c[j] := c[j] + 1;
@@ -488,7 +489,7 @@ InstallMethod( FindBasePointCandidates,
                         AddSet(val,j);
                     fi;
                 else
-                    AddHT(ht,w,[j]);
+                    HTAdd(ht,w,[j]);
                 fi;
             od;
         od;

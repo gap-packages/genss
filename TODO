@@ -1,6 +1,3 @@
-Fix bug reported by Alexander H if base point is over smaller field
-  and generators over larger field
-
 Later:
 
 Known left and right subgroups for BacktrackSearch
