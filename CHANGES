@@ -15,6 +15,7 @@
   * Some bugfixes to Stab if the stabilizer is trivial
   * Fix MakeGAPDocDoc with 5th argument
   * Fix an inefficiency reported by Alexander H.
+  * Fix a problem with Randomize for vectors which are Plists
 
 
 ==========================
