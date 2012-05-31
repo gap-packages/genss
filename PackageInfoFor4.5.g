@@ -28,13 +28,13 @@ Subtitle := "genss - generic Schreier-Sims",
 ##  See '?Extending: Version Numbers' in GAP help for an explanation
 ##  of valid version numbers. For an automatic package distribution update
 ##  you must provide a new version number even after small changes.
-Version := "1.4",
+Version := "1.5",
 ##  Please adjust also the VERSION file in the package directory when
 ##  changing this.
 
 ##  Release date of the current version in dd/mm/yyyy format.
 # 
-Date := "30/05/2012",  # not yet released
+Date := "31/05/2012",  # not yet released
 
 ##  URL of the archive(s) of the current package release, but *without*
 ##  the format extension(s), like '.zoo', which are given next.
@@ -46,7 +46,7 @@ Date := "30/05/2012",  # not yet released
 # 
 ArchiveURL := Concatenation( 
   "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/",
-  "genssfor4.5/genss-1.4_for4.5"),
+  "genssfor4.5/genss-1.5_for4.5"),
 
 ##  All provided formats as list of file extensions, separated by white
 ##  space or commas.
@@ -190,7 +190,7 @@ README_URL := Concatenation(
   "genss/README.genss"),
 PackageInfoURL := Concatenation( 
   "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/",
-  "genss/PackageInfo.g"),
+  "genssfor4.5/PackageInfo.g"),
 
 ##  Here you  must provide a short abstract explaining the package content 
 ##  in HTML format (used on the package overview Web page) and an URL 
@@ -239,9 +239,6 @@ PackageDoc := rec(
   # use same as in GAP            
   BookName  := "genss",
   # format/extension can be one of .zoo, .tar.gz, .tar.bz2, -win.zip
-  Archive := Concatenation(
-    "http://www.math.rwth-aachen.de/~Max.Neunhoeffer/Computer/Software/Gap/",
-    "genss/genssdoc.tar.gz"),
   ArchiveURLSubset := ["doc"],
   HTMLStart := "doc/chap0.html",
   PDFFile   := "doc/manual.pdf",
@@ -267,7 +264,7 @@ Dependencies := rec(
   # insensitive, least version denoted with '>=' prepended to version string.
   # without these, the package will not load
   NeededOtherPackages := [["GAPDoc", ">= 1.5"],["IO", ">= 4.2"],
-                          ["orb", ">= 4.4"]],
+                          ["orb", ">= 4.5"]],
   # without these the package will issue a warning while loading
   # SuggestedOtherPackages := [],
   SuggestedOtherPackages := [],
