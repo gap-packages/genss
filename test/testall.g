@@ -61,6 +61,18 @@ GetAtlasGroup := function(name,rep,max)
   return g;
 end;
 
+
+Print("Diagonal: \c");
+for p in [3,5,7] do
+  g := Group(DiagonalMat([Z(p)^1, Z(p)^0, Z(p)^0]),
+             DiagonalMat([Z(p)^0, Z(p)^1, Z(p)^0]),
+             DiagonalMat([Z(p)^0, Z(p)^0, Z(p)^1]));
+  Print(TestGroup(g,(p-1)^3,false),"\c");
+  Print(TestGroup(g,(p-1)^2,rec( Projective := true)),"\c");
+od;
+Print("\n");
+
+
 name := "J1";
 Print(name,": \c"); 
 for r in [1,2,3,4,5,6,7,8,14] do
