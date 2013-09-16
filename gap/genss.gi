@@ -2868,7 +2868,7 @@ InstallMethod( Stab, "by Orb orbit enumeration",
                 #stab := Subgroup(g,stabgens);
                 if Length(stabgens) > 0 then
                     stab := Group(stabgens);
-                    SetParent(g,stab);
+                    SetParent(stab,g);
                     SetSize(stab,stabsizeest);
                     SetStabilizerChain(stab,stabchain);
                 else
@@ -2953,7 +2953,7 @@ InstallMethod( Stab, "by Orb orbit enumeration",
                         # Done!
                         if Length(stabgens) > 0 then
                             stab := Group(stabgens);
-                            SetParent(g,stab);
+                            SetParent(stab,g);
                             SetSize(stab,stabsizeest);
                             SetStabilizerChain(stab,stabchain);
                         else
@@ -2969,7 +2969,7 @@ InstallMethod( Stab, "by Orb orbit enumeration",
                         #stab := Subgroup(g,stabgens);
                         if Length(stabgens) > 0 then
                             stab := Group(stabgens);
-                            SetParent(g,stab);
+                            SetParent(stab,g);
                         else
                             stab := TrivialSubgroup(g);
                             stabchain := StabilizerChain(stab);
