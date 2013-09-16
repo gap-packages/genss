@@ -430,9 +430,14 @@ InstallMethod( FindBasePointCandidates,
         v := Filtered(v,vv->ForAny(gens,x-> vv <> op(vv,x)));
         l := Length(v);
         if l = 0 then
-            v := OneMutable(gens[1]);
-	    # at least one basis vector needs to be moved
-	    v := Filtered(v,vv->ForAny(gens,x-> vv <> op(vv,x)));
+            # Find a vector on which grp acts non-trivially.
+            # At least one basis vector is guaranteed to be moved,
+            # unless grp is diagonal and op is OnLines, in which case
+            # they might all be fixed. However, in that case, the
+            # vector [1,1,...,1] is moved.
+            v := OneMutable(gens[1]); # List of basis vectors
+            Add(v, Sum(v)); # add vector [1,1,...,1]
+            v := Filtered(v,vv->ForAny(gens,x-> vv <> op(vv,x)));
             l := Length(v);
         fi;
         c := 0*[1..l];    # the number of coincidences
@@ -2868,7 +2873,7 @@ InstallMethod( Stab, "by Orb orbit enumeration",
                 #stab := Subgroup(g,stabgens);
                 if Length(stabgens) > 0 then
                     stab := Group(stabgens);
-                    SetParent(g,stab);
+                    SetParent(stab,g);
                     SetSize(stab,stabsizeest);
                     SetStabilizerChain(stab,stabchain);
                 else
@@ -2880,7 +2885,7 @@ InstallMethod( Stab, "by Orb orbit enumeration",
                             proof := true );
             fi;
             limit := 2*limit;
-            continue; 
+            if not IsClosed(o) then continue; fi;
         fi;
         count := 0;
         found := false;
@@ -2953,7 +2958,7 @@ InstallMethod( Stab, "by Orb orbit enumeration",
                         # Done!
                         if Length(stabgens) > 0 then
                             stab := Group(stabgens);
-                            SetParent(g,stab);
+                            SetParent(stab,g);
                             SetSize(stab,stabsizeest);
                             SetStabilizerChain(stab,stabchain);
                         else
@@ -2969,7 +2974,7 @@ InstallMethod( Stab, "by Orb orbit enumeration",
                         #stab := Subgroup(g,stabgens);
                         if Length(stabgens) > 0 then
                             stab := Group(stabgens);
-                            SetParent(g,stab);
+                            SetParent(stab,g);
                         else
                             stab := TrivialSubgroup(g);
                             stabchain := StabilizerChain(stab);
