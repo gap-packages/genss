@@ -2885,7 +2885,7 @@ InstallMethod( Stab, "by Orb orbit enumeration",
                             proof := true );
             fi;
             limit := 2*limit;
-            continue; 
+            if not IsClosed(o) then continue; fi;
         fi;
         count := 0;
         found := false;
