@@ -4,11 +4,13 @@
 ##  Call this with GAP.
 ##
 
-RequirePackage("GAPDoc");
+LoadPackage("GAPDoc");
 
 MakeGAPDocDoc("doc", "genss", [], "genss", "../../..");
 
+CopyHTMLStyleFiles("doc");
+
 GAPDocManualLab("genss");
 
-quit;
+QUIT;
 
