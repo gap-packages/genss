@@ -28,25 +28,13 @@ Subtitle := "genss - generic Schreier-Sims",
 ##  See '?Extending: Version Numbers' in GAP help for an explanation
 ##  of valid version numbers. For an automatic package distribution update
 ##  you must provide a new version number even after small changes.
-Version := "1.5",
+Version := "1.5.dev",
 ##  Please adjust also the VERSION file in the package directory when
 ##  changing this.
 
 ##  Release date of the current version in dd/mm/yyyy format.
 # 
 Date := "31/05/2012",  # not yet released
-
-##  URL of the archive(s) of the current package release, but *without*
-##  the format extension(s), like '.zoo', which are given next.
-##  The archive file name *must be changed* with each version of the archive
-##  (and probably somehow contain the package name and version).
-##  The paths of the files in the archive must begin with the name of the
-##  directory containing the package (in our "example" probably:
-##  example/init.g, ...    or  example-1.3/init.g, ...  )
-# 
-ArchiveURL := Concatenation( 
-  "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/",
-  "genss/genss-1.5"),
 
 ##  All provided formats as list of file extensions, separated by white
 ##  space or commas.
@@ -175,22 +163,12 @@ Status := "deposited",
 # AcceptDate := "08/1999",
 #AcceptDate := "",
 
-##  For a central overview of all packages and a collection of all package
-##  archives it is necessary to have two files accessible which should be
-##  contained in each package:
-##     - A README file, containing a short abstract about the package
-##       content and installation instructions.
-##     - The PackageInfo.g file you are currently reading or editing!
-##  You must specify URLs for these two files, these allow to automate 
-##  the updating of package information on the GAP Website, and inclusion
-##  and updating of the package in the GAP distribution.
-#
-README_URL := Concatenation(
-  "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/",
-  "genss/README.genss"),
-PackageInfoURL := Concatenation( 
-  "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/",
-  "genss/PackageInfo.g"),
+BaseURL := "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/",
+
+PackageWWWHome := Concatenation( ~.BaseURL, "genss.html" ),
+ArchiveURL     := Concatenation( ~.BaseURL, "genss/genss-", ~.Version ),
+README_URL     := Concatenation( ~.BaseURL, "genss/README.genss" ),
+PackageInfoURL := Concatenation( ~.BaseURL, "genss/PackageInfo.g" ),
 
 ##  Here you  must provide a short abstract explaining the package content 
 ##  in HTML format (used on the package overview Web page) and an URL 
@@ -204,9 +182,7 @@ AbstractHTML :=
    randomised Schreier-Sims algorithm to compute a stabiliser chain \
    and a base and strong generating set for arbitrary finite groups.",
 #
-PackageWWWHome := Concatenation(
-  "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/",
-  "genss.html"),
+
 #               
 ##  Here is the information on the help books of the package, used for
 ##  loading into GAP's online help and maybe for an online copy of the 
@@ -259,12 +235,12 @@ PackageDoc := rec(
 Dependencies := rec(
   # GAP version, use version strings for specifying exact versions,
   # prepend a '>=' for specifying a least version.
-  GAP := ">=4.4.12",
+  GAP := ">=4.5",
   # list of pairs [package name, (least) version],  package name is case
   # insensitive, least version denoted with '>=' prepended to version string.
   # without these, the package will not load
-  NeededOtherPackages := [["GAPDoc", ">= 1.2"],["IO", ">= 3.0"],
-                          ["orb", ">= 3.7"]],
+  NeededOtherPackages := [["GAPDoc", ">= 1.5"],["IO", ">= 4.2"],
+                          ["orb", ">= 4.5"]],
   # without these the package will issue a warning while loading
   # SuggestedOtherPackages := [],
   SuggestedOtherPackages := [],
