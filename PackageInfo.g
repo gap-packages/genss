@@ -107,7 +107,7 @@ PackageDoc := rec(
   HTMLStart := "doc/chap0.html",
   PDFFile   := "doc/manual.pdf",
   SixFile   := "doc/manual.six",
-  LongTitle := "genss - generic Schreier-Sims",
+  LongTitle := "Generic Schreier-Sims",
   Autoload  := false
 ),
 
