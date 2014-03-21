@@ -1,0 +1,130 @@
+  
+  [1X4 [33X[0;0YBacktrack search methods[133X[101X
+  
+  [33X[0;0YThis  chapter  describes  the  methods  for  backtrack  search  in the [5Xgenss[105X
+  package.  Note  that  the  code  in  this area is not yet very stable and is
+  almost  certainly  going  to  change in subsequent versions of this package.
+  This might also concern the interfaces and calling conventions.[133X
+  
+  
+  [1X4.1 [33X[0;0YSetwise stabilisers[133X[101X
+  
+  [1X4.1-1 SetwiseStabilizer[101X
+  
+  [29X[2XSetwiseStabilizer[102X( [3XG[103X, [3Xop[103X, [3XM[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Ya record[133X
+  
+  [33X[0;0YThis  operation computes the setwise stabiliser of the set [3XM[103X. So [3XG[103X must be a
+  group  acting on some set [22XΩ[122X, this action is given by the action function [3Xop[103X.
+  The  set  [3XM[103X  must  consist  of  elements  [22XΩ[122X. The result is a record with the
+  components  [10Xsetstab[110X  containing  the  setwise  stabiliser and [10XS[110X containing a
+  stabiliser chain for it.[133X
+  
+  [33X[0;0YThis operation uses backtrack search in a specially crafted stabiliser chain
+  for  [3XG[103X  doing  not  much  intelligent  pruning of the search tree, so expect
+  possible long delays![133X
+  
+  [1X4.1-2 SetwiseStabilizerPartitionBacktrack[101X
+  
+  [29X[2XSetwiseStabilizerPartitionBacktrack[102X( [3XG[103X, [3Xop[103X, [3XM[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Ya record[133X
+  
+  [33X[0;0YThis  operation computes the setwise stabiliser of the set [3XM[103X. So [3XG[103X must be a
+  group  acting on some set [22XΩ[122X, this action is given by the action function [3Xop[103X.
+  The  set  [3XM[103X  must  consist  of  elements  [22XΩ[122X. The result is a record with the
+  components  [10Xsetstab[110X  containing  the  setwise  stabiliser and [10XS[110X containing a
+  stabiliser chain for it.[133X
+  
+  [33X[0;0YThis operation uses backtrack search in a specially crafted stabiliser chain
+  for [3XG[103X. It does some ideas coming from partition backtrack but does not (yet)
+  implement  a  full  featured partition backtrack, so expect possible longish
+  delays![133X
+  
+  
+  [1X4.2 [33X[0;0YGeneric backtrack search[133X[101X
+  
+  [1X4.2-1 BacktrackSearchStabilizerChainElement[101X
+  
+  [29X[2XBacktrackSearchStabilizerChainElement[102X( [3XS[103X, [3XP[103X, [3Xg[103X, [3Xpruner[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Y[9Xfail[109X or a group element[133X
+  
+  [33X[0;0YLet  [22XG[122X be the group described by the stabiliser chain [3XS[103X. The group element [3Xg[103X
+  must  be  some  element  in  an overgroup [22Xhat G[122Xof [22XG[122X such that the function [3XP[103X
+  described below is defined on the whole of [22Xhat G[122X[133X
+  
+  [33X[0;0YThis operation implements a generic backtrack search in the coset [22XG[3Xg[103X[122X looking
+  for  an  element [22Xx in G[122X such that [3XP[103X[22X(x[3Xg[103X)[122X is [9Xtrue[109X where [3XP[103X is a function on [22Xhat
+  G[122Xtaking  values [9Xtrue[109X and [9Xfalse[109X. The operation returns the group element [22Xx[122X if
+  one is found or [9Xfail[109X if none was found.[133X
+  
+  [33X[0;0YThe search tree is given by the stabiliser chain, each node corresponds to a
+  right coset of one of the stabilisers in the chain. The leaves correspond to
+  right cosets of the identity group, i.e. to group elements in [22XG[3Xg[103X[122X[133X
+  
+  [33X[0;0YTo  make this backtrack search efficient some pruning of the search tree has
+  to be done. To this end there is the fourth argument [3Xpruner[103X which can either
+  be  [9Xfalse[109X (in which case no pruning at all happens) or a [5XGAP[105X function taking
+  5  arguments  and  returning  either  [9Xtrue[109X  or [9Xfalse[109X. The function [3Xpruner[103X is
+  called  for  every  node  in  the  search  tree  before the backtrack search
+  descents  into  the  subtrees.  If  the  [3Xpruner[103X  function returns [9Xfalse[109X, the
+  complete  subtree  starting  at  the  current  node is pruned and no further
+  search  is  performed  there.  If the result is [9Xtrue[109X (or [3Xpruner[103X was equal to
+  [9Xfalse[109X  altogether) then the subtree starting at the current node is searched
+  recursively.  Obviously,  the  [3Xpruner[103X  function  needs  to  know the current
+  position in the search tree, which it is told by its arguments.[133X
+  
+  [33X[0;0YEach  node  in  the search tree corresponds to a coset of some stabiliser of
+  the  stabiliser chain in its previous one. To set up some notation, let [23X G =
+  S_0  > S_1 > S_2 > \cdots > S_m > S_{{m+1}} = \{1\} [123X be the stabiliser chain
+  and  let  [23X  O_1,  O_2,  \ldots,  O_m [123X be the basic orbits. Then for the node
+  corresponding  to the coset [22XS_i t[3Xg[103X[122X for [22Xi ge 1[122X and some transversal element [22Xt[122X
+  contained  in [22XS_{i-1}[122X the arguments with which the [3Xpruner[103X function is called
+  are  the  following:  The  first  argument  is  the  stabiliser chain object
+  corresponding to [22XS_{i-1}[122X. The second argument is the index of the element in
+  [22XO_i[122X  corresponding  to  the transversal element [22Xt[122X. The third argument is the
+  group  element [22Xt[3Xg[103X[122X and the fourth argument is equal to the actual transversal
+  element  [22Xt[122X. The fifth argument is a word in the generators used to enumerate
+  [22XO_i[122X  expressing  [22Xt[122X,  the  word  comes  as  a  list of integers which are the
+  generator numbers.[133X
+  
+  [1X4.2-2 BacktrackSearchStabilizerChainSubgroup[101X
+  
+  [29X[2XBacktrackSearchStabilizerChainSubgroup[102X( [3XS[103X, [3XP[103X, [3Xpruner[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Y[9Xfail[109X or a stabiliser chain[133X
+  
+  [33X[0;0YLet  [22XG[122X  be  the  group  described  by the stabiliser chain [3XS[103X. This operation
+  implements  a generic backtrack search in the stabiliser chain [3XS[103X looking for
+  the  subgroup  [22XH[122X  of  the group [22XG[122X described by [3XS[103X of all elements [22Xx[122X for which
+  [3XP[103X[22X(x)[122X  is  [9Xtrue[109X, where [3XP[103X is a function on [22XG[122X taking values [9Xtrue[109X or [9Xfalse[109X. Note
+  that  of  course [3XP[103X must be such that [22XH[122X is actually a subgroup! The operation
+  returns a stabiliser chain describing the group [22XH[122X.[133X
+  
+  [33X[0;0YThe search tree is given by the stabiliser chain, each node corresponds to a
+  right coset of one of the stabilisers in the chain. The leaves correspond to
+  right cosets of the identity group, i.e. to group elements in [22XG[122X[133X
+  
+  [33X[0;0YTo  make this backtrack search efficient some pruning of the search tree has
+  to be done. To this end there is the fourth argument [3Xpruner[103X which can either
+  be  [9Xfalse[109X (in which case no pruning at all happens) or a [5XGAP[105X function taking
+  5  arguments  and  returning  either  [9Xtrue[109X  or [9Xfalse[109X. The function [3Xpruner[103X is
+  called  for  every  node  in  the  search  tree  before the backtrack search
+  descents  into  the  subtrees.  If  the  [3Xpruner[103X  function returns [9Xfalse[109X, the
+  complete  subtree  starting  at  the  current  node is pruned and no further
+  search  is  performed  there.  If the result is [9Xtrue[109X (or [3Xpruner[103X was equal to
+  [9Xfalse[109X  altogether) then the subtree starting at the current node is searched
+  recursively.  Obviously,  the  [3Xpruner[103X  function  needs  to  know the current
+  position in the search tree, which it is told by its arguments.[133X
+  
+  [33X[0;0YEach  node  in  the search tree corresponds to a coset of some stabiliser of
+  the  stabiliser chain in its previous one. To set up some notation, let [23X G =
+  S_0  > S_1 > S_2 > \cdots > S_m > S_{{m+1}} = \{1\} [123X be the stabiliser chain
+  and  let  [23X  O_1,  O_2,  \ldots,  O_m [123X be the basic orbits. Then for the node
+  corresponding  to the coset [22XS_i t[3Xg[103X[122X for [22Xi ge 1[122X and some transversal element [22Xt[122X
+  contained  in [22XS_{i-1}[122X the arguments with which the [3Xpruner[103X function is called
+  are  the  following:  The  first  argument  is  the  stabiliser chain object
+  corresponding to [22XS_{i-1}[122X. The second argument is the index of the element in
+  [22XO_i[122X  corresponding  to  the  transversal  element  [22Xt[122X.  The  third and fourth
+  arguments are the transversal element [22Xt[122X. The fifth argument is a word in the
+  generators  used  to enumerate [22XO_i[122X expressing [22Xt[122X, the word comes as a list of
+  integers which are the generator numbers.[133X
+  

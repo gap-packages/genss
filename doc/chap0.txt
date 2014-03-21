@@ -1,1 +1,90 @@
-Placeholder
+  
+  
+                              [1XGAP 4 Package [5Xgenss[105X[101X
+  
+  
+                             [1Xgeneric Schreier-Sims [101X
+  
+  
+                                      1.5
+  
+  
+                                    May 2012
+  
+  
+                                 Max Neunhöffer
+  
+                                  Felix Noeske
+  
+  
+  
+  Max Neunhöffer
+      Email:    [7Xmailto:neunhoef@mcs.st-and.ac.uk[107X
+      Homepage: [7Xhttp://www-groups.mcs.st-and.ac.uk/~neunhoef[107X
+      Address:  [33X[0;14YSchool  of  Mathematics  and Statistics Mathematical Institute
+                University of St Andrews North Haugh St Andrews, Fife KY16 9SS
+                Scotland, UK[133X
+  
+  
+  Felix Noeske
+      Email:    [7Xmailto:felix.noeske@math.rwth-aachen.de[107X
+      Homepage: [7Xhttp://www.math.rwth-aachen.de/~Felix.Noeske[107X
+      Address:  [33X[0;14YLehrstuhl  D  für  Mathematik,  RWTH Aachen, Templergraben 64,
+                52062 Aachen, Germany[133X
+  
+  
+  
+  -------------------------------------------------------
+  [1XCopyright[101X
+  [33X[0;0Y© 2006-2012 by Max Neunhöffer and Felix Noeske[133X
+  
+  [33X[0;0YThis  package  may  be distributed under the terms and conditions of the GNU
+  Public License Version 3 or higher.[133X
+  
+  
+  -------------------------------------------------------
+  
+  
+  [1XContents (genss)[101X
+  
+  1 [33X[0;0YIntroduction[133X
+    1.1 [33X[0;0YPhilosophy[133X
+    1.2 [33X[0;0YOverview over this manual[133X
+  2 [33X[0;0YInstallation of the [5Xgenss[105X-Package[133X
+  3 [33X[0;0YStabiliser Chains[133X
+    3.1 [33X[0;0YComputing stabiliser chains[133X
+      3.1-1 StabilizerChain
+    3.2 [33X[0;0YOptions for the computation of stabiliser chains[133X
+      3.2-1 GENSS_IsOneProjective
+    3.3 [33X[0;0YHow base points are chosen[133X
+      3.3-1 FindBasePointCandidates
+    3.4 [33X[0;0YUsing stabiliser chains[133X
+      3.4-1 SiftGroupElement
+      3.4-2 SiftGroupElementSLP
+      3.4-3 StrongGenerators
+      3.4-4 NrStrongGenerators
+      3.4-5 BaseStabilizerChain
+      3.4-6 Size
+      3.4-7 Random
+      3.4-8 \in
+      3.4-9 IsProved
+      3.4-10 GroupIteratorByStabilizerChain
+      3.4-11 SetStabilizerChain
+      3.4-12 StoredStabilizerChain
+      3.4-13 StabChainOp
+      3.4-14 SiftBaseImage
+      3.4-15 SLPChainStabilizerChain
+      3.4-16 GroupHomomorphismByImagesNCStabilizerChain
+      3.4-17 FindShortGeneratorsOfSubgroup
+      3.4-18 Stab
+  4 [33X[0;0YBacktrack search methods[133X
+    4.1 [33X[0;0YSetwise stabilisers[133X
+      4.1-1 SetwiseStabilizer
+      4.1-2 SetwiseStabilizerPartitionBacktrack
+    4.2 [33X[0;0YGeneric backtrack search[133X
+      4.2-1 BacktrackSearchStabilizerChainElement
+      4.2-2 BacktrackSearchStabilizerChainSubgroup
+  5 [33X[0;0YExamples[133X
+  
+  
+  [32X

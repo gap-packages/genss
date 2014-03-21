@@ -1,0 +1,19 @@
+  
+  [1X1 [33X[0;0YIntroduction[133X[101X
+  
+  
+  [1X1.1 [33X[0;0YPhilosophy[133X[101X
+  
+  [33X[0;0YThis  package  is  about  the  Schreier-Sims  algorithm  and base and strong
+  generating sets for arbitrary finite groups.[133X
+  
+  
+  [1X1.2 [33X[0;0YOverview over this manual[133X[101X
+  
+  [33X[0;0YChapter [14X2[114X describes the installation of this package. Chapter [14X3[114X desribes the
+  core  functionality  of  the  package,  namely  the computation and usage of
+  stabiliser  chains. Chapter [14X4[114X describes some methods using backtrack search.
+  This part of the package is not yet fully developed and is subject to change
+  in  later  versions.  Finally,  Chapter [14X5[114X shows instructive examples for the
+  usage of this package. As of now, the number of shown examples is zero.[133X
+  

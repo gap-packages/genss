@@ -1,43 +1,40 @@
-name: GitHubPagesForGAP
-version: 0.1
-date: 21/03/2014
-description: A GitHubPages generator for GAP packages
+name: genss
+version: 1.5
+date: 31/05/2012
+description: genss - generic Schreier-Sims
 
 authors:
-    - name: Max Horn
-      url: http://www.quendi.de/math
-    - name: A. U. Thor
+    - name: Max Neunhoeffer
+      url: http://www-groups.mcs.st-and.ac.uk/~neunhoef
+    - name: Felix Noeske
+      url: http://www.math.rwth-aachen.de/~Felix.Noeske
 
 maintainers:
-    - name: Max Horn
-      url: http://www.quendi.de/math
-    - name: Jan Itor
+    - name: Max Neunhoeffer
+      url: http://www-groups.mcs.st-and.ac.uk/~neunhoef
+    - name: Felix Noeske
+      url: http://www.math.rwth-aachen.de/~Felix.Noeske
 
-GAP: ">=4.5.5"
+GAP: ">=4.5"
 
 needed-pkgs:
     - name: "GAPDoc"
-      version: ">= 1.2"
+      version: ">= 1.5"
     - name: "IO"
-      version: ">= 4.1"
-
-suggested-pkgs:
-    - name: "orb"
       version: ">= 4.2"
+    - name: "orb"
+      version: ">= 4.5"
 
-www: http://fingolfin.github.io/GitHubPagesForGAP/
-readme: http://fingolfin.github.io/GitHubPagesForGAP/README
-packageinfo: http://fingolfin.github.io/GitHubPagesForGAP/PackageInfo.g
-github: https://github.com/fingolfin/GitHubPagesForGAP
+www: http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/genss.html
+readme: http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/genss/README.genss
+packageinfo: http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/genss/PackageInfo.g
 
 downloads:
     - name: .tar.gz
-      url: https://github.com/fingolfin/GitHubPagesForGAP/releases/download/v0.1/GitHubPagesForGAP-0.1.tar.gz
-    - name: .tar.bz2
-      url: https://github.com/fingolfin/GitHubPagesForGAP/releases/download/v0.1/GitHubPagesForGAP-0.1.tar.bz2
+      url: http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/genss/genss-1.5.tar.gz
 
-abstract: This is a pseudo package that contains no actual  <span class="pkgname">GAP</span> code. Instead, it is a template for other  GAP packages that allows to quickly setup GitHub pages.
+abstract: The <span class="pkgname">genss</span> package implements the    randomised Schreier-Sims algorithm to compute a stabiliser chain    and a base and strong generating set for arbitrary finite groups.
 
-status: other
+status: deposited
 doc-html: doc/chap0.html
 doc-pdf: doc/manual.pdf

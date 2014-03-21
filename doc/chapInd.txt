@@ -1,0 +1,33 @@
+  
+  
+  [1XIndex[101X
+  
+  [2X\in[102X  3.4-8
+  [2XBacktrackSearchStabilizerChainElement[102X  4.2-1
+  [2XBacktrackSearchStabilizerChainSubgroup[102X  4.2-2
+  [2XBaseStabilizerChain[102X  3.4-5
+  [2XFindBasePointCandidates[102X  3.3-1
+  [2XFindShortGeneratorsOfSubgroup[102X  3.4-17
+  [5Xgenss[105X  2.
+  [2XGENSS_IsOneProjective[102X  3.2-1
+  [2XGroupHomomorphismByImagesNCStabilizerChain[102X  3.4-16
+  [2XGroupIteratorByStabilizerChain[102X  3.4-10
+  [2XIsProved[102X  3.4-9
+  [2XNrStrongGenerators[102X  3.4-4
+  [2XRandom[102X  3.4-7
+  [2XSetStabilizerChain[102X  3.4-11
+  [2XSetwiseStabilizer[102X  4.1-1
+  [2XSetwiseStabilizerPartitionBacktrack[102X  4.1-2
+  [2XSiftBaseImage[102X  3.4-14
+  [2XSiftGroupElement[102X  3.4-1
+  [2XSiftGroupElementSLP[102X  3.4-2
+  [2XSize[102X  3.4-6
+  [2XSLPChainStabilizerChain[102X  3.4-15
+  [2XStab[102X  3.4-18
+  [2XStabChainOp[102X  3.4-13
+  [2XStabilizerChain[102X  3.1-1
+  [2XStoredStabilizerChain[102X  3.4-12
+  [2XStrongGenerators[102X  3.4-3
+  
+  
+  -------------------------------------------------------

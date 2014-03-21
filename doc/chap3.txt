@@ -1,0 +1,612 @@
+  
+  [1X3 [33X[0;0YStabiliser Chains[133X[101X
+  
+  [33X[0;0YThis  chapter  describes  the  core  functionality of the package. It mainly
+  covers  how to use [5Xgenss[105X to compute stabiliser chains for [5XGAP[105X groups and use
+  them to do sifting.[133X
+  
+  
+  [1X3.1 [33X[0;0YComputing stabiliser chains[133X[101X
+  
+  [33X[0;0YThe  main  tool to compute a stabiliser chain is the following operation. It
+  has many options and can be customised in a very flexible way.[133X
+  
+  [1X3.1-1 StabilizerChain[101X
+  
+  [29X[2XStabilizerChain[102X( [3XG[103X[, [3Xopt[103X] ) [32X operation
+  [6XReturns:[106X  [33X[0;10Ya stabiliser chain object or [9Xfail[109X[133X
+  
+  [33X[0;0YThis  operation  computes  a  stabiliser  chain  for  the  group  [3XG[103X  using a
+  randomised  Schreier-Sims  algorithm. The second argument [3Xopt[103X is an optional
+  options  record.  See  Section  [14X3.2[114X below for an explanation of the possible
+  components.[133X
+  
+  [33X[0;0YNote that this is a Monte Carlo algorithm in most cases, so there is a small
+  error  probability.  However,  the  only  error possible is that some of the
+  subgroups  in  the stabiliser chain are proper subgroups of the actual point
+  stabilisers.  So the resulting group order is always a divisor of the actual
+  group order and if the two are equal, then the stabiliser chain is proved to
+  be  correct.  In  particular,  if the group object [3XG[103X for some reason already
+  knows  the  group  order,  then  this procedure always returns a correct and
+  proven stabiliser chain for [3XG[103X.[133X
+  
+  
+  [1X3.2 [33X[0;0YOptions for the computation of stabiliser chains[133X[101X
+  
+  [33X[0;0YThe options record for the [2XStabilizerChain[102X ([14X3.1-1[114X) can contain the following
+  components,  which are used to control the behaviour of the computation of a
+  stabiliser  chain  for  the  group [3XG[103X. Note that for most of these components
+  there  are  default  values  to be found in the global [10XGENSS[110X record. You can
+  change  these  defaults  there  if you want but you should know what you are
+  doing.  An  explicitly  given  value  in  the  options  record  always takes
+  precedence over the default value.[133X
+  
+  [8X[10XBase[110X[108X
+        [33X[0;6YThis  component  can  either  be bound to an existing stabilizer chain
+        object  or  to a list of points. In both cases this indicates that the
+        base  of  the  stabilizer chain or the list of points respectively are
+        known  to  be  a  base  for  the  group  [3XG[103X.  In  the  first  case  the
+        corresponding action functions are taken from the stabiliser chain, in
+        the  second  case  one  should usually bind the component [10XBaseOps[110X to a
+        list  of equal length containing the action functions corresponding to
+        the base points.[133X
+  
+  [8X[10XBaseOps[110X[108X
+        [33X[0;6YIf  the  [10XBase[110X  component  is  bound  to  a  list of points the [10XBaseOps[110X
+        component  must be a list of equal length containing the corresponding
+        action  functions.  If  the  [10XBaseOps[110X component is unbound, a list with
+        identical  entries  [10XOnLines[110X is used in projective mode and [10XOnPoints[110X in
+        non-projective mode (see component [10XProjective[110X below).[133X
+  
+  [8X[10XCand[110X[108X
+        [33X[0;6YThe [10XCand[110X component can be bound to a record [10Xr[110Xwhich contains candidates
+        for  base points in the following way. The [10Xr.points[110X component contains
+        the  list  of  points,  the  [10Xr.ops[110X  component contains a list of equal
+        length with the corresponding action functions. The points and actions
+        specified  in the [10XCand[110X component are tried as possible base points for
+        [3XG[103X  (and  its  stabilisers)  first before other points are guessed (see
+        [2XFindBasePointCandidates[102X  ([14X3.3-1[114X)).  If  a  point  is  fixed  under all
+        generators  it is not used, unless the component [10XReduced[110X is explicitly
+        set  to  [9Xfalse[109X  (see below). If the component [10XStrictlyUseCandidates[110X is
+        [9Xfalse[109X  (the  default,  see  below),  the  algorithm tries to use other
+        points of an already found orbit before considering the next candidate
+        specified  by  [10XCand[110X.  This  is usually sensible because for an already
+        enumerated  orbit  we  have  a  natural  bound  on  the  length of the
+        suborbits for the point stabiliser in this orbit.[133X
+  
+  [8X[10XDeterministicVerification[110X[108X
+        [33X[0;6YSet  this  component to [9Xtrue[109X to switch on a deterministic verification
+        routine  after the randomised Schreier-Sims procedure. This is not yet
+        implemented.[133X
+  
+  [8X[10XErrorBound[110X[108X
+        [33X[0;6YSet this component to a rational number between 0 and 1. It will be an
+        upper  bound for the error probability. That is, the error probability
+        of  the  Monte  Carlo  verification  at the end will be less than this
+        rational  number.  This  component overrides everything you specify in
+        the [10Xrandom[110X or [10XVerifyElements[110X components.[133X
+  
+  [8X[10XFailInsteadOfError[110X[108X
+        [33X[0;6YIf  no  short  enough  orbit  is  found  during  the  computation, the
+        procedure  stops with an error message. If you would rather like it to
+        return  [9Xfail[109X  then set this component to [9Xtrue[109X. This option can be used
+        to  try  an  stabiliser  chain  computation  automatically and give up
+        before you run out of memory.[133X
+  
+  [8X[10XImmediateVerificationElements[110X[108X
+        [33X[0;6YWhenever  the  randomised  Schreier-Sims  procedure has first computed
+        generators for a stabiliser in the chain and has computed a stabiliser
+        chain  for  that  stabiliser recursively, an immediate verification is
+        done.  This  is  to  spot  early  on that the group found is in fact a
+        proper  subgroup  of  the  stabiliser.  This  verification  is done by
+        creating  a  few  more  random elements of that stabiliser and sifting
+        them through the newly created stabiliser chain. Each such element has
+        a  chance  of at least [22X1/2[122X to spot this. The number of random elements
+        used is stored in the component [10XImmediateVerificationElements[110X.[133X
+  
+  [8X[10XInitialHashSize[110X[108X
+        [33X[0;6YSet   this   component  to  the  initial  tree  hash  size  for  orbit
+        computations in the stabiliser chain.[133X
+  
+  [8X[10XIsOne[110X[108X
+        [33X[0;6YThe  default  for  this  computation  is  the [2XIsOne[102X ([14XReference: IsOne[114X)
+        operation  in  the  [5XGAP[105X  library.  Whenever  in  the  stabiliser chain
+        computation  it  has  to  be  tested whether or not a group element is
+        equal  to  the identity, the function stored in the [10XIsOne[110X component is
+        called. The rationale behind this is that you can compute a stabiliser
+        chain  for  a  factor group of the group object [3XG[103X. For example, if you
+        set  the [10XIsOne[110X component to [2XGENSS_IsOneProjective[102X ([14X3.2-1[114X) for a matrix
+        group  [3XG[103X,  scalar multiples of the identity are considered to be equal
+        to  the  identity. You will have to specify the base points explicitly
+        using  the  [10XCand[110X  and  [10XStrictlyUseCandidates[110X  component (see above and
+        below) to only use actions having the normal subgroup in its kernel. A
+        shortcut  for computing stabiliser chains of projective groups (matrix
+        group  modulo  scalars) is to set the [10XProjective[110X component (see below)
+        and switch to projective mode.[133X
+  
+  [8X[10XLimitShortOrbCandidates[110X[108X
+        [33X[0;6YThe  integer  value  of this component limits the number of candidates
+        considered  for the finding of short orbits. See the [10XTryShortOrbit[110X and
+        [10XTryBirthdayParadox[110X components.[133X
+  
+  [8X[10XNrRandElsBirthdayParadox[110X[108X
+        [33X[0;6YThe  method  using  the  birthday paradox to find short orbits uses at
+        most  as many random group elements to estimate the orbit size as this
+        component says. See the [10XTryBirthdayParadox[110X component.[133X
+  
+  [8X[10XNumberPrevOrbitPoints[110X[108X
+        [33X[0;6YAfter  an  orbit  for  the  stabiliser  chain has been enumerated, the
+        randomised Schreier-Sims method first tries [10XNumberPrevOrbitPoints[110X from
+        this  orbit  as  next  base  points. Note that this is not done if the
+        [10XStrictlyUseCandidates[110X component is set to [9Xtrue[109X.[133X
+  
+  [8X[10XOrbitLengthLimit[110X[108X
+        [33X[0;6YThis component is an absolute upper bound for the length of all orbits
+        in  the  stabiliser chain. If an orbit enumeration reaches this limit,
+        the stabiliser chain computation is aborted.[133X
+  
+  [8X[10XOrbitLimitBirthdayParadox[110X[108X
+        [33X[0;6YDuring the method to find short orbits using the birthday paradox (see
+        component [10XTryBirthdayParadox[110X) only orbits whose final estimated length
+        is less than [10XOrbitLimitBirthdayParadox[110X are used.[133X
+  
+  [8X[10XOrbitLimitImmediatelyTake[110X[108X
+        [33X[0;6YDuring the method to find short orbits using the birthday paradox (see
+        component  [10XTryBirthdayParadox[110X)  an  orbit  is  immediately used if its
+        currently  estimated  length  is  less than [10XOrbitLimitImmediatelyTake[110X,
+        even if the estimate is not yet very reliable.[133X
+  
+  [8X[10XOrbitsWithLog[110X[108X
+        [33X[0;6YThis  component  defaults  to [9Xtrue[109X in which case the orbit objects for
+        the  stabiliser  chain  have a log to allow to make the Schreier trees
+        shallow  by  adding  generators. If you set this to [9Xfalse[109X, no logs are
+        written  and  the  Schreier trees could potentially be deep. This will
+        make  sifting  slower.  Usually  you should not touch this option. The
+        only  reason  for  setting  it  to [9Xfalse[109X could be if you need that the
+        Schreier  trees  are not changed after their initial creation, even if
+        new generators are added to the stabiliser chain.[133X
+  
+  [8X[10XProjective[110X[108X
+        [33X[0;6YSet  this  component to [9Xtrue[109X if you want to compute a stabiliser chain
+        for  a  projective  group  given as a matrix group. Elements which are
+        scalar multiples of each other will be considered to be equal. This is
+        achieved  by  only  considering  projective actions. Note that in this
+        case  a known size of the group object cannot be used, since this size
+        is the order of the matrix group![133X
+  
+  [8X[10Xrandom[110X[108X
+        [33X[0;6YThe  [10Xrandom[110X  component  is there as a compatibility option. It behaves
+        exactly  as  for  the  stabiliser chain methods in the [5XGAP[105X library. It
+        must  be  set  to a number between [22X0[122X and [22X1000[122X indicating a lower bound
+        for  the  probability  of  a  correct  answer, where the value [22Xa[122X means
+        [22Xa/10[122X%.  Note that currently [22X1000[122X is not yet implemented since there is
+        no working deterministic verification routine.[133X
+  
+  [8X[10XRandomElmFunc[110X[108X
+        [33X[0;6YIf  this component is bound then it must be bound to a function taking
+        no  arguments  and  returning uniformly distributed random elements in
+        the group for which the stabiliser chain is to be computed. All random
+        elements used for the stabiliser chain will then be created by calling
+        this function.[133X
+  
+  [8X[10XRandomStabGens[110X[108X
+        [33X[0;6YThis  component contains the number of random stabiliser elements that
+        are generated initially to generate a new stabiliser in the chain.[133X
+  
+  [8X[10XReduced[110X[108X
+        [33X[0;6YIf  this  component  is  bound to [9Xtrue[109X, then no orbits of length [22X1[122X are
+        allowed  in the stabiliser chain. That is, no points are taken as base
+        points  that are fixed under all generators of the current stabiliser.
+        Set  this  component  to  [9Xfalse[109X  to  allow for orbits of length [22X1[122X, for
+        example  if  you want the stabiliser chain to run through a prescribed
+        base.[133X
+  
+  [8X[10XReport[110X[108X
+        [33X[0;6YThe number in the [10XReport[110X component is taken as the [10XReport[110X component in
+        all  orbit enumerations. That is, every [10XReport[110X newly found elements in
+        the  orbit  a  message  is  printed saying how far the computation has
+        gone.[133X
+  
+  [8X[10XShortOrbitsInitialLimit[110X[108X
+        [33X[0;6YSee the [10XTryShortOrbit[110X component.[133X
+  
+  [8X[10XShortOrbitsNrRandoms[110X[108X
+        [33X[0;6YSee the [10XTryShortOrbit[110X component.[133X
+  
+  [8X[10XShortOrbitsOrbLimit[110X[108X
+        [33X[0;6YSee the [10XTryShortOrbit[110X component.[133X
+  
+  [8X[10XSize[110X[108X
+        [33X[0;6YIf  the [10XSize[110X component is set to a positive integer it is taken as the
+        size  of the group [3XG[103X. This information allows to verify the stabiliser
+        chain  simply  by  looking  at its size. If the group object knows its
+        size  already (and the [10XProjective[110X component was not set to [9Xtrue[109X), then
+        the stored size of the group is automatically taken into account, such
+        that one does not have to use this option.[133X
+  
+  [8X[10XStabGenAddSlots[110X[108X
+        [33X[0;6YThe  value of the [10XStabGenAddSlots[110X component is directly handed over to
+        the  product replacer object which is used to generate random elements
+        to find stabiliser generators.[133X
+  
+  [8X[10XStabGenMaxDepth[110X[108X
+        [33X[0;6YThe  value of the [10XStabGenMaxDepth[110X component is directly handed over to
+        the  product replacer object which is used to generate random elements
+        to find stabiliser generators.[133X
+  
+  [8X[10XStabGenScrambleFactor[110X[108X
+        [33X[0;6YThe  value  of  the [10XStabGenScrambleFactor[110X component is directly handed
+        over  to  the product replacer object which is used to generate random
+        elements to find stabiliser generators.[133X
+  
+  [8X[10XStabGenScramble[110X[108X
+        [33X[0;6YThe  value of the [10XStabGenScramble[110X component is directly handed over to
+        the  product replacer object which is used to generate random elements
+        to find stabiliser generators.[133X
+  
+  [8X[10XStrictlyUseCandidates[110X[108X
+        [33X[0;6YIf  this  component  is  set  to [9Xtrue[109X (default is [9Xfalse[109X) then only the
+        given   candidate  points  are  taken  as  possible  base  points.  In
+        particular,  the  procedure  does  not  take  additional points of the
+        previous   orbit   as   candidates  for  base  points  (see  component
+        [10XNumberPrevOrbitPoints[110X ). Use this option in combination to [10XReduced[110X set
+        to [9Xfalse[109X to enforce a certain known base.[133X
+  
+  [8X[10XTryBirthdayParadox[110X[108X
+        [33X[0;6YThe  method  to try to find short orbits using the birthday paradox is
+        used  up  to  [10XTryBirthdayParadox[110X  times  for each new base point. This
+        method uses the Murray/O'Brien heuristics to find candidates for short
+        orbits and then uses statistics using the birthday paradox to estimate
+        the  orbit  lengths. As soon as a point is found whose orbit is either
+        estimated  to  be  smaller than [10XOrbitLimitBirthdayParadox[110X with a solid
+        statistical   estimate   or   is   estimated   to   be   smaller  than
+        [10XOrbitLimitImmediatelyTake[110X with a weak statistical estimate, this point
+        is taken as the next base point.[133X
+  
+  [8X[10XTryShortOrbit[110X[108X
+        [33X[0;6YThe   method   to   try  to  find  short  orbits  using  the  standard
+        Murray/O'Brien  heuristics  is used up to [10XTryShortOrbit[110X times for each
+        new base point. This method uses the heuristics to find candicates for
+        short orbits using [10XShortOrbitsNrRandoms[110X random group elements. It then
+        enumerates  all  these orbits up to the limit [10XShortOrbitsInitialLimit[110X.
+        If any of them closes the corresponding candidate is taken as the next
+        base point. Otherwise half of the points are thrown away and the limit
+        is  doubled.  This  goes  on until either an orbit closes or the limit
+        grows over [10XShortOrbitsOrbLimit[110X.[133X
+  
+  [8X[10XVerifyElements[110X[108X
+        [33X[0;6YThis  component can be used to set it to the number of random elements
+        that are used in the end to verify the stabiliser chain statistically.
+        Usually  the  user  specifies  the  component  [10XErrorBound[110X  instead and
+        [10XVerifyElements[110X  is  then computed automatically from that. However, if
+        no  [10XErrorBound[110X is given, the [10XVerifyElements[110X component takes precedence
+        over the [10Xrandom[110X component.[133X
+  
+  [8X[10XVeryShortOrbLimit[110X[108X
+        [33X[0;6YThe  very  first  method  tried  to  find  the  next  base point is to
+        enumerate  the orbit of the first and the last basis vector and of one
+        random  vector  up to the limit [10XVeryShortOrbLimit[110X. If the orbit closes
+        before  this limit is reached, the corresponding vector is immediately
+        taken.[133X
+  
+  [1X3.2-1 GENSS_IsOneProjective[101X
+  
+  [29X[2XGENSS_IsOneProjective[102X( [3Xx[103X ) [32X function
+  [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
+  
+  [33X[0;0YThis  function tests whether or not the matrix [3Xx[103X is a scalar multiple of the
+  identity matrix. This function is useful for projective action.[133X
+  
+  
+  [1X3.3 [33X[0;0YHow base points are chosen[133X[101X
+  
+  [33X[0;0YThis  section  explains  some internal details of how base points are chosen
+  during  a  stabiliser chain computations. As a user, you can probably safely
+  skip  this  section  and  ignore it altogether. However, in situations where
+  thes  stabiliser  chain  computation is more difficult (for example if it is
+  difficult  to find short orbits), then it can be helpful to know about these
+  details.[133X
+  
+  [33X[0;0YWhenever the stabiliser chain computation needs to set up a new layer in the
+  stabiliser  chain it needs a new base point. The first method it tries is to
+  take  a  point in the previous orbit one layer up, since for these points we
+  have  a natural upper limit for the orbit length, namely the orbit length in
+  the  layer  above. If this does not work (either there is no higher layer or
+  more  than  the first [10XNumberPrevOrbitPoints[110X (see stabiliser chain options in
+  Section   [14X3.2[114X)   in   that   orbit   are  fixed  by  the  current  group  or
+  [10XStrictlyUseCandidates[110X  is  [9Xtrue[109X),  it  is  checked  whether  or not there is
+  another known candidate for a base point.[133X
+  
+  [33X[0;0YNote that if the user supplies candidates for the base points and operations
+  (see component [10XCand[110X in the stabiliser chain options in Section [14X3.2[114X), then it
+  is entirely possible that all base points come from these candidates and the
+  mechanisms described in this sections are not used at all.[133X
+  
+  [33X[0;0YHowever,  if  the  procedure runs out of base points, it needs a way to find
+  new candidates. This is done using the following operation:[133X
+  
+  [1X3.3-1 FindBasePointCandidates[101X
+  
+  [29X[2XFindBasePointCandidates[102X( [3Xg[103X, [3Xopt[103X, [3Xi[103X, [3XS[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Ya [10XCand[110X record[133X
+  
+  [33X[0;0YThis  operation returns base point candidates in the form of a record as for
+  the [10XCand[110X option for stabiliser chain computations (see Section [14X3.2[114X).[133X
+  
+  [33X[0;0YThere  are  various  methods  installed to this end which all might fail and
+  call  [10XTryNextMethod();[110X. We do not document the details of these methods here
+  but  only  give an overview. For permutation groups the choice of candidates
+  is  very  straightforward,  one  simply  takes a few integers with the usual
+  action  [10XOnPoints[110X.  For matrix group finding a reasonably short orbit is more
+  difficult.  The  system  first  handles  the case of a scalar group which is
+  easy.  Then  it  hopes  to  find a [21Xvery short orbit[121X defined by the component
+  [10XVeryShortOrbLimit[110X in the stabiliser chain computation options. If this fails
+  the  birthday  paradoxon method is used to find an estimate for a reasonably
+  short orbit amoung candidates coming from the Murray and O'Brien heuristics.
+  If this fails the same heuristics are used but various orbits are enumerated
+  up  to a certain point decreasing the number of orbits as the limit goes up.
+  If  all  fails  some  of the candidates from the heuristics are simply tried
+  with  brute force. The whole computation can fail if some upper orbit length
+  limit  is  reached  (see  component [10XOrbitLengthLimit[110X in the stabiliser chain
+  computation options).[133X
+  
+  
+  [1X3.4 [33X[0;0YUsing stabiliser chains[133X[101X
+  
+  [33X[0;0YThe most important thing one can do with a stabiliser chain is sifting. This
+  is done with one of the next to operations:[133X
+  
+  [1X3.4-1 SiftGroupElement[101X
+  
+  [29X[2XSiftGroupElement[102X( [3XS[103X, [3Xel[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Ya record[133X
+  
+  [33X[0;0YThe  first  argument  [3XS[103X  must  be  a  stabiliser chain object and the second
+  argument  [3Xel[103X  a  group  element  (not  necessarily  contained  in  the group
+  described by [3XS[103X). The result is a record describing the result of the sifting
+  process. The component [10Xrem[110X contains the remainder of the sifting process. If
+  [3Xel[103X  is contained in the group described by [3XS[103X, then the remainder is equal to
+  the identity. Note that if the [10XIsOne[110X-component of the options record for the
+  stabiliser  chain [3XS[103X is different from the [2XIsOne[102X ([14XReference: IsOne[114X) operation
+  then  the [10Xrem[110X component is equal to the identity according to that test. The
+  result  of this test ([9Xtrue[109X or [9Xfalse[109X) is stored in the component [10Xisone[110X of the
+  resulting  record.  This means, that this component indicates whether or not
+  the sifting was successful. The component [10XS[110X is bound to the stabiliser chain
+  object  corresponding  to  the layer in which the sifting stopped. If it ran
+  through the whole chain this component is bound to [9Xfalse[109X. The component [10XpreS[110X
+  is  always  bound  to  the  previous layer, which is the lowest layer if the
+  sifting was successful.[133X
+  
+  [1X3.4-2 SiftGroupElementSLP[101X
+  
+  [29X[2XSiftGroupElementSLP[102X( [3XS[103X, [3Xel[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Ya record[133X
+  
+  [33X[0;0YThis  operation  behaves  exactly as [2XSiftGroupElement[102X ([14X3.4-1[114X) except that in
+  the   successful   case  the  component  [10Xslp[110X  of  the  resulting  record  is
+  additionally bound to a straight line program which expresses the element [3Xel[103X
+  in   terms   of   the   strong  generators  of  the  stabiliser  chain  (see
+  [2XStrongGenerators[102X ([14X3.4-3[114X)).[133X
+  
+  [1X3.4-3 StrongGenerators[101X
+  
+  [29X[2XStrongGenerators[102X( [3XS[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Ya list of group elements[133X
+  
+  [33X[0;0YThis operation returns the strong generators of the stabiliser chain [3XS[103X. This
+  means  that  each  stabiliser  in  the  stabiliser chain is generated by the
+  subset  of  the set of strong generators which fix the corresponding points.
+  Note  that  each  layer  of  the  stabiliser chain uses some subset of these
+  strong generators as generators for the orbit object of that layer.[133X
+  
+  [33X[0;0YNote further that this operation called for the objects describing the lower
+  layers  of the stabiliser chain always returns all strong generators for the
+  whole stabiliser chain (top layer).[133X
+  
+  [1X3.4-4 NrStrongGenerators[101X
+  
+  [29X[2XNrStrongGenerators[102X( [3XS[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Ya positive integer[133X
+  
+  [33X[0;0YThis  operation  returns  the  number of strong generators of the stabiliser
+  chain [3XS[103X (see [2XStrongGenerators[102X ([14X3.4-3[114X)).[133X
+  
+  [1X3.4-5 BaseStabilizerChain[101X
+  
+  [29X[2XBaseStabilizerChain[102X( [3XS[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Ya record[133X
+  
+  [33X[0;0YThis  operation  returns  the  base  of  the stabiliser chain [3XS[103X in form of a
+  record,  which  can  be  used  as  the [10XCand[110X component for a stabiliser chain
+  computation.  That  is,  two components are bound, the [10Xpoints[110X component is a
+  list  of base points and the [10Xops[110X component is a corresponding list of action
+  functions.[133X
+  
+  [1X3.4-6 Size[101X
+  
+  [29X[2XSize[102X( [3XS[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Ya positive integer[133X
+  
+  [33X[0;0YThis  operation  returns the size (i.e. order) of the group described by the
+  stabiliser  chain [3XS[103X. This is simply the product of the lengths of the orbits
+  in the chain.[133X
+  
+  [1X3.4-7 Random[101X
+  
+  [29X[2XRandom[102X( [3XS[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Ya group element[133X
+  
+  [33X[0;0YThis  operation  can  be  called  with a stabiliser chain object [3XS[103X or with a
+  group  object,  if  this  group  object  has  a stored stabiliser chain (see
+  [2XSetStabilizerChain[102X  ([14X3.4-11[114X)).  The  method will randomly choose transversal
+  elements  and  thus  produce  a  uniformly distributed random element of the
+  group.[133X
+  
+  [1X3.4-8 \in[101X
+  
+  [29X[2X\in[102X( [3Xx[103X, [3XS[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
+  
+  [33X[0;0YThis  operation  tests  whether or not the group element [3Xx[103X lies in the group
+  described  by  the  stabiliser  chain  [3XS[103X  by  sifting  (see [2XSiftGroupElement[102X
+  ([14X3.4-1[114X)). The argument [3XS[103X can also be a group object with a stored stabiliser
+  chain  (see  [2XSetStabilizerChain[102X  ([14X3.4-11[114X)).  Note that this operation can be
+  called with the [9Xin[109X keyword using infix notation.[133X
+  
+  [1X3.4-9 IsProved[101X
+  
+  [29X[2XIsProved[102X( [3XS[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
+  
+  [33X[0;0YThis operation returns whether or not the stabiliser chain [3XS[103X is proved to be
+  correct.  If  it  has  only  been  verified  by randomised methods, [10Xfalse[110X is
+  returned.  At  the  time  of  this  writing  the only possible deterministic
+  verification  is  if  the  size  of the group is known before the stabiliser
+  chain computation begins.[133X
+  
+  [1X3.4-10 GroupIteratorByStabilizerChain[101X
+  
+  [29X[2XGroupIteratorByStabilizerChain[102X( [3XS[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Yan iterator[133X
+  
+  [33X[0;0YThis operation returns an iterator object which runs through the elements of
+  the  group  described by the stabiliser chain object [3XS[103X. The usual operations
+  [2XNextIterator[102X   ([14XReference:   NextIterator[114X)  and  [2XIsDoneIterator[102X  ([14XReference:
+  IsDoneIterator[114X)  as  well as the [9Xfor[109X loop construction can be used with this
+  object.  The  iterator  is  implemented using the stored transversals in the
+  Schreier trees of the stabiliser chain.[133X
+  
+  [1X3.4-11 SetStabilizerChain[101X
+  
+  [29X[2XSetStabilizerChain[102X( [3Xg[103X, [3XS[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Ynothing[133X
+  
+  [33X[0;0YOnce the user is convinced that the stabiliser chain [3XS[103X describes the group [3Xg[103X
+  correctly, he can call this operation to store the stabiliser chain together
+  with the group object. From then on, additional methods using the stabiliser
+  chain  (for  example  [2XSize[102X  ([14X3.4-6[114X),  [2XRandom[102X  ([14X3.4-7[114X) and [2X\in[102X ([14X3.4-8[114X) above)
+  become  applicable  for the group object. Note that if a stabiliser chain is
+  known  to  be  correct  (for example if the group knew its size beforehand),
+  then  the stabiliser chain is stored with the group automatically when it is
+  constructed,  which  makes  the  explicit  storing  of  the stabiliser chain
+  unnecessary.[133X
+  
+  [33X[0;0YThe   stored   stabiliser  chain  of  a  group  object  can  be  used  using
+  [2XStoredStabilizerChain[102X ([14X3.4-12[114X).[133X
+  
+  [1X3.4-12 StoredStabilizerChain[101X
+  
+  [29X[2XStoredStabilizerChain[102X( [3Xg[103X ) [32X attribute
+  [6XReturns:[106X  [33X[0;10Ya stabiliser chain[133X
+  
+  [33X[0;0YThis  attribute  for a group object [3Xg[103X contains a stored stabiliser chain for
+  the group. See [2XSetStabilizerChain[102X ([14X3.4-11[114X) for details.[133X
+  
+  [1X3.4-13 StabChainOp[101X
+  
+  [29X[2XStabChainOp[102X( [3Xp[103X, [3XS[103X ) [32X method
+  [6XReturns:[106X  [33X[0;10Ya [5XGAP[105X stabiliser chain[133X
+  
+  [33X[0;0YThis  method  computes  a  standard  [5XGAP[105X  library  stabiliser  chain for the
+  permutation  group  [3Xp[103X  using  the  fact that [3XS[103X is a known correct stabiliser
+  chain  for  [3Xp[103X. If all base points in [3XS[103X are positive integers and all actions
+  are  equal  to  [10XOnPoints[110X,  then  the  same base points are taken for the new
+  stabiliser chain.[133X
+  
+  [1X3.4-14 SiftBaseImage[101X
+  
+  [29X[2XSiftBaseImage[102X( [3XS[103X, [3Xl[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
+  
+  [33X[0;0YThis  operation  sifts an image [3Xl[103X of the base points of the stabiliser chain
+  [3XS[103X.  This  means  that  the elements of the list [3Xl[103X must be images of the base
+  points  under the actions in the various layers of the stabiliser chain. The
+  sifting  procedure  using  the  orbits  and Schreier trees in the stabiliser
+  chain  decides  if  this  base image is one for a group element of the group
+  described by [3XS[103X and returns [10Xtrue[110X or [10Xfalse[110X accordingly.[133X
+  
+  [33X[0;0YThis operation is mostly used internally.[133X
+  
+  [1X3.4-15 SLPChainStabilizerChain[101X
+  
+  [29X[2XSLPChainStabilizerChain[102X( [3XS[103X, [3Xgens[103X ) [32X operation
+  [6XReturns:[106X  [33X[0;10Ya record[133X
+  
+  [33X[0;0YThis operation assumes that [3XS[103X is a stabiliser chain that correctly describes
+  the  group  generated  by the generators [3Xgens[103X. It returns a list of straight
+  line  programs expressing successively the stabilisers in the chain, each in
+  terms  of  the  generators of the previous, the first in terms of [3Xgens[103X. This
+  list  is  stored in the component [10Xslps[110X of the resulting record. The sizes of
+  the  groups  in the chain are stored in the component [10Xsizes[110X of the resulting
+  record.[133X
+  
+  [33X[0;0YThe  operations, functions and methods described below use stabiliser chains
+  internally:[133X
+  
+  [1X3.4-16 GroupHomomorphismByImagesNCStabilizerChain[101X
+  
+  [29X[2XGroupHomomorphismByImagesNCStabilizerChain[102X( [3Xg[103X, [3Xh[103X, [3Ximages[103X, [3Xopt1[103X, [3Xopt2[103X ) [32X function
+  [6XReturns:[106X  [33X[0;10Ya group homomorphism[133X
+  
+  [33X[0;0YThis  function creates a group homomorphism object from the group [3Xg[103X into the
+  group object [3Xh[103X, mapping the generators of the group [3Xg[103X to the elements [3Ximages[103X
+  which  must  lie  in [3Xh[103X. This mapping must be a group homomorphism, note that
+  this is not checked![133X
+  
+  [33X[0;0YThe  homomorphism  is  computed by computing stabiliser chains on both sides
+  such  that  elements  can be mapped in both directions simply be sifting and
+  expressing  them  in  terms  of the strong generators. This is where the two
+  arguments  [3Xopts1[103X and [3Xopts2[103X come into play. The former is used as the options
+  record for the stabiliser computation in [3Xg[103X and the latter for the one in the
+  group generated by [3Ximages[103X.[133X
+  
+  [1X3.4-17 FindShortGeneratorsOfSubgroup[101X
+  
+  [29X[2XFindShortGeneratorsOfSubgroup[102X( [3Xg[103X, [3Xu[103X ) [32X method
+  [6XReturns:[106X  [33X[0;10Ya record[133X
+  
+  [33X[0;0YThis  is  an additional method for matrix or permutation groups implementing
+  the          operation          [2XFindShortGeneratorsOfSubgroup[102X          ([14Xorb:
+  FindShortGeneratorsOfSubgroup[114X) from the [5Xorb[105X package using stabiliser chains.
+  Both  arguments  must be groups and [3Xu[103X must be a subgroup of [3Xg[103X. The resulting
+  record  contains  two  components [10Xgens[110X and [10Xslp[110X, where the first is a list of
+  generators  for  the  group  [3Xu[103X  and  the  second  is a straight line program
+  expressing [10Xgens[110X in terms of the generators of [3Xg[103X. This operation aims to find
+  short words in the generators of [3Xg[103X to use as generators for [3Xu[103X.[133X
+  
+  [1X3.4-18 Stab[101X
+  
+  [29X[2XStab[102X( [3Xg[103X, [3Xx[103X, [3Xop[103X[, [3Xopt[103X] ) [32X operation
+  [6XReturns:[106X  [33X[0;10Ya record or [9Xfail[109X[133X
+  
+  [33X[0;0YThis  operation  aims  to compute the point stabiliser of the group [3Xg[103X acting
+  via  the action function [3Xop[103X of the point [3Xx[103X. The optional last argument is an
+  options  record.  The  general  approach of this procedure is to go back and
+  forth  between  enumerating a part of the orbit and trying to produce random
+  elements  in  the stabiliser using the already enumerated part of the orbit.
+  Random  elements in the stabiliser are produced by using product replacement
+  in [3Xg[103X to produce random elements of [3Xg[103X and then using the Schreier tree of the
+  orbit  to  map  them  back into the stabiliser. If this works, the resulting
+  random elements are distributed uniformly in the point stabiliser.[133X
+  
+  [33X[0;0YThis  routine  is  a  Monte  Carlo  procedure.  If  sufficiently many random
+  elements of the stabiliser have been produced and did not increase its size,
+  the  program  concludes  that  the  whole  stabiliser is found and returns a
+  record describing it. Otherwise it returns [9Xfail[109X after some time.[133X
+  
+  [33X[0;0YThe  resulting  record  has  the  stabiliser in the component [10Xstab[110X, its size
+  estimate in the component [10Xsize[110X, a stabiliser chain for [10Xstab[110X in the component
+  [10Xstabilizerchain[110X  and  a  boolean  value  in  the  component [10Xproof[110X indicating
+  whether or not the result is certain.[133X
+  
+  [33X[0;0YWe do not document all possible options in the options record here, since we
+  want  to  allow  for  the possibility to change these in later versions. The
+  most  important  component in the options record is the component [10XErrorBound[110X
+  which  must  be  bound  to a rational number between 0 and 1 and which is an
+  upper bound for the error probability.[133X
+  
+  [33X[0;0YPlease  note  again  that two types of errors can occur in this program: The
+  first  is  that  the correct point stabiliser is not found but only a proper
+  subgroup  of  it.  The  second  is  that the stabiliser chain computation to
+  estimate its size went wrong and returns an incorrect stabiliser chain.[133X
+  
