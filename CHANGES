@@ -2,6 +2,15 @@
  This file describes changes in the genss package beginning from version 1.0:
 ==============================================================================
 
+==========================
+ Changes from 1.5 -> 1.6:
+==========================
+
+  * Fix bug where stabilizers did not have the right parent group
+  * Fix bug when dealing with diagonal matrix groups
+  * Fix bug which sometimes lead to an endless loop in Stab()
+  * Move package repository and website to GitHub
+
 
 ==========================
  Changes from 1.4 -> 1.5:
