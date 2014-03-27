@@ -8,22 +8,10 @@
 
 SetPackageInfo( rec(
 
-##  This is case sensitive, use your preferred spelling.
 PackageName := "genss",
-
-##  This may be used by a default banner or on a Web page, should fit on
-##  one line.
-Subtitle := "genss - generic Schreier-Sims",
-
-##  See '?Extending: Version Numbers' in GAP help for an explanation
-##  of valid version numbers. For an automatic package distribution update
-##  you must provide a new version number even after small changes.
+Subtitle := "Generic Schreier-Sims",
 Version := "1.5.dev",
-##  Please adjust also the VERSION file in the package directory when
-##  changing this.
-
-##  Release date of the current version in dd/mm/yyyy format.
-Date := "31/05/2012",
+Date := "31/05/2012", # dd/mm/yyyy format
 
 ##  Information about authors and maintainers.
 Persons := [
