@@ -10,8 +10,8 @@ SetPackageInfo( rec(
 
 PackageName := "genss",
 Subtitle := "Generic Schreier-Sims",
-Version := "1.5.dev",
-Date := "31/05/2012", # dd/mm/yyyy format
+Version := "1.6",
+Date := "31/04/2014", # dd/mm/yyyy format
 
 ##  Information about authors and maintainers.
 Persons := [
