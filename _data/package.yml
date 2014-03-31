@@ -1,7 +1,7 @@
 name: genss
-version: 1.5
-date: 31/05/2012
-description: genss - generic Schreier-Sims
+version: 1.6
+date: 31/04/2014
+description: Generic Schreier-Sims
 
 authors:
     - name: Max Neunhoeffer
@@ -10,8 +10,6 @@ authors:
       url: http://www.math.rwth-aachen.de/~Felix.Noeske
 
 maintainers:
-    - name: Max Neunhoeffer
-      url: http://www-groups.mcs.st-and.ac.uk/~neunhoef
     - name: Felix Noeske
       url: http://www.math.rwth-aachen.de/~Felix.Noeske
 
@@ -25,13 +23,15 @@ needed-pkgs:
     - name: "orb"
       version: ">= 4.5"
 
-www: http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/genss.html
-readme: http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/genss/README.genss
-packageinfo: http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/genss/PackageInfo.g
+www: http://neunhoef.github.io/genss/
+readme: http://neunhoef.github.io/genss/README
+packageinfo: http://neunhoef.github.io/genss/PackageInfo.g
 
 downloads:
     - name: .tar.gz
-      url: http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/genss/genss-1.5.tar.gz
+      url: https://github.com/neunhoef/genss/releases/download/v1.6/genss-1.6.tar.gz
+    - name: .tar.bz2
+      url: https://github.com/neunhoef/genss/releases/download/v1.6/genss-1.6.tar.bz2
 
 abstract: The <span class="pkgname">genss</span> package implements the    randomised Schreier-Sims algorithm to compute a stabiliser chain    and a base and strong generating set for arbitrary finite groups.
 

@@ -8,22 +8,10 @@
 
 SetPackageInfo( rec(
 
-##  This is case sensitive, use your preferred spelling.
 PackageName := "genss",
-
-##  This may be used by a default banner or on a Web page, should fit on
-##  one line.
-Subtitle := "genss - generic Schreier-Sims",
-
-##  See '?Extending: Version Numbers' in GAP help for an explanation
-##  of valid version numbers. For an automatic package distribution update
-##  you must provide a new version number even after small changes.
-Version := "1.5",
-##  Please adjust also the VERSION file in the package directory when
-##  changing this.
-
-##  Release date of the current version in dd/mm/yyyy format.
-Date := "31/05/2012",
+Subtitle := "Generic Schreier-Sims",
+Version := "1.6",
+Date := "31/04/2014", # dd/mm/yyyy format
 
 ##  Information about authors and maintainers.
 Persons := [
@@ -31,7 +19,7 @@ Persons := [
     LastName      := "Neunhoeffer",
     FirstNames    := "Max",
     IsAuthor      := true,
-    IsMaintainer  := true,
+    IsMaintainer  := false,
     Email         := "neunhoef@mcs.st-and.ac.uk",
     WWWHome       := "http://www-groups.mcs.st-and.ac.uk/~neunhoef",
     PostalAddress := Concatenation( [
@@ -80,14 +68,13 @@ Status := "deposited",
 # AcceptDate := "08/1999",
 #AcceptDate := "",
 
-BaseURL := "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/",
-
-PackageWWWHome := Concatenation( ~.BaseURL, "genss.html" ),
-ArchiveURL     := Concatenation( ~.BaseURL, "genss/genss-", ~.Version ),
-README_URL     := Concatenation( ~.BaseURL, "genss/README.genss" ),
-PackageInfoURL := Concatenation( ~.BaseURL, "genss/PackageInfo.g" ),
-
-ArchiveFormats := ".tar.gz",
+PackageWWWHome := "http://neunhoef.github.io/genss/",
+README_URL     := Concatenation(~.PackageWWWHome, "README"),
+PackageInfoURL := Concatenation(~.PackageWWWHome, "PackageInfo.g"),
+ArchiveURL     := Concatenation("https://github.com/neunhoef/genss/",
+                                "releases/download/v", ~.Version,
+                                "/genss-", ~.Version),
+ArchiveFormats := ".tar.gz .tar.bz2",
 
 ##  Here you  must provide a short abstract explaining the package content 
 ##  in HTML format (used on the package overview Web page) and an URL 

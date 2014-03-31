@@ -17,3 +17,9 @@
   in  later  versions.  Finally,  Chapter [14X5[114X shows instructive examples for the
   usage of this package. As of now, the number of shown examples is zero.[133X
   
+  
+  [1X1.3 [33X[0;0YFeedback[133X[101X
+  
+  [33X[0;0YFor  bug  reports,  feature  requests  and suggestions, please use our issue
+  tracker ([7Xhttps://github.com/neunhoef/genss/issues[107X).[133X
+  
