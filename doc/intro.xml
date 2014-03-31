@@ -39,6 +39,14 @@ As of now, the number of shown examples is zero.
 
 </Section>
 
+<Section Label="feedback">
+<Heading>Feedback</Heading>
+
+For bug reports, feature requests and suggestions, please use our
+<URL Text="issue tracker">https://github.com/neunhoef/genss/issues</URL>.
+
+</Section>
+
 <!-- ############################################################ -->
 
 </Chapter>
