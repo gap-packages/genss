@@ -612,7 +612,7 @@ InstallMethod( FindBasePointCandidates, "for a direct product",
   function( grp, opt, i, parentS )
     local gens,l,cand,j,factgens,fac,cand2,k,op,S2,op2;
     gens := GeneratorsOfGroup(grp);
-    if not(ForAll(gens,IsTuple)) or Length(gens) = 0 then
+    if not(ForAll(gens,IsDirectProductElement)) or Length(gens) = 0 then
         TryNextMethod();
     fi;
     l := Length(gens[1]);
