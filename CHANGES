@@ -3,40 +3,40 @@
 ==================================================
 
 1.6 (2014-03-31)
-  * Fix bug where stabilizers did not have the right parent group
-  * Fix bug when dealing with diagonal matrix groups
-  * Fix bug which sometimes lead to an endless loop in Stab()
-  * Move package repository and website to GitHub
+  - Fix bug where stabilizers did not have the right parent group
+  - Fix bug when dealing with diagonal matrix groups
+  - Fix bug which sometimes lead to an endless loop in Stab()
+  - Move package repository and website to GitHub
 
 1.5 (2012-05-31)
-  * Fix a URL in the PackageInfo.g file for version 4,5
-  * Lose Archive URL for documentation in PackageInfo.g
+  - Fix a URL in the PackageInfo.g file for version 4,5
+  - Lose Archive URL for documentation in PackageInfo.g
 
 1.4 (2012-05-30)
-  * New option "OrbitsWithLog".
-  * New internal function AddNormalizingGenToLayer
-  * New method ORB_IsElementInStabilizerChain for bysuborbit stuff
-  * Remove "tst/testall.g" from PackageInfo.g
-  * New operation StabMC
-  * Some bugfixes to Stab if the stabilizer is trivial
-  * Fix MakeGAPDocDoc with 5th argument
-  * Fix an inefficiency reported by Alexander H.
-  * Fix a problem with Randomize for vectors which are Plists
-  * Fix a problem with finding base point candidates using birthday
+  - New option "OrbitsWithLog".
+  - New internal function AddNormalizingGenToLayer
+  - New method ORB_IsElementInStabilizerChain for bysuborbit stuff
+  - Remove "tst/testall.g" from PackageInfo.g
+  - New operation StabMC
+  - Some bugfixes to Stab if the stabilizer is trivial
+  - Fix MakeGAPDocDoc with 5th argument
+  - Fix an inefficiency reported by Alexander H.
+  - Fix a problem with Randomize for vectors which are Plists
+  - Fix a problem with finding base point candidates using birthday
     paradox: A hash table was created for vectors over too small a 
     finite field.
 
 1.3 (2009-09-09)
-  * Add LoadPackage("atlasrep") to test file.
+  - Add LoadPackage("atlasrep") to test file.
 
 1.2 (2009-09-08)
-  * Introduce options component "RandomElmFunc" used in constructive
+  - Introduce options component "RandomElmFunc" used in constructive
     recognition.
-  * Require orb 3.3.
+  - Require orb 3.3.
 
 1.1 (2009-08-31)
-  * Fix a small issue in PackageInfo.g for the release process.
-  * Require orb 3.2.
+  - Fix a small issue in PackageInfo.g for the release process.
+  - Require orb 3.2.
 
 1.0 (2009-08-26)
-  * Initial release
+  - Initial release
