@@ -2,6 +2,12 @@
  This file describes changes in the genss package
 ==================================================
 
+1.6.1 (2014-04-04)
+  - Previous release had an invalid release date in
+    PackageInfo.g (2014-04-31 instead of 2014-03-31).
+  - Merge HISTORY and CHANGES files.
+  - Change IsTuple to IsDirectProductElement.
+
 1.6 (2014-03-31)
   - Fix bug where stabilizers did not have the right parent group
   - Fix bug when dealing with diagonal matrix groups
