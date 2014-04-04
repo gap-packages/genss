@@ -1,6 +1,6 @@
 name: genss
-version: 1.6
-date: 31/04/2014
+version: 1.6.1
+date: 04/04/2014
 description: Generic Schreier-Sims
 
 authors:
@@ -32,9 +32,9 @@ packageinfo: http://neunhoef.github.io/genss/PackageInfo.g
 
 downloads:
     - name: .tar.gz
-      url: https://github.com/neunhoef/genss/releases/download/v1.6/genss-1.6.tar.gz
+      url: https://github.com/neunhoef/genss/releases/download/v1.6.1/genss-1.6.1.tar.gz
     - name: .tar.bz2
-      url: https://github.com/neunhoef/genss/releases/download/v1.6/genss-1.6.tar.bz2
+      url: https://github.com/neunhoef/genss/releases/download/v1.6.1/genss-1.6.1.tar.bz2
 
 abstract: The <span class="pkgname">genss</span> package implements the    randomised Schreier-Sims algorithm to compute a stabiliser chain    and a base and strong generating set for arbitrary finite groups.
 
