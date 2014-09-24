@@ -1,42 +1,58 @@
   
   
-                              [1XGAP 4 Package [5Xgenss[105X[101X
+                                    [1X genss [101X
   
   
-                             [1Xgeneric Schreier-Sims [101X
+                            [1X Generic Schreier-Sims [101X
   
   
-                                     1.6.1
+                                     1.6.2
   
   
-                                   March 2014
+                                   24/09/2014
   
   
                                  Max Neunhöffer
   
                                   Felix Noeske
   
+                                    Max Horn
+  
   
   
   Max Neunhöffer
-      Email:    [7Xmailto:neunhoef@mcs.st-and.ac.uk[107X
+      Email:    [7Xmailto:max@9hoeffer.de[107X
       Homepage: [7Xhttp://www-groups.mcs.st-and.ac.uk/~neunhoef[107X
-      Address:  [33X[0;14YSchool  of  Mathematics  and Statistics Mathematical Institute
-                University of St Andrews North Haugh St Andrews, Fife KY16 9SS
-                Scotland, UK[133X
+      Address:  [33X[0;14YGustav-Freytag-Straße 40[133X
+                [33X[0;14Y50354 Hürth[133X
+                [33X[0;14YGermany[133X
   
   
   Felix Noeske
       Email:    [7Xmailto:felix.noeske@math.rwth-aachen.de[107X
       Homepage: [7Xhttp://www.math.rwth-aachen.de/~Felix.Noeske[107X
-      Address:  [33X[0;14YLehrstuhl  D  für  Mathematik,  RWTH Aachen, Templergraben 64,
-                52062 Aachen, Germany[133X
+      Address:  [33X[0;14YFelix Noeske[133X
+                [33X[0;14YLehrstuhl D fuer Mathematik, RWTH Aachen[133X
+                [33X[0;14YTemplergraben 64[133X
+                [33X[0;14Y52056 Aachen[133X
+                [33X[0;14YGermany[133X
+  
+  
+  Max Horn
+      Email:    [7Xmailto:max.horn@math.uni-giessen.de[107X
+      Homepage: [7Xhttp://www.quendi.de/math[107X
+      Address:  [33X[0;14YAG Algebra[133X
+                [33X[0;14YMathematisches Institut[133X
+                [33X[0;14YJustus-Liebig-Universität Gießen[133X
+                [33X[0;14YArndtstraße 2[133X
+                [33X[0;14Y35392 Gießen[133X
+                [33X[0;14YGermany[133X
   
   
   
   -------------------------------------------------------
   [1XCopyright[101X
-  [33X[0;0Y© 2006-2012 by Max Neunhöffer and Felix Noeske[133X
+  [33X[0;0Y© 2006-2014 by Max Neunhöffer and Felix Noeske[133X
   
   [33X[0;0YThis  package  may  be distributed under the terms and conditions of the GNU
   Public License Version 3 or higher.[133X
