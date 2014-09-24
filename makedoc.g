@@ -4,14 +4,18 @@
 ##  Call this with GAP.
 ##
 
-SetPackagePath("genss", ".");
-PrintTo("VERSION", PackageInfo("genss")[1].Version);
+PACKAGE := "genss";
+SetPackagePath(PACKAGE, ".");
+PrintTo("VERSION", PackageInfo(PACKAGE)[1].Version);
 
 LoadPackage("GAPDoc");
 
-MakeGAPDocDoc("doc", "genss", [], "genss");
-CopyHTMLStyleFiles("doc");
-GAPDocManualLab("genss");
+if fail <> LoadPackage("AutoDoc", ">= 2014.03.27") then
+    AutoDoc(PACKAGE : scaffold := rec( MainPage := false ));
+else
+    MakeGAPDocDoc("doc", PACKAGE, [], PACKAGE, "MathJax");
+    CopyHTMLStyleFiles("doc");
+    GAPDocManualLab(PACKAGE);
+fi;
 
 QUIT;
-

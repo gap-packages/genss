@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This is an automatically generated file. -->
+<TitlePage>
+  <Title>
+    genss
+  </Title>
+  <Subtitle>
+    Generic Schreier-Sims
+  </Subtitle>
+  <Version>
+    1.6.1
+  </Version>
+  <Author>
+    Max Neunhöffer<Alt Only="LaTeX"><Br/></Alt>
+<Address>
+Gustav-Freytag-Straße 40<Br/>
+50354 Hürth<Br/>
+Germany<Br/>
+</Address>
+<Email>max@9hoeffer.de</Email>
+<Homepage>http://www-groups.mcs.st-and.ac.uk/~neunhoef</Homepage>
+
+  </Author>
+  <Author>
+    Felix Noeske<Alt Only="LaTeX"><Br/></Alt>
+<Address>
+Felix Noeske<Br/>
+Lehrstuhl D fuer Mathematik, RWTH Aachen<Br/>
+Templergraben 64<Br/>
+52056 Aachen<Br/>
+Germany<Br/>
+</Address>
+<Email>felix.noeske@math.rwth-aachen.de</Email>
+<Homepage>http://www.math.rwth-aachen.de/~Felix.Noeske</Homepage>
+
+  </Author>
+  <Date>
+    04/04/2014
+  </Date>
+  <Copyright>
+    &copyright; 2006-2012 by Max Neunhöffer and Felix Noeske<P/>
+
+This package may be distributed under the terms and conditions of the
+GNU Public License Version 3 or higher.
+
+  </Copyright>
+  </TitlePage>

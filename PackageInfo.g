@@ -111,7 +111,18 @@ AvailabilityTest := ReturnTrue,
 
 ##  *Optional*: Here you can list some keyword related to the topic 
 ##  of the package.
-Keywords := ["Schreier-Sims", "Schreier", "Sims", "Stabilizer chain"]
+Keywords := ["Schreier-Sims", "Schreier", "Sims", "Stabilizer chain"],
+
+AutoDoc := rec(
+    TitlePage := rec(
+        Copyright := Concatenation(
+                    "&copyright; 2006-2012 by Max Neunhöffer and Felix Noeske<P/>\n",
+                    "\n",
+                    "This package may be distributed under the terms and conditions of the\n",
+                    "GNU Public License Version 3 or higher.\n"
+                ),
+    )
+),
 
 ));
 
