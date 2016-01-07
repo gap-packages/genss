@@ -905,6 +905,7 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
                  S!.layer," (",opt.ImmediateVerificationElements,
                  " elements)...");
             i := 0;
+#Error("foobar");
             while i < opt.ImmediateVerificationElements do
                 i := i + 1;
                 x := GENSS_RandomElementFromAbove(S,layer);

@@ -112,7 +112,7 @@ function( G, op, M )
   # components:
   #   setstab   : the setwise stabilizer
   #   S         : a stabilizer chain for G using (parts of) M as base
-  local FindGensInDepth,S,SS,gens,i,m;
+  local FindGens,S,SS,gens,i,m;
   
   Info( InfoGenSS, 1, "Computing adjusted stabilizer chain..." );
   S := StabilizerChain( G, 
@@ -135,28 +135,32 @@ function( G, op, M )
 
   m := Length(M);
 
-  # We now proceed recursively (actually, this is tail recursion) again:
-  FindGensInDepth := function(S,depth)
-      local MM,done,g,map,newgens,newgensp,o,tolook,x;
-      # In depth <depth> this finds gens of the setwise stabilizer
-      # that fix all points M{[1..depth-1]} and move M[depth] and determine
-      # which points in M{[depth+1..Length(M)]} can be reached in this
-      # way.
-      if depth = m or S = false then return; fi;
-      if M[depth] <> S!.orb[1] then
-          FindGensInDepth(S,depth+1);
-          return;
-      fi;
-      o := [M[depth]];
-      tolook := M{[depth+1..m]};
-      newgens := [];
-      g := Group(S!.orb!.gens);
-      MM := M{[depth..m]};
-      done := false;
-      repeat  # this loop never terminates but there are "return" statements
-          map := GENSS_FindElmMappingBaseSubsetIntoSet(
-               g, S!.orb!.op, S, MM, MM, tolook, [], 1 );
-          if map <> fail then 
+  FindGens := function(S)
+      local MM,g,map,newgens,newgensp,o,tolook,x,depth;
+      depth := 0;
+      while true do  # this loop never terminates but there are "return" statements
+          depth := depth + 1;
+          # In depth <depth> this finds gens of the setwise stabilizer
+          # that fix all points M{[1..depth-1]} and move M[depth] and determine
+          # which points in M{[depth+1..Length(M)]} can be reached in this
+          # way.
+          if depth = m or S = false then return; fi;
+          if M[depth] <> S!.orb[1] then
+              continue;
+          fi;
+          o := [M[depth]];
+          tolook := M{[depth+1..m]};
+          newgens := [];
+          g := Group(S!.orb!.gens);
+          MM := M{[depth..m]};
+          while true do
+              map := GENSS_FindElmMappingBaseSubsetIntoSet(
+                   g, S!.orb!.op, S, MM, MM, tolook, [], 1 );
+              if map = fail then 
+                  Info( InfoGenSS, 2, "No more to be found in depth ",depth );
+                  break;  # no more to be found
+              fi;
+              # in SetwiseStabilizer
               x := GENSS_ComputeFoundElm( g, S!.orb!.op, S, MM, map, 1 );
               Info( InfoGenSS, 2, "Found new generator in depth ", depth );
               Add(newgens,x);
@@ -165,23 +169,19 @@ function( G, op, M )
               Enumerate(o);
               tolook := Filtered(MM,x->not(x in o));
               if Length(tolook) = 0 then   # we have everything!
-                  done := true;
                   newgensp := ActionOnOrbit(o,newgens);
                   if IsNaturalSymmetricGroup(Group(newgensp)) then
                       # We now know that everything has been found!
                       Info( InfoGenSS, 2, "Found Sym in depth ",depth );
                       return;
                   fi;
+                  break;
               fi;
-          else
-              Info( InfoGenSS, 2, "No more to be found in depth ",depth );
-              done := true;  # no more to be found
-          fi;
-      until done;
-      FindGensInDepth(S!.stab,depth+1);
-      return;
+          od;
+          S := S!.stab;
+      od;
   end;
-  FindGensInDepth(S,1);
+  FindGens(S);
   if Length(gens) = 0 then Add(gens,One(G)); fi;
   return rec( setstab := GroupWithGenerators(gens), S := S );
 end);
@@ -395,7 +395,7 @@ function( G, op, M )
   #   setstab   : the setwise stabilizer
   #   S         : a stabilizer chain for G using (parts of) M as base
   # We assume that all of M lies in the orbit of the first point in M.
-  local FindGensInDepth,S,SS,gens,i,m,r,rt,rt2;
+  local FindGens,S,SS,gens,i,m,r,rt,rt2;
   
   rt := Runtime();
   Info( InfoGenSS, 1, "Computing adjusted stabilizer chain..." );
@@ -441,28 +441,32 @@ function( G, op, M )
 
   m := Length(M);
 
-  # We now proceed recursively (actually, this is tail recursion) again:
-  FindGensInDepth := function(S,depth)
-      local MM,done,g,map,newgens,newgensp,o,tolook,x;
-      # In depth <depth> this finds gens of the setwise stabilizer
-      # that fix all points M{[1..depth-1]} and move M[depth] and determine
-      # which points in M{[depth+1..Length(M)]} can be reached in this
-      # way.
-      if depth = m or S = false then return; fi;
-      if M[depth] <> S!.orb[1] then
-          FindGensInDepth(S,depth+1);
-          return;
-      fi;
-      o := [M[depth]];
-      tolook := M{[depth+1..m]};
-      newgens := [];
-      g := Group(S!.orb!.gens);
-      MM := M{[depth..m]};
-      done := false;
-      repeat  # this loop never terminates but there are "return" statements
-          map := GENSS_FindElmMappingBaseSubsetIntoSetPartitionBacktrack(
-               g, S!.orb!.op, S, M, MM, tolook, M{[1..depth-1]}, depth );
-          if map <> fail then 
+  FindGens := function(S)
+      local MM,g,map,newgens,newgensp,o,tolook,x,depth;
+      depth := 0;
+      while true do  # this loop never terminates but there are "return" statements
+          depth := depth + 1;
+          # In depth <depth> this finds gens of the setwise stabilizer
+          # that fix all points M{[1..depth-1]} and move M[depth] and determine
+          # which points in M{[depth+1..Length(M)]} can be reached in this
+          # way.
+          if depth = m or S = false then return; fi;
+          if M[depth] <> S!.orb[1] then
+              continue;
+          fi;
+          o := [M[depth]];
+          tolook := M{[depth+1..m]};
+          newgens := [];
+          g := Group(S!.orb!.gens);
+          MM := M{[depth..m]};
+          while true do
+              map := GENSS_FindElmMappingBaseSubsetIntoSetPartitionBacktrack(
+                   g, S!.orb!.op, S, M, MM, tolook, M{[1..depth-1]}, depth );
+              if map = fail then 
+                  Info( InfoGenSS, 2, "No more to be found in depth ",depth );
+                  break;  # no more to be found
+              fi;
+              # in SetwiseStabilizerPartitionBacktrack
               x := GENSS_ComputeFoundElm( g, S!.orb!.op, S, M, map, depth );
               Info( InfoGenSS, 2, "Found new generator in depth ", depth );
               Add(newgens,x);
@@ -471,23 +475,19 @@ function( G, op, M )
               Enumerate(o);
               tolook := Filtered(MM,x->not(x in o));
               if Length(tolook) = 0 then   # we have everything!
-                  done := true;
                   newgensp := ActionOnOrbit(o,newgens);
                   if IsNaturalSymmetricGroup(Group(newgensp)) then
                       # We now know that everything has been found!
                       Info( InfoGenSS, 2, "Found Sym in depth ",depth );
                       return;
                   fi;
+                  break;
               fi;
-          else
-              Info( InfoGenSS, 2, "No more to be found in depth ",depth );
-              done := true;  # no more to be found
-          fi;
-      until done;
-      FindGensInDepth(S!.stab,depth+1);
-      return;
+          od;
+          S := S!.stab;
+      od;
   end;
-  FindGensInDepth(S,1);
+  FindGens(S);
   if Length(gens) = 0 then Add(gens,One(G)); fi;
 
   Info( InfoGenSS, 1, "Time so far: ",Runtime()-rt," Lap: ",Runtime()-rt2);
