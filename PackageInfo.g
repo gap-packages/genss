@@ -7,8 +7,8 @@ SetPackageInfo( rec(
 
 PackageName := "genss",
 Subtitle := "Generic Schreier-Sims",
-Version := "1.6.2",
-Date := "24/09/2014", # dd/mm/yyyy format
+Version := "1.6.3",
+Date := "07/01/2016", # dd/mm/yyyy format
 
 ##  Information about authors and maintainers.
 Persons := [
@@ -80,10 +80,10 @@ Status := "deposited",
 # AcceptDate := "08/1999",
 #AcceptDate := "",
 
-PackageWWWHome := "http://gap-system.github.io/genss/",
+PackageWWWHome := "http://gap-packages.github.io/genss/",
 README_URL     := Concatenation(~.PackageWWWHome, "README"),
 PackageInfoURL := Concatenation(~.PackageWWWHome, "PackageInfo.g"),
-ArchiveURL     := Concatenation("https://github.com/gap-system/genss/",
+ArchiveURL     := Concatenation("https://github.com/gap-packages/genss/",
                                 "releases/download/v", ~.Version,
                                 "/genss-", ~.Version),
 ArchiveFormats := ".tar.gz .tar.bz2",

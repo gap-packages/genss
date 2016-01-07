@@ -6,14 +6,11 @@
 To get the newest version of this GAP 4 package download the
 archive file
     genss-x.x.tar.gz
-    genss-x.x.zoo
     genss-x.x.tar.bz2
-    genss-x.x.zip
 and unpack it using 
-    gunzip genss-x.x.tar.gz; tar xvf genss-x.x.tar
+    tar xvf genss-x.x.tar.gz
 respectively
-    unzoo -x genss-x.x.zoo
-and so on.
+    tar xvf genss-x.x.tar.bz2
 
 Do this in a directory called 'pkg', preferably (but not necessarily)
 in the 'pkg' subdirectory of your GAP 4 installation. It creates a
@@ -22,7 +19,7 @@ subdirectory called 'genss'.
 This is all which is needed if you installed the package in the standard
 'pkg' subdirectory.
 
-Note that the genss package needs the 'orb' package to work.
+Note that the genss package needs the 'orb' and 'IO' packages to work.
 
 If you installed the package in another 'pkg' directory than the standard
 'pkg' directory in your GAP 4 installation, then you have to add the path
@@ -38,4 +35,4 @@ in the genss directory. But this should not be necessary.
 
 For bug reports, feature requests and suggestions, please refer to
 
-   https://github.com/neunhoef/genss/issues
+   https://github.com/gap-packages/genss/issues
