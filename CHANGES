@@ -1,5 +1,8 @@
 This file describes changes in the genss package.
 
+1.6.4 (2016-03-08)
+  - Maintenance release
+
 1.6.3 (2016-01-07)
   - Fix a bug in SetwiseStabilizer (see issue #5)
   - Move website to http://gap-packages.github.io/genss/
