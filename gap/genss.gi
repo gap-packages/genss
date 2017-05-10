@@ -96,7 +96,7 @@ GENSS.OrbitsWithLog := true;
 InstallGlobalFunction( GENSS_CopyDefaultOptions,
   function( defopt, opt )
     local n;
-    for n in RecFields(defopt) do
+    for n in RecNames(defopt) do
         if not(IsBound(opt.(n))) then
             opt.(n) := defopt.(n);
         fi;
