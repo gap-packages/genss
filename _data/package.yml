@@ -1,7 +1,8 @@
 name: genss
 version: 1.6.4
 date: 08/03/2016
-description: Generic Schreier-Sims
+description: |
+    Generic Schreier-Sims
 
 authors:
     - name: Max Neunhöffer
@@ -29,7 +30,7 @@ needed-pkgs:
       url: "https://gap-packages.github.io/orb"
 
 www: https://gap-packages.github.io/genss
-readme: https://gap-packages.github.io/genss/README
+readme: README
 packageinfo: https://gap-packages.github.io/genss/PackageInfo.g
 
 downloads:
@@ -38,7 +39,8 @@ downloads:
     - name: .tar.bz2
       url: https://github.com/gap-packages/genss/releases/download/v1.6.4/genss-1.6.4.tar.bz2
 
-abstract: The <span class="pkgname">genss</span> package implements the    randomised Schreier-Sims algorithm to compute a stabiliser chain    and a base and strong generating set for arbitrary finite groups.
+abstract: |
+    The <span class="pkgname">genss</span> package implements the    randomised Schreier-Sims algorithm to compute a stabiliser chain    and a base and strong generating set for arbitrary finite groups.
 
 status: deposited
 doc-html: doc/chap0.html
