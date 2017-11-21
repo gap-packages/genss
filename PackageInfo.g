@@ -7,8 +7,8 @@ SetPackageInfo( rec(
 
 PackageName := "genss",
 Subtitle := "Generic Schreier-Sims",
-Version := "1.6.4",
-Date := "08/03/2016", # dd/mm/yyyy format
+Version := "1.6.5",
+Date := "21/11/2017", # dd/mm/yyyy format
 
 ##  Information about authors and maintainers.
 Persons := [
@@ -127,12 +127,8 @@ Dependencies := rec(
 
 AvailabilityTest := ReturnTrue,
 
-##  *Optional*, but recommended: path relative to package root to a file which 
-##  contains as many tests of the package functionality as sensible.
-#TestFile := "tst/testall.g",
+TestFile := "tst/testall.g",
 
-##  *Optional*: Here you can list some keyword related to the topic 
-##  of the package.
 Keywords := ["Schreier-Sims", "Schreier", "Sims", "Stabilizer chain"],
 
 AutoDoc := rec(

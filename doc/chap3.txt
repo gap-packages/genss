@@ -41,7 +41,7 @@
   doing.  An  explicitly  given  value  in  the  options  record  always takes
   precedence over the default value.[133X
   
-  [8X[10XBase[110X[108X
+  [8X[10XBase[110X[8X[108X
         [33X[0;6YThis  component  can  either  be bound to an existing stabilizer chain
         object  or  to a list of points. In both cases this indicates that the
         base  of  the  stabilizer chain or the list of points respectively are
@@ -51,14 +51,14 @@
         list  of equal length containing the action functions corresponding to
         the base points.[133X
   
-  [8X[10XBaseOps[110X[108X
+  [8X[10XBaseOps[110X[8X[108X
         [33X[0;6YIf  the  [10XBase[110X  component  is  bound  to  a  list of points the [10XBaseOps[110X
         component  must be a list of equal length containing the corresponding
         action  functions.  If  the  [10XBaseOps[110X component is unbound, a list with
         identical  entries  [10XOnLines[110X is used in projective mode and [10XOnPoints[110X in
         non-projective mode (see component [10XProjective[110X below).[133X
   
-  [8X[10XCand[110X[108X
+  [8X[10XCand[110X[8X[108X
         [33X[0;6YThe [10XCand[110X component can be bound to a record [10Xr[110Xwhich contains candidates
         for  base points in the following way. The [10Xr.points[110X component contains
         the  list  of  points,  the  [10Xr.ops[110X  component contains a list of equal
@@ -74,26 +74,26 @@
         enumerated  orbit  we  have  a  natural  bound  on  the  length of the
         suborbits for the point stabiliser in this orbit.[133X
   
-  [8X[10XDeterministicVerification[110X[108X
+  [8X[10XDeterministicVerification[110X[8X[108X
         [33X[0;6YSet  this  component to [9Xtrue[109X to switch on a deterministic verification
         routine  after the randomised Schreier-Sims procedure. This is not yet
         implemented.[133X
   
-  [8X[10XErrorBound[110X[108X
+  [8X[10XErrorBound[110X[8X[108X
         [33X[0;6YSet this component to a rational number between 0 and 1. It will be an
         upper  bound for the error probability. That is, the error probability
         of  the  Monte  Carlo  verification  at the end will be less than this
         rational  number.  This  component overrides everything you specify in
         the [10Xrandom[110X or [10XVerifyElements[110X components.[133X
   
-  [8X[10XFailInsteadOfError[110X[108X
+  [8X[10XFailInsteadOfError[110X[8X[108X
         [33X[0;6YIf  no  short  enough  orbit  is  found  during  the  computation, the
         procedure  stops with an error message. If you would rather like it to
         return  [9Xfail[109X  then set this component to [9Xtrue[109X. This option can be used
         to  try  an  stabiliser  chain  computation  automatically and give up
         before you run out of memory.[133X
   
-  [8X[10XImmediateVerificationElements[110X[108X
+  [8X[10XImmediateVerificationElements[110X[8X[108X
         [33X[0;6YWhenever  the  randomised  Schreier-Sims  procedure has first computed
         generators for a stabiliser in the chain and has computed a stabiliser
         chain  for  that  stabiliser recursively, an immediate verification is
@@ -104,11 +104,11 @@
         a  chance  of at least [22X1/2[122X to spot this. The number of random elements
         used is stored in the component [10XImmediateVerificationElements[110X.[133X
   
-  [8X[10XInitialHashSize[110X[108X
+  [8X[10XInitialHashSize[110X[8X[108X
         [33X[0;6YSet   this   component  to  the  initial  tree  hash  size  for  orbit
         computations in the stabiliser chain.[133X
   
-  [8X[10XIsOne[110X[108X
+  [8X[10XIsOne[110X[8X[108X
         [33X[0;6YThe  default  for  this  computation  is  the [2XIsOne[102X ([14XReference: IsOne[114X)
         operation  in  the  [5XGAP[105X  library.  Whenever  in  the  stabiliser chain
         computation  it  has  to  be  tested whether or not a group element is
@@ -124,39 +124,39 @@
         group  modulo  scalars) is to set the [10XProjective[110X component (see below)
         and switch to projective mode.[133X
   
-  [8X[10XLimitShortOrbCandidates[110X[108X
+  [8X[10XLimitShortOrbCandidates[110X[8X[108X
         [33X[0;6YThe  integer  value  of this component limits the number of candidates
         considered  for the finding of short orbits. See the [10XTryShortOrbit[110X and
         [10XTryBirthdayParadox[110X components.[133X
   
-  [8X[10XNrRandElsBirthdayParadox[110X[108X
+  [8X[10XNrRandElsBirthdayParadox[110X[8X[108X
         [33X[0;6YThe  method  using  the  birthday paradox to find short orbits uses at
         most  as many random group elements to estimate the orbit size as this
         component says. See the [10XTryBirthdayParadox[110X component.[133X
   
-  [8X[10XNumberPrevOrbitPoints[110X[108X
+  [8X[10XNumberPrevOrbitPoints[110X[8X[108X
         [33X[0;6YAfter  an  orbit  for  the  stabiliser  chain has been enumerated, the
         randomised Schreier-Sims method first tries [10XNumberPrevOrbitPoints[110X from
         this  orbit  as  next  base  points. Note that this is not done if the
         [10XStrictlyUseCandidates[110X component is set to [9Xtrue[109X.[133X
   
-  [8X[10XOrbitLengthLimit[110X[108X
+  [8X[10XOrbitLengthLimit[110X[8X[108X
         [33X[0;6YThis component is an absolute upper bound for the length of all orbits
         in  the  stabiliser chain. If an orbit enumeration reaches this limit,
         the stabiliser chain computation is aborted.[133X
   
-  [8X[10XOrbitLimitBirthdayParadox[110X[108X
+  [8X[10XOrbitLimitBirthdayParadox[110X[8X[108X
         [33X[0;6YDuring the method to find short orbits using the birthday paradox (see
         component [10XTryBirthdayParadox[110X) only orbits whose final estimated length
         is less than [10XOrbitLimitBirthdayParadox[110X are used.[133X
   
-  [8X[10XOrbitLimitImmediatelyTake[110X[108X
+  [8X[10XOrbitLimitImmediatelyTake[110X[8X[108X
         [33X[0;6YDuring the method to find short orbits using the birthday paradox (see
         component  [10XTryBirthdayParadox[110X)  an  orbit  is  immediately used if its
         currently  estimated  length  is  less than [10XOrbitLimitImmediatelyTake[110X,
         even if the estimate is not yet very reliable.[133X
   
-  [8X[10XOrbitsWithLog[110X[108X
+  [8X[10XOrbitsWithLog[110X[8X[108X
         [33X[0;6YThis  component  defaults  to [9Xtrue[109X in which case the orbit objects for
         the  stabiliser  chain  have a log to allow to make the Schreier trees
         shallow  by  adding  generators. If you set this to [9Xfalse[109X, no logs are
@@ -166,7 +166,7 @@
         Schreier  trees  are not changed after their initial creation, even if
         new generators are added to the stabiliser chain.[133X
   
-  [8X[10XProjective[110X[108X
+  [8X[10XProjective[110X[8X[108X
         [33X[0;6YSet  this  component to [9Xtrue[109X if you want to compute a stabiliser chain
         for  a  projective  group  given as a matrix group. Elements which are
         scalar multiples of each other will be considered to be equal. This is
@@ -174,7 +174,7 @@
         case  a known size of the group object cannot be used, since this size
         is the order of the matrix group![133X
   
-  [8X[10Xrandom[110X[108X
+  [8X[10Xrandom[110X[8X[108X
         [33X[0;6YThe  [10Xrandom[110X  component  is there as a compatibility option. It behaves
         exactly  as  for  the  stabiliser chain methods in the [5XGAP[105X library. It
         must  be  set  to a number between [22X0[122X and [22X1000[122X indicating a lower bound
@@ -182,18 +182,18 @@
         [22Xa/10[122X%.  Note that currently [22X1000[122X is not yet implemented since there is
         no working deterministic verification routine.[133X
   
-  [8X[10XRandomElmFunc[110X[108X
+  [8X[10XRandomElmFunc[110X[8X[108X
         [33X[0;6YIf  this component is bound then it must be bound to a function taking
         no  arguments  and  returning uniformly distributed random elements in
         the group for which the stabiliser chain is to be computed. All random
         elements used for the stabiliser chain will then be created by calling
         this function.[133X
   
-  [8X[10XRandomStabGens[110X[108X
+  [8X[10XRandomStabGens[110X[8X[108X
         [33X[0;6YThis  component contains the number of random stabiliser elements that
         are generated initially to generate a new stabiliser in the chain.[133X
   
-  [8X[10XReduced[110X[108X
+  [8X[10XReduced[110X[8X[108X
         [33X[0;6YIf  this  component  is  bound to [9Xtrue[109X, then no orbits of length [22X1[122X are
         allowed  in the stabiliser chain. That is, no points are taken as base
         points  that are fixed under all generators of the current stabiliser.
@@ -201,22 +201,22 @@
         example  if  you want the stabiliser chain to run through a prescribed
         base.[133X
   
-  [8X[10XReport[110X[108X
+  [8X[10XReport[110X[8X[108X
         [33X[0;6YThe number in the [10XReport[110X component is taken as the [10XReport[110X component in
         all  orbit enumerations. That is, every [10XReport[110X newly found elements in
         the  orbit  a  message  is  printed saying how far the computation has
         gone.[133X
   
-  [8X[10XShortOrbitsInitialLimit[110X[108X
+  [8X[10XShortOrbitsInitialLimit[110X[8X[108X
         [33X[0;6YSee the [10XTryShortOrbit[110X component.[133X
   
-  [8X[10XShortOrbitsNrRandoms[110X[108X
+  [8X[10XShortOrbitsNrRandoms[110X[8X[108X
         [33X[0;6YSee the [10XTryShortOrbit[110X component.[133X
   
-  [8X[10XShortOrbitsOrbLimit[110X[108X
+  [8X[10XShortOrbitsOrbLimit[110X[8X[108X
         [33X[0;6YSee the [10XTryShortOrbit[110X component.[133X
   
-  [8X[10XSize[110X[108X
+  [8X[10XSize[110X[8X[108X
         [33X[0;6YIf  the [10XSize[110X component is set to a positive integer it is taken as the
         size  of the group [3XG[103X. This information allows to verify the stabiliser
         chain  simply  by  looking  at its size. If the group object knows its
@@ -224,27 +224,27 @@
         the stored size of the group is automatically taken into account, such
         that one does not have to use this option.[133X
   
-  [8X[10XStabGenAddSlots[110X[108X
+  [8X[10XStabGenAddSlots[110X[8X[108X
         [33X[0;6YThe  value of the [10XStabGenAddSlots[110X component is directly handed over to
         the  product replacer object which is used to generate random elements
         to find stabiliser generators.[133X
   
-  [8X[10XStabGenMaxDepth[110X[108X
+  [8X[10XStabGenMaxDepth[110X[8X[108X
         [33X[0;6YThe  value of the [10XStabGenMaxDepth[110X component is directly handed over to
         the  product replacer object which is used to generate random elements
         to find stabiliser generators.[133X
   
-  [8X[10XStabGenScrambleFactor[110X[108X
+  [8X[10XStabGenScrambleFactor[110X[8X[108X
         [33X[0;6YThe  value  of  the [10XStabGenScrambleFactor[110X component is directly handed
         over  to  the product replacer object which is used to generate random
         elements to find stabiliser generators.[133X
   
-  [8X[10XStabGenScramble[110X[108X
+  [8X[10XStabGenScramble[110X[8X[108X
         [33X[0;6YThe  value of the [10XStabGenScramble[110X component is directly handed over to
         the  product replacer object which is used to generate random elements
         to find stabiliser generators.[133X
   
-  [8X[10XStrictlyUseCandidates[110X[108X
+  [8X[10XStrictlyUseCandidates[110X[8X[108X
         [33X[0;6YIf  this  component  is  set  to [9Xtrue[109X (default is [9Xfalse[109X) then only the
         given   candidate  points  are  taken  as  possible  base  points.  In
         particular,  the  procedure  does  not  take  additional points of the
@@ -252,7 +252,7 @@
         [10XNumberPrevOrbitPoints[110X ). Use this option in combination to [10XReduced[110X set
         to [9Xfalse[109X to enforce a certain known base.[133X
   
-  [8X[10XTryBirthdayParadox[110X[108X
+  [8X[10XTryBirthdayParadox[110X[8X[108X
         [33X[0;6YThe  method  to try to find short orbits using the birthday paradox is
         used  up  to  [10XTryBirthdayParadox[110X  times  for each new base point. This
         method uses the Murray/O'Brien heuristics to find candidates for short
@@ -263,7 +263,7 @@
         [10XOrbitLimitImmediatelyTake[110X with a weak statistical estimate, this point
         is taken as the next base point.[133X
   
-  [8X[10XTryShortOrbit[110X[108X
+  [8X[10XTryShortOrbit[110X[8X[108X
         [33X[0;6YThe   method   to   try  to  find  short  orbits  using  the  standard
         Murray/O'Brien  heuristics  is used up to [10XTryShortOrbit[110X times for each
         new base point. This method uses the heuristics to find candicates for
@@ -274,7 +274,7 @@
         is  doubled.  This  goes  on until either an orbit closes or the limit
         grows over [10XShortOrbitsOrbLimit[110X.[133X
   
-  [8X[10XVerifyElements[110X[108X
+  [8X[10XVerifyElements[110X[8X[108X
         [33X[0;6YThis  component can be used to set it to the number of random elements
         that are used in the end to verify the stabiliser chain statistically.
         Usually  the  user  specifies  the  component  [10XErrorBound[110X  instead and
@@ -282,7 +282,7 @@
         no  [10XErrorBound[110X is given, the [10XVerifyElements[110X component takes precedence
         over the [10Xrandom[110X component.[133X
   
-  [8X[10XVeryShortOrbLimit[110X[108X
+  [8X[10XVeryShortOrbLimit[110X[8X[108X
         [33X[0;6YThe  very  first  method  tried  to  find  the  next  base point is to
         enumerate  the orbit of the first and the last basis vector and of one
         random  vector  up to the limit [10XVeryShortOrbLimit[110X. If the orbit closes
