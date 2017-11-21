@@ -1,5 +1,10 @@
 This file describes changes in the genss package.
 
+1.6.5 (2017-11-21)
+  - Maintenance release
+  - Use RecNames instead of the obsolete RecFields
+  - Fix link to issue tracker
+
 1.6.4 (2016-03-08)
   - Maintenance release
 
