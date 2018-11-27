@@ -2633,13 +2633,13 @@ InstallMethod( \in, "for a group elm and a group with stored stabilizer chain",
     return r.isone;
   end );
 
-InstallOtherMethod( Random, "for a stabilizer chain",
-  [ IsStabilizerChainByOrb ],
-  function(S)
+InstallOtherMethodWithRandomSource( Random, "for a random source and a stabilizer chain",
+  [ IsRandomSource, IsStabilizerChainByOrb ],
+  function(rs, S)
     local x,pos,w;
     x := One(S!.orb!.gens[1]);
     while S <> false do
-        pos := Random(1,Length(S!.orb));
+        pos := Random(rs, 1,Length(S!.orb));
         w := TraceSchreierTreeForward(S!.orb,pos);
         x := GENSS_Prod(S!.orb!.gens,w) * x;
         S := S!.stab;
@@ -2647,18 +2647,18 @@ InstallOtherMethod( Random, "for a stabilizer chain",
     return x;
   end );
 
-InstallMethod( Random, "for a group with a stored stabilizer chain",
-  [ IsGroup and HasStoredStabilizerChain ],
-  function(g) return Random(StoredStabilizerChain(g)); end );
+InstallMethodWithRandomSource( Random, "for a random source and a group with a stored stabilizer chain",
+  [ IsRandomSource, IsGroup and HasStoredStabilizerChain ],
+  function(rs, g) return Random(rs, StoredStabilizerChain(g)); end );
 
-InstallMethod( Random, "for a permgroup with a stored stabilizer chain",
-  [ IsPermGroup and HasStoredStabilizerChain ], 10,
-  function(g) return Random(StoredStabilizerChain(g)); end );
+InstallMethodWithRandomSource( Random, "for a random source and a permgroup with a stored stabilizer chain",
+  [ IsRandomSource, IsPermGroup and HasStoredStabilizerChain ], 10,
+  function(rs, g) return Random(rs, StoredStabilizerChain(g)); end );
 
-InstallMethod( Random, "for a matrixgroup with a stored stabilizer chain",
-  [ IsMatrixGroup and IsHandledByNiceMonomorphism and 
+InstallMethodWithRandomSource( Random, "for a random source and a matrixgroup with a stored stabilizer chain",
+  [ IsRandomSource, IsMatrixGroup and IsHandledByNiceMonomorphism and 
     HasStoredStabilizerChain ],
-  function(g) return Random(StoredStabilizerChain(g)); end );
+  function(rs, g) return Random(rs, StoredStabilizerChain(g)); end );
 
 InstallMethod( SizeMC, "for a group and an error bound",
   [IsGroup, IsRat],
