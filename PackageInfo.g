@@ -9,6 +9,7 @@ PackageName := "genss",
 Subtitle := "Generic Schreier-Sims",
 Version := "1.6.5",
 Date := "21/11/2017", # dd/mm/yyyy format
+License := "GPL-3.0-or-later",
 
 ##  Information about authors and maintainers.
 Persons := [
