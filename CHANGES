@@ -1,5 +1,10 @@
 This file describes changes in the genss package.
 
+X.Y (2019-07-XX)
+  - Minimal require GAP version is 4.9
+  - Add variants of Random methods which optionally accept a random source
+  - Various janitorial changes
+
 1.6.5 (2017-11-21)
   - Maintenance release
   - Use RecNames instead of the obsolete RecFields
