@@ -7,8 +7,9 @@ SetPackageInfo( rec(
 
 PackageName := "genss",
 Subtitle := "Generic Schreier-Sims",
-Version := "1.6.5",
-Date := "21/11/2017", # dd/mm/yyyy format
+Version := "1.6.6",
+Date := "18/07/2018", # dd/mm/yyyy format
+License := "GPL-3.0-or-later",
 
 ##  Information about authors and maintainers.
 Persons := [
@@ -47,17 +48,16 @@ Persons := [
     FirstNames    := "Max",
     IsAuthor      := false,
     IsMaintainer  := true,
-    Email         := "max.horn@math.uni-giessen.de",
-    WWWHome       := "http://www.quendi.de/math",
+    Email         := "max.horn@uni-siegen.de",
+    WWWHome       := "https://www.quendi.de/math",
     PostalAddress := Concatenation(
-                       "AG Algebra\n",
-                       "Mathematisches Institut\n",
-                       "Justus-Liebig-Universität Gießen\n",
-                       "Arndtstraße 2\n",
-                       "35392 Gießen\n",
+                       "Department Mathematik\n",
+                       "Universität Siegen\n",
+                       "Walter-Flex-Straße 3\n",
+                       "57072 Siegen\n",
                        "Germany" ),
-    Place         := "Gießen",
-    Institution   := "Justus-Liebig-Universität Gießen"
+    Place         := "Siegen",
+    Institution   := "Universität Siegen"
   ),
 ],
 
@@ -115,7 +115,7 @@ PackageDoc := rec(
 ),
 
 Dependencies := rec(
-  GAP := ">=4.5",
+  GAP := ">=4.9",
   NeededOtherPackages := [
     ["GAPDoc", ">= 1.5"],
     ["IO", ">= 4.2"],

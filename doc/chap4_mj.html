@@ -6,7 +6,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <script type="text/javascript"
-  src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 <title>GAP (genss) - Chapter 4: Backtrack search methods</title>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
@@ -51,7 +51,7 @@
 
 <h5>4.1-1 SetwiseStabilizer</h5>
 
-<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; SetwiseStabilizer</code>( <var class="Arg">G</var>, <var class="Arg">op</var>, <var class="Arg">M</var> )</td><td class="tdright">( operation )</td></tr></table></div>
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; SetwiseStabilizer</code>( <var class="Arg">G</var>, <var class="Arg">op</var>, <var class="Arg">M</var> )</td><td class="tdright">(&nbsp;operation&nbsp;)</td></tr></table></div>
 <p>Returns: a record</p>
 
 <p>This operation computes the setwise stabiliser of the set <var class="Arg">M</var>. So <var class="Arg">G</var> must be a group acting on some set <span class="SimpleMath">\(\Omega\)</span>, this action is given by the action function <var class="Arg">op</var>. The set <var class="Arg">M</var> must consist of elements <span class="SimpleMath">\(\Omega\)</span>. The result is a record with the components <code class="code">setstab</code> containing the setwise stabiliser and <code class="code">S</code> containing a stabiliser chain for it.</p>
@@ -62,7 +62,7 @@
 
 <h5>4.1-2 SetwiseStabilizerPartitionBacktrack</h5>
 
-<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; SetwiseStabilizerPartitionBacktrack</code>( <var class="Arg">G</var>, <var class="Arg">op</var>, <var class="Arg">M</var> )</td><td class="tdright">( operation )</td></tr></table></div>
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; SetwiseStabilizerPartitionBacktrack</code>( <var class="Arg">G</var>, <var class="Arg">op</var>, <var class="Arg">M</var> )</td><td class="tdright">(&nbsp;operation&nbsp;)</td></tr></table></div>
 <p>Returns: a record</p>
 
 <p>This operation computes the setwise stabiliser of the set <var class="Arg">M</var>. So <var class="Arg">G</var> must be a group acting on some set <span class="SimpleMath">\(\Omega\)</span>, this action is given by the action function <var class="Arg">op</var>. The set <var class="Arg">M</var> must consist of elements <span class="SimpleMath">\(\Omega\)</span>. The result is a record with the components <code class="code">setstab</code> containing the setwise stabiliser and <code class="code">S</code> containing a stabiliser chain for it.</p>
@@ -77,7 +77,7 @@
 
 <h5>4.2-1 BacktrackSearchStabilizerChainElement</h5>
 
-<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; BacktrackSearchStabilizerChainElement</code>( <var class="Arg">S</var>, <var class="Arg">P</var>, <var class="Arg">g</var>, <var class="Arg">pruner</var> )</td><td class="tdright">( operation )</td></tr></table></div>
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; BacktrackSearchStabilizerChainElement</code>( <var class="Arg">S</var>, <var class="Arg">P</var>, <var class="Arg">g</var>, <var class="Arg">pruner</var> )</td><td class="tdright">(&nbsp;operation&nbsp;)</td></tr></table></div>
 <p>Returns: <code class="keyw">fail</code> or a group element</p>
 
 <p>Let <span class="SimpleMath">\(G\)</span> be the group described by the stabiliser chain <var class="Arg">S</var>. The group element <var class="Arg">g</var> must be some element in an overgroup <span class="SimpleMath">\(\hat G\)</span>of <span class="SimpleMath">\(G\)</span> such that the function <var class="Arg">P</var> described below is defined on the whole of <span class="SimpleMath">\(\hat G\)</span></p>
@@ -94,7 +94,7 @@
 
 <h5>4.2-2 BacktrackSearchStabilizerChainSubgroup</h5>
 
-<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; BacktrackSearchStabilizerChainSubgroup</code>( <var class="Arg">S</var>, <var class="Arg">P</var>, <var class="Arg">pruner</var> )</td><td class="tdright">( operation )</td></tr></table></div>
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; BacktrackSearchStabilizerChainSubgroup</code>( <var class="Arg">S</var>, <var class="Arg">P</var>, <var class="Arg">pruner</var> )</td><td class="tdright">(&nbsp;operation&nbsp;)</td></tr></table></div>
 <p>Returns: <code class="keyw">fail</code> or a stabiliser chain</p>
 
 <p>Let <span class="SimpleMath">\(G\)</span> be the group described by the stabiliser chain <var class="Arg">S</var>. This operation implements a generic backtrack search in the stabiliser chain <var class="Arg">S</var> looking for the subgroup <span class="SimpleMath">\(H\)</span> of the group <span class="SimpleMath">\(G\)</span> described by <var class="Arg">S</var> of all elements <span class="SimpleMath">\(x\)</span> for which <var class="Arg">P</var><span class="SimpleMath">\((x)\)</span> is <code class="keyw">true</code>, where <var class="Arg">P</var> is a function on <span class="SimpleMath">\(G\)</span> taking values <code class="keyw">true</code> or <code class="keyw">false</code>. Note that of course <var class="Arg">P</var> must be such that <span class="SimpleMath">\(H\)</span> is actually a subgroup! The operation returns a stabiliser chain describing the group <span class="SimpleMath">\(H\)</span>.</p>

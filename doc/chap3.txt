@@ -13,7 +13,7 @@
   
   [1X3.1-1 StabilizerChain[101X
   
-  [29X[2XStabilizerChain[102X( [3XG[103X[, [3Xopt[103X] ) [32X operation
+  [33X[1;0Y[29X[2XStabilizerChain[102X( [3XG[103X[, [3Xopt[103X] ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Ya stabiliser chain object or [9Xfail[109X[133X
   
   [33X[0;0YThis  operation  computes  a  stabiliser  chain  for  the  group  [3XG[103X  using a
@@ -291,7 +291,7 @@
   
   [1X3.2-1 GENSS_IsOneProjective[101X
   
-  [29X[2XGENSS_IsOneProjective[102X( [3Xx[103X ) [32X function
+  [33X[1;0Y[29X[2XGENSS_IsOneProjective[102X( [3Xx[103X ) [32X function[133X
   [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
   
   [33X[0;0YThis  function tests whether or not the matrix [3Xx[103X is a scalar multiple of the
@@ -327,7 +327,7 @@
   
   [1X3.3-1 FindBasePointCandidates[101X
   
-  [29X[2XFindBasePointCandidates[102X( [3Xg[103X, [3Xopt[103X, [3Xi[103X, [3XS[103X ) [32X operation
+  [33X[1;0Y[29X[2XFindBasePointCandidates[102X( [3Xg[103X, [3Xopt[103X, [3Xi[103X, [3XS[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Ya [10XCand[110X record[133X
   
   [33X[0;0YThis  operation returns base point candidates in the form of a record as for
@@ -358,7 +358,7 @@
   
   [1X3.4-1 SiftGroupElement[101X
   
-  [29X[2XSiftGroupElement[102X( [3XS[103X, [3Xel[103X ) [32X operation
+  [33X[1;0Y[29X[2XSiftGroupElement[102X( [3XS[103X, [3Xel[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Ya record[133X
   
   [33X[0;0YThe  first  argument  [3XS[103X  must  be  a  stabiliser chain object and the second
@@ -379,7 +379,7 @@
   
   [1X3.4-2 SiftGroupElementSLP[101X
   
-  [29X[2XSiftGroupElementSLP[102X( [3XS[103X, [3Xel[103X ) [32X operation
+  [33X[1;0Y[29X[2XSiftGroupElementSLP[102X( [3XS[103X, [3Xel[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Ya record[133X
   
   [33X[0;0YThis  operation  behaves  exactly as [2XSiftGroupElement[102X ([14X3.4-1[114X) except that in
@@ -390,7 +390,7 @@
   
   [1X3.4-3 StrongGenerators[101X
   
-  [29X[2XStrongGenerators[102X( [3XS[103X ) [32X operation
+  [33X[1;0Y[29X[2XStrongGenerators[102X( [3XS[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Ya list of group elements[133X
   
   [33X[0;0YThis operation returns the strong generators of the stabiliser chain [3XS[103X. This
@@ -405,7 +405,7 @@
   
   [1X3.4-4 NrStrongGenerators[101X
   
-  [29X[2XNrStrongGenerators[102X( [3XS[103X ) [32X operation
+  [33X[1;0Y[29X[2XNrStrongGenerators[102X( [3XS[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Ya positive integer[133X
   
   [33X[0;0YThis  operation  returns  the  number of strong generators of the stabiliser
@@ -413,7 +413,7 @@
   
   [1X3.4-5 BaseStabilizerChain[101X
   
-  [29X[2XBaseStabilizerChain[102X( [3XS[103X ) [32X operation
+  [33X[1;0Y[29X[2XBaseStabilizerChain[102X( [3XS[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Ya record[133X
   
   [33X[0;0YThis  operation  returns  the  base  of  the stabiliser chain [3XS[103X in form of a
@@ -424,7 +424,7 @@
   
   [1X3.4-6 Size[101X
   
-  [29X[2XSize[102X( [3XS[103X ) [32X operation
+  [33X[1;0Y[29X[2XSize[102X( [3XS[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Ya positive integer[133X
   
   [33X[0;0YThis  operation  returns the size (i.e. order) of the group described by the
@@ -433,7 +433,7 @@
   
   [1X3.4-7 Random[101X
   
-  [29X[2XRandom[102X( [3XS[103X ) [32X operation
+  [33X[1;0Y[29X[2XRandom[102X( [3XS[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Ya group element[133X
   
   [33X[0;0YThis  operation  can  be  called  with a stabiliser chain object [3XS[103X or with a
@@ -444,7 +444,7 @@
   
   [1X3.4-8 \in[101X
   
-  [29X[2X\in[102X( [3Xx[103X, [3XS[103X ) [32X operation
+  [33X[1;0Y[29X[2X\in[102X( [3Xx[103X, [3XS[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
   
   [33X[0;0YThis  operation  tests  whether or not the group element [3Xx[103X lies in the group
@@ -455,7 +455,7 @@
   
   [1X3.4-9 IsProved[101X
   
-  [29X[2XIsProved[102X( [3XS[103X ) [32X operation
+  [33X[1;0Y[29X[2XIsProved[102X( [3XS[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
   
   [33X[0;0YThis operation returns whether or not the stabiliser chain [3XS[103X is proved to be
@@ -466,7 +466,7 @@
   
   [1X3.4-10 GroupIteratorByStabilizerChain[101X
   
-  [29X[2XGroupIteratorByStabilizerChain[102X( [3XS[103X ) [32X operation
+  [33X[1;0Y[29X[2XGroupIteratorByStabilizerChain[102X( [3XS[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Yan iterator[133X
   
   [33X[0;0YThis operation returns an iterator object which runs through the elements of
@@ -478,7 +478,7 @@
   
   [1X3.4-11 SetStabilizerChain[101X
   
-  [29X[2XSetStabilizerChain[102X( [3Xg[103X, [3XS[103X ) [32X operation
+  [33X[1;0Y[29X[2XSetStabilizerChain[102X( [3Xg[103X, [3XS[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Ynothing[133X
   
   [33X[0;0YOnce the user is convinced that the stabiliser chain [3XS[103X describes the group [3Xg[103X
@@ -496,7 +496,7 @@
   
   [1X3.4-12 StoredStabilizerChain[101X
   
-  [29X[2XStoredStabilizerChain[102X( [3Xg[103X ) [32X attribute
+  [33X[1;0Y[29X[2XStoredStabilizerChain[102X( [3Xg[103X ) [32X attribute[133X
   [6XReturns:[106X  [33X[0;10Ya stabiliser chain[133X
   
   [33X[0;0YThis  attribute  for a group object [3Xg[103X contains a stored stabiliser chain for
@@ -504,7 +504,7 @@
   
   [1X3.4-13 StabChainOp[101X
   
-  [29X[2XStabChainOp[102X( [3Xp[103X, [3XS[103X ) [32X method
+  [33X[1;0Y[29X[2XStabChainOp[102X( [3Xp[103X, [3XS[103X ) [32X method[133X
   [6XReturns:[106X  [33X[0;10Ya [5XGAP[105X stabiliser chain[133X
   
   [33X[0;0YThis  method  computes  a  standard  [5XGAP[105X  library  stabiliser  chain for the
@@ -515,7 +515,7 @@
   
   [1X3.4-14 SiftBaseImage[101X
   
-  [29X[2XSiftBaseImage[102X( [3XS[103X, [3Xl[103X ) [32X operation
+  [33X[1;0Y[29X[2XSiftBaseImage[102X( [3XS[103X, [3Xl[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
   
   [33X[0;0YThis  operation  sifts an image [3Xl[103X of the base points of the stabiliser chain
@@ -529,7 +529,7 @@
   
   [1X3.4-15 SLPChainStabilizerChain[101X
   
-  [29X[2XSLPChainStabilizerChain[102X( [3XS[103X, [3Xgens[103X ) [32X operation
+  [33X[1;0Y[29X[2XSLPChainStabilizerChain[102X( [3XS[103X, [3Xgens[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Ya record[133X
   
   [33X[0;0YThis operation assumes that [3XS[103X is a stabiliser chain that correctly describes
@@ -545,7 +545,7 @@
   
   [1X3.4-16 GroupHomomorphismByImagesNCStabilizerChain[101X
   
-  [29X[2XGroupHomomorphismByImagesNCStabilizerChain[102X( [3Xg[103X, [3Xh[103X, [3Ximages[103X, [3Xopt1[103X, [3Xopt2[103X ) [32X function
+  [33X[1;0Y[29X[2XGroupHomomorphismByImagesNCStabilizerChain[102X( [3Xg[103X, [3Xh[103X, [3Ximages[103X, [3Xopt1[103X, [3Xopt2[103X ) [32X function[133X
   [6XReturns:[106X  [33X[0;10Ya group homomorphism[133X
   
   [33X[0;0YThis  function creates a group homomorphism object from the group [3Xg[103X into the
@@ -562,7 +562,7 @@
   
   [1X3.4-17 FindShortGeneratorsOfSubgroup[101X
   
-  [29X[2XFindShortGeneratorsOfSubgroup[102X( [3Xg[103X, [3Xu[103X ) [32X method
+  [33X[1;0Y[29X[2XFindShortGeneratorsOfSubgroup[102X( [3Xg[103X, [3Xu[103X ) [32X method[133X
   [6XReturns:[106X  [33X[0;10Ya record[133X
   
   [33X[0;0YThis  is  an additional method for matrix or permutation groups implementing
@@ -576,7 +576,7 @@
   
   [1X3.4-18 Stab[101X
   
-  [29X[2XStab[102X( [3Xg[103X, [3Xx[103X, [3Xop[103X[, [3Xopt[103X] ) [32X operation
+  [33X[1;0Y[29X[2XStab[102X( [3Xg[103X, [3Xx[103X, [3Xop[103X[, [3Xopt[103X] ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Ya record or [9Xfail[109X[133X
   
   [33X[0;0YThis  operation  aims  to compute the point stabiliser of the group [3Xg[103X acting

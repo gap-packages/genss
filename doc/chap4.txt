@@ -11,7 +11,7 @@
   
   [1X4.1-1 SetwiseStabilizer[101X
   
-  [29X[2XSetwiseStabilizer[102X( [3XG[103X, [3Xop[103X, [3XM[103X ) [32X operation
+  [33X[1;0Y[29X[2XSetwiseStabilizer[102X( [3XG[103X, [3Xop[103X, [3XM[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Ya record[133X
   
   [33X[0;0YThis  operation computes the setwise stabiliser of the set [3XM[103X. So [3XG[103X must be a
@@ -26,7 +26,7 @@
   
   [1X4.1-2 SetwiseStabilizerPartitionBacktrack[101X
   
-  [29X[2XSetwiseStabilizerPartitionBacktrack[102X( [3XG[103X, [3Xop[103X, [3XM[103X ) [32X operation
+  [33X[1;0Y[29X[2XSetwiseStabilizerPartitionBacktrack[102X( [3XG[103X, [3Xop[103X, [3XM[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Ya record[133X
   
   [33X[0;0YThis  operation computes the setwise stabiliser of the set [3XM[103X. So [3XG[103X must be a
@@ -45,7 +45,7 @@
   
   [1X4.2-1 BacktrackSearchStabilizerChainElement[101X
   
-  [29X[2XBacktrackSearchStabilizerChainElement[102X( [3XS[103X, [3XP[103X, [3Xg[103X, [3Xpruner[103X ) [32X operation
+  [33X[1;0Y[29X[2XBacktrackSearchStabilizerChainElement[102X( [3XS[103X, [3XP[103X, [3Xg[103X, [3Xpruner[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Y[9Xfail[109X or a group element[133X
   
   [33X[0;0YLet  [22XG[122X be the group described by the stabiliser chain [3XS[103X. The group element [3Xg[103X
@@ -89,7 +89,7 @@
   
   [1X4.2-2 BacktrackSearchStabilizerChainSubgroup[101X
   
-  [29X[2XBacktrackSearchStabilizerChainSubgroup[102X( [3XS[103X, [3XP[103X, [3Xpruner[103X ) [32X operation
+  [33X[1;0Y[29X[2XBacktrackSearchStabilizerChainSubgroup[102X( [3XS[103X, [3XP[103X, [3Xpruner[103X ) [32X operation[133X
   [6XReturns:[106X  [33X[0;10Y[9Xfail[109X or a stabiliser chain[133X
   
   [33X[0;0YLet  [22XG[122X  be  the  group  described  by the stabiliser chain [3XS[103X. This operation

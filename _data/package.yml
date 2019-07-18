@@ -1,6 +1,6 @@
 name: genss
-version: 1.6.5
-date: 2017-11-21
+version: 1.6.6
+date: 2018-07-18
 description: |
     Generic Schreier-Sims
 
@@ -14,9 +14,9 @@ maintainers:
     - name: Felix Noeske
       url: http://www.math.rwth-aachen.de/~Felix.Noeske
     - name: Max Horn
-      url: http://www.quendi.de/math
+      url: https://www.quendi.de/math
 
-GAP: ">=4.5"
+GAP: ">=4.9"
 
 needed-pkgs:
     - name: "GAPDoc"
@@ -35,9 +35,9 @@ packageinfo: https://gap-packages.github.io/genss/PackageInfo.g
 
 downloads:
     - name: .tar.gz
-      url: https://github.com/gap-packages/genss/releases/download/v1.6.5/genss-1.6.5.tar.gz
+      url: https://github.com/gap-packages/genss/releases/download/v1.6.6/genss-1.6.6.tar.gz
     - name: .tar.bz2
-      url: https://github.com/gap-packages/genss/releases/download/v1.6.5/genss-1.6.5.tar.bz2
+      url: https://github.com/gap-packages/genss/releases/download/v1.6.6/genss-1.6.6.tar.bz2
 
 abstract: |
     The <span class="pkgname">genss</span> package implements the    randomised Schreier-Sims algorithm to compute a stabiliser chain    and a base and strong generating set for arbitrary finite groups.
