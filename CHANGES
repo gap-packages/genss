@@ -1,6 +1,6 @@
 This file describes changes in the genss package.
 
-X.Y (2019-07-XX)
+1.6.6 (2019-07-18)
   - Minimal require GAP version is 4.9
   - Add variants of Random methods which optionally accept a random source
   - Various janitorial changes
