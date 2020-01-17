@@ -22,8 +22,7 @@ SetInfoLevel(InfoGenSS,1);
 # main function "StabilizerChain":
 #############################################################################
 
-DeclareGlobalVariable( "GENSS" );
-InstallValue(GENSS,rec());
+BindGlobal( "GENSS", rec() );
 
 
 #############################################################################
