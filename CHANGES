@@ -15,7 +15,7 @@ This file describes changes in the genss package.
 
 1.6.3 (2016-01-07)
   - Fix a bug in SetwiseStabilizer (see issue #5)
-  - Move website to http://gap-packages.github.io/genss/
+  - Move website to https://gap-packages.github.io/genss/
 
 1.6.2 (2014-09-24)
   - Update Max Neunhoeffer's contact data
