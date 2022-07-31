@@ -7,8 +7,8 @@ SetPackageInfo( rec(
 
 PackageName := "genss",
 Subtitle := "Generic Schreier-Sims",
-Version := "1.6.6dev",
-Date := "18/07/2018", # dd/mm/yyyy format
+Version := "1.6.7",
+Date := "31/07/2022", # dd/mm/yyyy format
 License := "GPL-3.0-or-later",
 
 ##  Information about authors and maintainers.
