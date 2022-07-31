@@ -6,17 +6,15 @@
                             [1X Generic Schreier-Sims [101X
   
   
-                                     1.6.6
+                                     1.6.7
   
   
-                                  18 July 2018
+                                  31 July 2022
   
   
                                  Max Neunhöffer
   
                                   Felix Noeske
-  
-                                    Max Horn
   
   
   
@@ -35,16 +33,6 @@
                 [33X[0;14YLehrstuhl D fuer Mathematik, RWTH Aachen[133X
                 [33X[0;14YTemplergraben 64[133X
                 [33X[0;14Y52056 Aachen[133X
-                [33X[0;14YGermany[133X
-  
-  
-  Max Horn
-      Email:    [7Xmailto:max.horn@uni-siegen.de[107X
-      Homepage: [7Xhttps://www.quendi.de/math[107X
-      Address:  [33X[0;14YDepartment Mathematik[133X
-                [33X[0;14YUniversität Siegen[133X
-                [33X[0;14YWalter-Flex-Straße 3[133X
-                [33X[0;14Y57072 Siegen[133X
                 [33X[0;14YGermany[133X
   
   
