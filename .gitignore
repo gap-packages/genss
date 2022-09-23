@@ -2,7 +2,7 @@
 /doc/chap*.txt
 /doc/*.css
 /doc/*.js
-doc/chooser.html
+/doc/chooser.html
 /doc/*.aux
 /doc/*.bbl
 /doc/*.blg
@@ -19,6 +19,7 @@ doc/chooser.html
 /doc/*.toc
 /doc/manual.pdf
 /doc/title.xml
+/doc/_*.xml
 
 /tmp/
 /gh-pages/
