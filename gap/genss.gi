@@ -141,9 +141,7 @@ InstallGlobalFunction( GENSS_FindVectorsWithShortOrbit,
         Add(l,x);
         Add(data.randpool,x);
     od;
-    if IsObjWithMemory(l[1]) then
-        ForgetMemory(l);
-    fi;
+    ForgetMemory(l);
     c := List(l,x->Set(Factors(CharacteristicPolynomial(x,1):
                                onlydegs := [1..3])));
     v := [];
