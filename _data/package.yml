@@ -1,5 +1,6 @@
 name: genss
-version: 1.6.8
+version: "1.6.8"
+license: "GPL-3.0-or-later"
 date: 2022-09-26
 description: |
     Generic Schreier-Sims
@@ -45,3 +46,30 @@ abstract: |
 status: deposited
 doc-html: doc/chap0_mj.html
 doc-pdf: doc/manual.pdf
+keywords: |
+    Schreier-Sims, Schreier, Sims, Stabilizer chain.
+citeas: |
+    <p class='BibEntry'>
+    [<span class='BibKey'>NNH22</span>]   <b class='BibAuthor'>Neunhöffer, M., Noeske, F. and Horn, M.</b>,
+     <i class='BibTitle'>genss, Generic Schreier-Sims,
+             Version 1.6.8</i>
+     (<span class='BibYear'>2022</span>)<br />
+    (<span class='BibNote'>GAP package</span>),
+    <span class='BibHowpublished'><a href="https://gap-packages.github.io/genss">https://gap-packages.github.io/genss</a></span>.
+    </p>
+    
+
+bibtex: |
+    @misc{ genss1.6.8,
+      author =           {Neunh{\"o}ffer, M. and Noeske, F. and Horn, M.},
+      title =            {{genss}, Generic Schreier-Sims, {V}ersion 1.6.8},
+      month =            {Sep},
+      year =             {2022},
+      note =             {GAP package},
+      howpublished =     {\href           {https://gap-packages.github.io/genss}
+                          {\texttt{https://gap-packages.github.io/}\discretionary
+                          {}{}{}\texttt{genss}}},
+      keywords =         {Schreier-Sims; Schreier; Sims; Stabilizer chain},
+      printedkey =       {NNH22}
+    }
+
