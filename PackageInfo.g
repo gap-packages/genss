@@ -118,10 +118,11 @@ Dependencies := rec(
   GAP := ">=4.9",
   NeededOtherPackages := [
     ["GAPDoc", ">= 1.5"],
-    ["IO", ">= 4.2"],
     ["orb", ">= 4.5"],
   ],
-  SuggestedOtherPackages := [],
+  SuggestedOtherPackages := [
+    ["IO", ">= 4.2"],
+  ],
   ExternalConditions := []
 ),
 
