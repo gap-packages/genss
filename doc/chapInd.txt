@@ -8,7 +8,7 @@
   [2XBaseStabilizerChain[102X 3.4-5 
   [2XFindBasePointCandidates[102X 3.3-1 
   [2XFindShortGeneratorsOfSubgroup[102X 3.4-17 
-  [5Xgenss[105X 2. 
+  [5Xgenss[105X 2.0 
   [2XGENSS_IsOneProjective[102X 3.2-1 
   [2XGroupHomomorphismByImagesNCStabilizerChain[102X 3.4-16 
   [2XGroupIteratorByStabilizerChain[102X 3.4-10 

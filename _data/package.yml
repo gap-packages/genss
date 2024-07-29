@@ -1,7 +1,7 @@
 name: genss
-version: "1.6.8"
+version: "1.6.9"
 license: "GPL-3.0-or-later"
-date: 2022-09-26
+date: 2024-07-29
 description: |
     Generic Schreier-Sims
 
@@ -22,13 +22,15 @@ GAP: ">=4.9"
 needed-pkgs:
     - name: "GAPDoc"
       version: ">= 1.5"
-      url: "http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc"
-    - name: "IO"
-      version: ">= 4.2"
-      url: "https://gap-packages.github.io/io"
+      url: "https://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc"
     - name: "orb"
       version: ">= 4.5"
       url: "https://gap-packages.github.io/orb"
+
+suggested-pkgs:
+    - name: "IO"
+      version: ">= 4.2"
+      url: "https://gap-packages.github.io/io"
 
 www: https://gap-packages.github.io/genss
 readme: README
@@ -36,9 +38,9 @@ packageinfo: https://gap-packages.github.io/genss/PackageInfo.g
 
 downloads:
     - name: .tar.gz
-      url: https://github.com/gap-packages/genss/releases/download/v1.6.8/genss-1.6.8.tar.gz
+      url: https://github.com/gap-packages/genss/releases/download/v1.6.9/genss-1.6.9.tar.gz
     - name: .tar.bz2
-      url: https://github.com/gap-packages/genss/releases/download/v1.6.8/genss-1.6.8.tar.bz2
+      url: https://github.com/gap-packages/genss/releases/download/v1.6.9/genss-1.6.9.tar.bz2
 
 abstract: |
     The <span class="pkgname">genss</span> package implements the    randomised Schreier-Sims algorithm to compute a stabiliser chain    and a base and strong generating set for arbitrary finite groups.
@@ -50,26 +52,28 @@ keywords: |
     Schreier-Sims, Schreier, Sims, Stabilizer chain.
 citeas: |
     <p class='BibEntry'>
-    [<span class='BibKey'>NNH22</span>]   <b class='BibAuthor'>Neunhöffer, M., Noeske, F. and Horn, M.</b>,
+    [<span class='BibKey'>NNH24</span>]   <b class='BibAuthor'>Neunhöffer, M., Noeske, F. and Horn, M.</b>,
      <i class='BibTitle'>genss, Generic Schreier-Sims,
-             Version 1.6.8</i>
-     (<span class='BibYear'>2022</span>)<br />
+             Version 1.6.9</i>
+     (<span class='BibYear'>2024</span>)<br />
     (<span class='BibNote'>GAP package</span>),
     <span class='BibHowpublished'><a href="https://gap-packages.github.io/genss">https://gap-packages.github.io/genss</a></span>.
     </p>
     
 
 bibtex: |
-    @misc{ genss1.6.8,
+    @misc{ genss,
       author =           {Neunh{\"o}ffer, M. and Noeske, F. and Horn, M.},
-      title =            {{genss}, Generic Schreier-Sims, {V}ersion 1.6.8},
-      month =            {Sep},
-      year =             {2022},
+      title =            {{genss},   Generic   Schreier\texttt{\symbol{45}}Sims,
+                          {V}ersion 1.6.9},
+      month =            {Jul},
+      year =             {2024},
       note =             {GAP package},
       howpublished =     {\href           {https://gap-packages.github.io/genss}
-                          {\texttt{https://gap-packages.github.io/}\discretionary
+                          {\texttt{https://gap\texttt{\symbol{45}}packages.github.io/}\discretionary
                           {}{}{}\texttt{genss}}},
-      keywords =         {Schreier-Sims; Schreier; Sims; Stabilizer chain},
-      printedkey =       {NNH22}
+      keywords =         {Schreier\texttt{\symbol{45}}Sims;    Schreier;   Sims;
+                          Stabilizer chain},
+      printedkey =       {NNH24}
     }
 

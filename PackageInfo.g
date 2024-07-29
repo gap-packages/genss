@@ -7,8 +7,8 @@ SetPackageInfo( rec(
 
 PackageName := "genss",
 Subtitle := "Generic Schreier-Sims",
-Version := "1.6.8",
-Date := "26/09/2022", # dd/mm/yyyy format
+Version := "1.6.9",
+Date := "29/07/2024", # dd/mm/yyyy format
 License := "GPL-3.0-or-later",
 
 ##  Information about authors and maintainers.
@@ -48,16 +48,16 @@ Persons := [
     FirstNames    := "Max",
     IsAuthor      := false,
     IsMaintainer  := true,
-    Email         := "horn@mathematik.uni-kl.de",
+    Email         := "mhorn@rptu.de",
     WWWHome       := "https://www.quendi.de/math",
     PostalAddress := Concatenation(
                        "Fachbereich Mathematik\n",
-                       "TU Kaiserslautern\n",
+                       "RPTU Kaiserslautern-Landau\n",
                        "Gottlieb-Daimler-Straße 48\n",
                        "67663 Kaiserslautern\n",
                        "Germany" ),
     Place         := "Kaiserslautern, Germany",
-    Institution   := "TU Kaiserslautern"
+    Institution   := "RPTU Kaiserslautern-Landau"
   ),
 ],
 
@@ -118,10 +118,11 @@ Dependencies := rec(
   GAP := ">=4.9",
   NeededOtherPackages := [
     ["GAPDoc", ">= 1.5"],
-    ["IO", ">= 4.2"],
     ["orb", ">= 4.5"],
   ],
-  SuggestedOtherPackages := [],
+  SuggestedOtherPackages := [
+    ["IO", ">= 4.2"],
+  ],
   ExternalConditions := []
 ),
 
