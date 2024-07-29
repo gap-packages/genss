@@ -1,5 +1,9 @@
 This file describes changes in the genss package.
 
+1.6.9 (2024-07-29)
+  - Turn IO into an optional dependency
+  - Update contact details for Max Horn in package description
+
 1.6.8 (2022-09-26)
   - Fix a bug that cold lead to an unexpected error when computing
     stabilizers in groups-with-memory
