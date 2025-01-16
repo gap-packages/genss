@@ -84,7 +84,6 @@ DeclareGlobalFunction( "SLPChainStabilizerChain" );
 DeclareGlobalFunction( "GENSS_Prod" );
 DeclareOperation( "VerifyStabilizerChainMC", [ IsStabilizerChain, IsInt ] );
 DeclareGlobalFunction( "VerifyStabilizerChainTC" );
-DeclareGlobalFunction( "VerifyStabilizerChainTC2" );
 DeclareGlobalFunction( "GENSS_ImageElm" );
 DeclareGlobalFunction( "GENSS_PreImagesRepresentative" );
 DeclareGlobalFunction( "GroupHomomorphismByImagesNCStabilizerChain" );
