@@ -298,9 +298,9 @@ InstallMethod( FindBasePointCandidates,
   50,  # highest weight,
   function( grp, opt, i, parentS )
     local F, q, d, gens, v;
-    Info( InfoGenSS, 3, "Finding nice base points (scalar)..." );
     F := DefaultFieldOfMatrixGroup(grp);
     q := Size(F);
+    Info( InfoGenSS, 3, "Finding nice base points (scalar over ", F, ")..." );
     d := DimensionOfMatrixGroup(grp);
     gens := GeneratorsOfGroup(grp);
     if IsObjWithMemory(gens[1]) then
@@ -322,9 +322,9 @@ InstallMethod( FindBasePointCandidates,
   40,  # highest weight,
   function( grp, opt, i, parentS )
     local F, q, d, gens, op, v, vv, k, kk, o, cand, j;
-    Info( InfoGenSS, 3, "Finding nice base points (very short)..." );
     F := DefaultFieldOfMatrixGroup(grp);
     q := Size(F);
+    Info( InfoGenSS, 3, "Finding nice base points (very short over ", F, ")..." );
     d := DimensionOfMatrixGroup(grp);
     gens := GeneratorsOfGroup(grp);
     if IsObjWithMemory(gens[1]) then
@@ -409,7 +409,7 @@ InstallMethod( FindBasePointCandidates,
     orblimit := opt.OrbitLimitBirthdayParadox;
 
     Info( InfoGenSS, 3, "Finding base points (birthday paradox, limit=",
-                        orblimit,", randels=",randels,")..." );
+                        orblimit,", randels=",randels,", field=",F,")..." );
     data := opt.FindBasePointCandidatesData; # this we get from earlier methods
     if q = 2 then
         op := OnPoints;
@@ -515,7 +515,7 @@ InstallMethod( FindBasePointCandidates,
     F := DefaultFieldOfMatrixGroup(grp);
     d := DimensionOfMatrixGroup(grp);
     data := opt.FindBasePointCandidatesData;
-    Info( InfoGenSS, 3, "Finding nice base points (TryShortOrbit)..." );
+    Info( InfoGenSS, 3, "Finding nice base points (TryShortOrbit over ",F,")..." );
 
     # Next possibly "TryShortOrbit":
     cand := rec( points := [], used := 0 );
@@ -549,7 +549,7 @@ InstallMethod( FindBasePointCandidates,
     local F, d, bv, cand, w, v;
     F := DefaultFieldOfMatrixGroup(grp);
     d := DimensionOfMatrixGroup(grp);
-    Info( InfoGenSS, 3, "Finding nice base points (Murray/O'Brien)..." );
+    Info( InfoGenSS, 3, "Finding nice base points (Murray/O'Brien over ",F,")..." );
 
     # Standard Murray/O'Brien heuristics:
     if i = 0 and 
