@@ -78,7 +78,6 @@ DeclareOperation( "NrStrongGenerators", [IsStabilizerChain] );
 DeclareOperation( "GENSS_CreateSchreierGenerator",
   [ IsStabilizerChain, IsPosInt, IsPosInt ] );
 DeclareGlobalFunction( "GENSS_FindGensStabilizer" );
-DeclareGlobalFunction( "GENSS_FindShortGensStabilizerOld" );
 DeclareGlobalFunction( "GENSS_FindShortGensStabilizer" );
 DeclareGlobalFunction( "SLPChainStabilizerChain" );
 DeclareGlobalFunction( "GENSS_Prod" );
