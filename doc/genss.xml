@@ -27,8 +27,6 @@
 <#Include SYSTEM "examples.xml">
 </Body>
 
-<Bibliography Databases="genss"/>
-
 <!--  And finally an index as well   -->
 <TheIndex/>
 
