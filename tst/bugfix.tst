@@ -4,7 +4,8 @@ gap> START_TEST("bugfix.tst");
 # See https://github.com/gap-packages/genss/issues/5
 #
 gap> for i in [1..100] do
->    g := PrimitiveGroup(9, 5);
+>    # g := PrimitiveGroup(9, 5);
+>    g := Group([ (2,6)(3,8)(5,9), (2,5,6,7,3,9,8,4), (1,2,3)(4,5,6)(7,8,9) ]);
 >    actual := SetwiseStabilizer(g, OnPoints, [3]).setstab;
 >    expected := Stabilizer(g, 3);
 >    if actual <> expected then
