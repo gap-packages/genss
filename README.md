@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/gap-packages/genss/actions/workflows/CI.yml/badge.svg)](https://github.com/gap-packages/genss/actions/workflows/CI.yml)
+[![CI](https://github.com/gap-packages/genss/actions/workflows/CI.yml/badge.svg)](https://github.com/gap-packages/genss/actions/workflows/CI.yml)
 [![Code Coverage](https://codecov.io/github/gap-packages/genss/coverage.svg?branch=master&token=)](https://codecov.io/gh/gap-packages/genss)
 
 # README file for the `genss` GAP 4 package
