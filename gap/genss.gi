@@ -592,17 +592,8 @@ InstallMethod( FindBasePointCandidates, "for a permutation group",
     return rec( points := points, ops := ops, used := 0 );
   end );
     
-GENSS_HACK := OnPoints;
-
 InstallGlobalFunction( GENSS_OpFunctionMaker, function(op,index)
-  local name,s,f;
-  name := NAME_FUNC(op);
-  if name = "unknown" or name = "GENSS_HACK" then return fail; fi;
-  s := Concatenation( "GENSS_HACK := function(x,el) return ",
-                      name, "(x,el[",String(index),"]); end;" );
-  f := InputTextString(s);
-  Read(f);
-  return GENSS_HACK;
+  return {x,el} -> op(x, el[index]);
 end);
 
 InstallMethod( FindBasePointCandidates, "for a direct product",
