@@ -34,13 +34,16 @@ Sect="StabChainOpts"/> below for an
 explanation of the possible components. 
 <P/>
 Note that this is a Monte Carlo algorithm in most cases, so there is a
-small error probability. However, the only error possible is that some of
-the subgroups in the stabiliser chain are proper subgroups of the actual point
-stabilisers. So the resulting group order is always a divisor of the actual
-group order and if the two are equal, then the stabiliser chain is proved
-to be correct. In particular, if the group object <A>G</A> for some reason
-already knows the group order, then this procedure always returns a correct
-and proven stabiliser chain for <A>G</A>.
+small error probability. If the algorithm misses generators for a point
+stabiliser, then later orbit lengths may be too small. Since these orbit
+lengths are multiplied to compute the size represented by the stabiliser
+chain, the resulting size need not be a divisor of the actual group order.
+In particular, equality of the computed size and the actual group order
+does not by itself prove correctness unless the group order was known to
+the algorithm during the computation. If the group object <A>G</A> for some
+reason already knows the group order, then this procedure keeps adding
+random elements until the known size is reached, and returns a correct and
+proven stabiliser chain for <A>G</A>.
 </Description>
 </ManSection>
 
@@ -124,7 +127,9 @@ verification is done by creating a few more random elements of that
 stabiliser and sifting them through the newly created stabiliser chain.
 Each such element has a chance of at least <M>1/2</M> to spot this. The
 number of random elements used is stored in the component
-<C>ImmediateVerificationElements</C>.
+<C>ImmediateVerificationElements</C>. Increasing this value can detect
+missing stabiliser generators earlier, at the cost of more random element
+generation and sifting at each non-trivial stabiliser layer.
 </Item>
 <Mark><C>InitialHashSize</C></Mark>
 <Item>
@@ -330,7 +335,11 @@ are used in the end to verify the stabiliser chain statistically.
 Usually the user specifies the component <C>ErrorBound</C> instead
 and <C>VerifyElements</C> is then computed automatically from that. 
 However, if no <C>ErrorBound</C> is given, the <C>VerifyElements</C>
-component takes precedence over the <C>random</C> component.
+component takes precedence over the <C>random</C> component. Increasing
+this value reduces the probability that missing generators survive the
+final Monte Carlo verification, but it does not make the result
+deterministic unless the group size is known or another deterministic
+verification is available.
 </Item>
 <Mark><C>VeryShortOrbLimit</C></Mark>
 <Item>
