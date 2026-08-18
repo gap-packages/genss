@@ -2,13 +2,13 @@
 [![Code Coverage](https://codecov.io/github/gap-packages/genss/coverage.svg?branch=master&token=)](https://codecov.io/gh/gap-packages/genss)
 
 # README file for the `genss` GAP 4 package
-        
+
 To get the newest version of this GAP 4 package download the
 archive file
 
     genss-x.x.tar.gz
 
-and unpack it using 
+and unpack it using
 
     tar xvf genss-x.x.tar.gz
 
@@ -26,7 +26,7 @@ If you installed the package in another `pkg` directory than the standard
 to the directory containing your `pkg` directory to GAP's list of directories.
 This can be done by starting GAP with the `-l` command line option
 followed by the name of the directory and a semicolon. Then your directory
-is prepended to the list of directories searched. Otherwise the package 
+is prepended to the list of directories searched. Otherwise the package
 is not found by GAP. Of course, you can add this option to your GAP
 startup script.
 
