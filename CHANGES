@@ -1,5 +1,13 @@
 This file describes changes in the genss package.
 
+1.6.10 (2026-08-18)
+  - Correct an incorrect claim in the manual about what can happen if a
+    randomized stabilizer chain is incorrect (e.g. it was claimed that the
+    result would indicate a group size that's a divisor of the correct size;
+    but that is false; all we can say is that it will be smaller than the
+    correct size)
+  - Various janitorial changes
+
 1.6.9 (2024-07-29)
   - Turn IO into an optional dependency
   - Update contact details for Max Horn in package description
