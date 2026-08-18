@@ -1,55 +1,26 @@
 #############################################################################
 ##  
-##  PackageInfo.g for the package `genss'
-##  
+##  Demo PackageInfo.g for the GitHubPagesForGAP
+##
 
 SetPackageInfo( rec(
 
-PackageName := "genss",
-Subtitle := "Generic Schreier-Sims",
-Version := "1.6.9",
-Date := "29/07/2024", # dd/mm/yyyy format
-License := "GPL-3.0-or-later",
+PackageName := "GitHubPagesForGAP",
 
-##  Information about authors and maintainers.
+Subtitle := "A GitHub Pages generator for GAP packages",
+Version := "0.4",
+Date := "10/04/2025", # dd/mm/yyyy format
+License := "0BSD",
+
 Persons := [
-  rec( 
-    LastName      := "Neunhöffer",
-    FirstNames    := "Max",
-    IsAuthor      := true,
-    IsMaintainer  := false,
-    Email         := "max@9hoeffer.de",
-    WWWHome       := "http://www-groups.mcs.st-and.ac.uk/~neunhoef",
-    PostalAddress := Concatenation( [
-                       "Gustav-Freytag-Straße 40\n",
-                       "50354 Hürth\n",
-                       "Germany" ] ),
-    #Place         := "St Andrews",
-    #Institution   := "University of St Andrews"
-  ),
-  rec( 
-    LastName      := "Noeske",
-    FirstNames    := "Felix",
-    IsAuthor      := true,
-    IsMaintainer  := true,
-    Email         := "felix.noeske@math.rwth-aachen.de",
-    WWWHome       := "http://www.math.rwth-aachen.de/~Felix.Noeske",
-    PostalAddress := Concatenation( [
-                       "Felix Noeske\n",
-                       "Lehrstuhl D fuer Mathematik, RWTH Aachen\n",
-                       "Templergraben 64\n",
-                       "52056 Aachen\n",
-                       "Germany" ] ),
-    Place         := "Aachen",
-    Institution   := "RWTH Aachen"
-  ),
   rec(
     LastName      := "Horn",
     FirstNames    := "Max",
-    IsAuthor      := false,
+    IsAuthor      := true,
     IsMaintainer  := true,
     Email         := "mhorn@rptu.de",
     WWWHome       := "https://www.quendi.de/math",
+    GitHubUsername:= "fingolfin",
     PostalAddress := Concatenation(
                        "Fachbereich Mathematik\n",
                        "RPTU Kaiserslautern-Landau\n",
@@ -59,89 +30,73 @@ Persons := [
     Place         := "Kaiserslautern, Germany",
     Institution   := "RPTU Kaiserslautern-Landau"
   ),
+
+  rec(
+    LastName      := "Thor",
+    FirstNames    := "A. U.",
+    IsAuthor      := true,
+    IsMaintainer  := false,
+    #Email         := "author@example.com",
+  ),
+
+  rec(
+    LastName      := "Itor",
+    FirstNames    := "Jan",
+    IsAuthor      := false,
+    IsMaintainer  := true,
+    #Email         := "janitor@example.com",
+  ),
 ],
 
-##  Status information. Currently the following cases are recognized:
-##    "accepted"      for successfully refereed packages
-##    "deposited"     for packages for which the GAP developers agreed 
-##                    to distribute them with the core GAP system
-##    "dev"           for development versions of packages 
-##    "other"         for all other packages
-##
-# Status := "accepted",
-Status := "deposited",
+Status := "other",
 
-##  You must provide the next two entries if and only if the status is 
-##  "accepted" because is was successfully refereed:
-# format: 'name (place)'
-# CommunicatedBy := "Mike Atkinson (St. Andrews)",
-#CommunicatedBy := "",
-# format: mm/yyyy
-# AcceptDate := "08/1999",
-#AcceptDate := "",
+# The following are not strictly necessary in your own PackageInfo.g
+# (in the sense that update.g only looks at the usual fields
+# like PackageWWWHome, ArchiveURL etc.). But they are convenient
+# if you use exactly the scheme for your package website that we propose.
+GithubUser := "gap-system",
+GithubRepository := ~.PackageName,
+GithubWWW := Concatenation("https://github.com/", ~.GithubUser, "/", ~.GithubRepository),
 
-SourceRepository := rec(
-    Type := "git",
-    URL := Concatenation( "https://github.com/gap-packages/", ~.PackageName ),
-),
-IssueTrackerURL := Concatenation( ~.SourceRepository.URL, "/issues" ),
-PackageWWWHome  := Concatenation( "https://gap-packages.github.io/", ~.PackageName ),
-README_URL      := Concatenation( ~.PackageWWWHome, "/README" ),
-PackageInfoURL  := Concatenation( ~.PackageWWWHome, "/PackageInfo.g" ),
-ArchiveURL      := Concatenation( ~.SourceRepository.URL,
-                                 "/releases/download/v", ~.Version,
-                                 "/", ~.PackageName, "-", ~.Version ),
+PackageWWWHome := Concatenation("https://", ~.GithubUser, ".github.io/", ~.GithubRepository, "/"),
+README_URL     := Concatenation( ~.PackageWWWHome, "README.md" ),
+PackageInfoURL := Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
+# The following assumes you are using the Github releases system. If not, adjust
+# it accordingly.
+ArchiveURL     := Concatenation(~.GithubWWW,
+                    "/releases/download/v", ~.Version, "/",
+                    ~.GithubRepository, "-", ~.Version),
+
 ArchiveFormats := ".tar.gz .tar.bz2",
 
-##  Here you  must provide a short abstract explaining the package content 
-##  in HTML format (used on the package overview Web page) and an URL 
-##  for a Webpage with more detailed information about the package
-##  (not more than a few lines, less is ok):
-##  Please, use '<span class="pkgname">GAP</span>' and
-##  '<span class="pkgname">MyPKG</span>' for specifing package names.
-##  
 AbstractHTML := 
-  "The <span class=\"pkgname\">genss</span> package implements the \
-   randomised Schreier-Sims algorithm to compute a stabiliser chain \
-   and a base and strong generating set for arbitrary finite groups.",
+  "This is a pseudo package that contains no actual\
+  <span class=\"pkgname\">GAP</span> code. Instead, it is a template for other\
+  GAP packages that allows to quickly setup GitHub Pages.",
 
 PackageDoc := rec(
-  BookName  := "genss",
+  BookName  := "GitHubPagesForGAP",
   ArchiveURLSubset := ["doc"],
-  HTMLStart := "doc/chap0_mj.html",
+  HTMLStart := "doc/chap0.html",
   PDFFile   := "doc/manual.pdf",
   SixFile   := "doc/manual.six",
-  LongTitle := "Generic Schreier-Sims",
+  LongTitle := "A GitHub Pages generator for GAP packages",
 ),
 
+# The following dependencies are fake and for testing / demo purposes
 Dependencies := rec(
-  GAP := ">=4.9",
+  GAP := ">=4.8.1",
   NeededOtherPackages := [
-    ["GAPDoc", ">= 1.5"],
-    ["orb", ">= 4.5"],
+    ["GAPDoc", ">= 1.2"],
+    ["IO", ">= 4.1"],
   ],
-  SuggestedOtherPackages := [
-    ["IO", ">= 4.2"],
-  ],
+  SuggestedOtherPackages := [["orb", ">= 4.2"]],
   ExternalConditions := []
 ),
 
 AvailabilityTest := ReturnTrue,
 
-TestFile := "tst/testall.g",
-
-Keywords := ["Schreier-Sims", "Schreier", "Sims", "Stabilizer chain"],
-
-AutoDoc := rec(
-    TitlePage := rec(
-        Copyright := Concatenation(
-                    "&copyright; 2006-2014 by Max Neunhöffer and Felix Noeske<P/>\n",
-                    "\n",
-                    "This package may be distributed under the terms and conditions of the\n",
-                    "GNU Public License Version 3 or higher.\n"
-                ),
-    )
-),
+Keywords := ["GitHub Pages", "GAP"]
 
 ));
 
