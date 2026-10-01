@@ -1,87 +1,104 @@
 This file describes changes in the genss package.
 
-1.6.10 (2026-08-18)
-  - Correct an incorrect claim in the manual about what can happen if a
-    randomized stabilizer chain is incorrect (e.g. it was claimed that the
-    result would indicate a group size that's a divisor of the correct size;
-    but that is false; all we can say is that it will be smaller than the
-    correct size)
-  - Various janitorial changes
+## 1.6.10 (2026-08-18)
 
-1.6.9 (2024-07-29)
-  - Turn IO into an optional dependency
-  - Update contact details for Max Horn in package description
+- Correct an incorrect claim in the manual about what can happen if a
+  randomized stabilizer chain is incorrect (e.g. it was claimed that the
+  result would indicate a group size that's a divisor of the correct size;
+  but that is false; all we can say is that it will be smaller than the
+  correct size)
+- Various janitorial changes
 
-1.6.8 (2022-09-26)
-  - Fix a bug that cold lead to an unexpected error when computing
-    stabilizers in groups-with-memory
+## 1.6.9 (2024-07-29)
 
-1.6.7 (2022-07-31)
-  - Minor janitorial changes
+- Turn IO into an optional dependency
+- Update contact details for Max Horn in package description
 
-1.6.6 (2019-07-18)
-  - Minimal required GAP version is 4.9
-  - Add variants of Random methods which optionally accept a random source
-  - Various janitorial changes
+## 1.6.8 (2022-09-26)
 
-1.6.5 (2017-11-21)
-  - Maintenance release
-  - Use RecNames instead of the obsolete RecFields
-  - Fix link to issue tracker
+- Fix a bug that cold lead to an unexpected error when computing
+  stabilizers in groups-with-memory
 
-1.6.4 (2016-03-08)
-  - Maintenance release
+## 1.6.7 (2022-07-31)
 
-1.6.3 (2016-01-07)
-  - Fix a bug in SetwiseStabilizer (see issue #5)
-  - Move website to https://gap-packages.github.io/genss/
+- Minor janitorial changes
 
-1.6.2 (2014-09-24)
-  - Update Max Neunhoeffer's contact data
-  - Use AutoDoc to generate title page of the manual from PackageInfo.g
-  - Add Max Horn as a maintainer
+## 1.6.6 (2019-07-18)
 
-1.6.1 (2014-04-04)
-  - Previous release had an invalid release date in
-    PackageInfo.g (2014-04-31 instead of 2014-03-31).
-  - Merge HISTORY and CHANGES files.
-  - Change IsTuple to IsDirectProductElement.
+- Minimal required GAP version is 4.9
+- Add variants of Random methods which optionally accept a random source
+- Various janitorial changes
 
-1.6 (2014-03-31)
-  - Fix bug where stabilizers did not have the right parent group
-  - Fix bug when dealing with diagonal matrix groups
-  - Fix bug which sometimes lead to an endless loop in Stab()
-  - Move package repository and website to GitHub
+## 1.6.5 (2017-11-21)
 
-1.5 (2012-05-31)
-  - Fix a URL in the PackageInfo.g file for version 4,5
-  - Lose Archive URL for documentation in PackageInfo.g
+- Maintenance release
+- Use RecNames instead of the obsolete RecFields
+- Fix link to issue tracker
 
-1.4 (2012-05-30)
-  - New option "OrbitsWithLog".
-  - New internal function AddNormalizingGenToLayer
-  - New method ORB_IsElementInStabilizerChain for bysuborbit stuff
-  - Remove "tst/testall.g" from PackageInfo.g
-  - New operation StabMC
-  - Some bugfixes to Stab if the stabilizer is trivial
-  - Fix MakeGAPDocDoc with 5th argument
-  - Fix an inefficiency reported by Alexander H.
-  - Fix a problem with Randomize for vectors which are Plists
-  - Fix a problem with finding base point candidates using birthday
-    paradox: A hash table was created for vectors over too small a 
-    finite field.
+## 1.6.4 (2016-03-08)
 
-1.3 (2009-09-09)
-  - Add LoadPackage("atlasrep") to test file.
+- Maintenance release
 
-1.2 (2009-09-08)
-  - Introduce options component "RandomElmFunc" used in constructive
-    recognition.
-  - Require orb 3.3.
+## 1.6.3 (2016-01-07)
 
-1.1 (2009-08-31)
-  - Fix a small issue in PackageInfo.g for the release process.
-  - Require orb 3.2.
+- Fix a bug in SetwiseStabilizer (see issue #5)
+- Move website to https://gap-packages.github.io/genss/
 
-1.0 (2009-08-26)
-  - Initial release
+## 1.6.2 (2014-09-24)
+
+- Update Max Neunhoeffer's contact data
+- Use AutoDoc to generate title page of the manual from PackageInfo.g
+- Add Max Horn as a maintainer
+
+## 1.6.1 (2014-04-04)
+
+- Previous release had an invalid release date in
+  PackageInfo.g (2014-04-31 instead of 2014-03-31).
+- Merge HISTORY and CHANGES files.
+- Change IsTuple to IsDirectProductElement.
+
+## 1.6 (2014-03-31)
+
+- Fix bug where stabilizers did not have the right parent group
+- Fix bug when dealing with diagonal matrix groups
+- Fix bug which sometimes lead to an endless loop in Stab()
+- Move package repository and website to GitHub
+
+## 1.5 (2012-05-31)
+
+- Fix a URL in the PackageInfo.g file for version 4,5
+- Lose Archive URL for documentation in PackageInfo.g
+
+## 1.4 (2012-05-30)
+
+- New option "OrbitsWithLog".
+- New internal function AddNormalizingGenToLayer
+- New method ORB_IsElementInStabilizerChain for bysuborbit stuff
+- Remove "tst/testall.g" from PackageInfo.g
+- New operation StabMC
+- Some bugfixes to Stab if the stabilizer is trivial
+- Fix MakeGAPDocDoc with 5th argument
+- Fix an inefficiency reported by Alexander H.
+- Fix a problem with Randomize for vectors which are Plists
+- Fix a problem with finding base point candidates using birthday
+  paradox: A hash table was created for vectors over too small a
+  finite field.
+
+## 1.3 (2009-09-09)
+
+- Add LoadPackage("atlasrep") to test file.
+
+## 1.2 (2009-09-08)
+
+- Introduce options component "RandomElmFunc" used in constructive
+  recognition.
+- Require orb 3.3.
+
+## 1.1 (2009-08-31)
+
+- Fix a small issue in PackageInfo.g for the release process.
+- Require orb 3.2.
+
+## 1.0 (2009-08-26)
+
+- Initial release
