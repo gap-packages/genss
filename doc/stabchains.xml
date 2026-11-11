@@ -34,16 +34,14 @@ Sect="StabChainOpts"/> below for an
 explanation of the possible components. 
 <P/>
 Note that this is a Monte Carlo algorithm in most cases, so there is a
-small error probability. If the algorithm misses generators for a point
-stabiliser, then later orbit lengths may be too small. Since these orbit
-lengths are multiplied to compute the size represented by the stabiliser
-chain, the resulting size need not be a divisor of the actual group order.
-In particular, equality of the computed size and the actual group order
-does not by itself prove correctness unless the group order was known to
-the algorithm during the computation. If the group object <A>G</A> for some
-reason already knows the group order, then this procedure keeps adding
-random elements until the known size is reached, and returns a correct and
-proven stabiliser chain for <A>G</A>.
+small error probability. However, the only error possible is that some of
+the subgroups in the stabiliser chain are proper subgroups of the actual
+point stabilisers. So the resulting size always divides the actual group
+order (with <C>Projective</C>, the order of the projective group), and if
+the two are equal, then the stabiliser chain is proved to be correct. If the
+group object <A>G</A> for some reason already knows the group order, then
+this procedure keeps adding random elements until the known size is
+reached, and returns a correct and proven stabiliser chain for <A>G</A>.
 </Description>
 </ManSection>
 
