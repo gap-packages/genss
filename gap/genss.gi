@@ -824,19 +824,14 @@ InstallGlobalFunction( GENSS_AddLowerGensToLayer,
         return;
     fi;
     nrs := Filtered(below!.layergens, i -> not i in S!.layergens);
-    if Length(nrs) = 0 then
-        return;
-    fi;
-
     len := Length(S!.orb);
     gens := S!.stronggens{nrs};
     Append(S!.layergens,nrs);
     AddGeneratorsToOrbit(S!.orb,gens);
     Append(S!.orb!.gensi,List(gens,x->x^-1));
     if Length(S!.orb) > len then
-        Info(InfoGenSS,2,"Generators of layer ",below!.layer,
-             " extend orbit in layer ",S!.layer," to length ",
-             Length(S!.orb));
+        Info(InfoGenSS,2,"Generators of layer ",below!.layer," extend orbit ",
+             "in layer ",S!.layer," to length ",Length(S!.orb));
     fi;
   end );
 
