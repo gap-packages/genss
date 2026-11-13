@@ -126,10 +126,9 @@ function( G, op, M )
       if SS = false then break; fi;
       if M[i] = SS!.orb[1] then SS := SS!.stab; fi;
   od;
-  while SS <> false do
-      Append(gens, SS!.orb!.gens);
-      SS := SS!.stab;
-  od;
+  if SS <> false then
+      gens := ShallowCopy(SS!.orb!.gens);
+  fi;
   # These are now the generators of the pointwise stabilizer!
   # We add to them as we go.
 
@@ -432,10 +431,9 @@ function( G, op, M )
       if SS = false then break; fi;
       if M[i] = SS!.orb[1] then SS := SS!.stab; fi;
   od;
-  while SS <> false do
-      Append(gens, SS!.orb!.gens);
-      SS := SS!.stab;
-  od;
+  if SS <> false then
+      gens := ShallowCopy(SS!.orb!.gens);
+  fi;
   # These are now the generators of the pointwise stabilizer!
   # We add to them as we go.
 
