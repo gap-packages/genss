@@ -36,4 +36,22 @@ gap> Size(S);
 3628800
 
 #
+gap> z := Z(5);; o := z^0;; n := 0*z;;
+gap> GENSS_IsOneProjective(z * IdentityMat(3, GF(5)));
+true
+gap> GENSS_IsOneProjective(ImmutableMatrix(GF(5), z * IdentityMat(3, GF(5))));
+true
+gap> GENSS_IsOneProjective(NullMat(3, 3, GF(5)));
+false
+gap> GENSS_IsOneProjective(DiagonalMat([o, o, z]));
+false
+gap> GENSS_IsOneProjective([[n, o], [o, n]]);
+false
+gap> GENSS_IsOneProjective([[z, n], [o, z]]);
+false
+gap> GENSS_IsOneProjective(
+>      GeneratorsOfGroup(GroupWithMemory([z * IdentityMat(3, GF(5))]))[1]);
+true
+
+#
 gap> STOP_TEST("isone.tst", 1);
