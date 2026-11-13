@@ -5,7 +5,7 @@ gap> START_TEST("cand.tst");
 gap> g := Group(GeneratorsOfGroup(GL(4,3)));;
 
 #
-gap> b := [[1,0,0,0],[0,1,0,0]] * Z(3)^0;;
+gap> b := ImmutableMatrix(GF(3), [[1,0,0,0],[0,1,0,0]] * Z(3)^0);;
 gap> S := StabilizerChain(g, rec( Cand := rec( points := [b],
 >              ops := [OnSubspacesByCanonicalBasis] ) ));;
 gap> Size(S) = Size(GL(4,3));
