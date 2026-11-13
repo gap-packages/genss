@@ -60,9 +60,9 @@ in the options record always takes precedence over the default value.
 
 <List>
 <Mark><C>Base</C></Mark>
-<Item>This component can either be bound to an existing stabilizer chain
+<Item>This component can either be bound to an existing stabiliser chain
 object or to a list of points. In both cases this indicates that the
-base of the stabilizer chain or the list of points respectively are
+base of the stabiliser chain or the list of points respectively are
 known to be a base for the group <A>G</A>. In the first case the
 corresponding action functions are taken from the stabiliser chain, in
 the second case one should usually bind the component <C>BaseOps</C> to
@@ -78,7 +78,7 @@ a list with identical entries <C>OnLines</C> is used in projective mode and
 below).
 </Item>
 <Mark><C>Cand</C></Mark>
-<Item>The <C>Cand</C> component can be bound to a record <C>r</C>which contains
+<Item>The <C>Cand</C> component can be bound to a record <C>r</C> which contains
 candidates for base points in the following way. The <C>r.points</C>
 component contains the list of points, the <C>r.ops</C> component contains
 a list of equal length with the corresponding action functions. The
@@ -110,9 +110,9 @@ number. This component overrides everything you specify in the
 <Mark><C>FailInsteadOfError</C></Mark>
 <Item>
 If no short enough orbit is found during the computation, the procedure
-stops with an error message. If you would rather like it to return
+stops with an error message. If you would rather have it return
 <K>fail</K> then set this component to <K>true</K>. This option can be used
-to try an stabiliser chain computation automatically and give up before you
+to try a stabiliser chain computation automatically and give up before you
 run out of memory.
 </Item>
 <Mark><C>ImmediateVerificationElements</C></Mark>
@@ -146,8 +146,8 @@ factor group of the group object <A>G</A>. For example, if you set the
 group <A>G</A>, scalar multiples of the identity are considered to be
 equal to the identity. You will have to specify the base points
 explicitly using the <C>Cand</C> and <C>StrictlyUseCandidates</C>
-component (see above and below) to only use actions
-having the normal subgroup in its kernel. A shortcut for computing
+components (see above and below) to only use actions
+having the normal subgroup in their kernel. A shortcut for computing
 stabiliser chains of projective groups (matrix group modulo scalars) is
 to set the <C>Projective</C> component (see below) and switch to projective
 mode.
@@ -167,7 +167,7 @@ component says. See the <C>TryBirthdayParadox</C> component.
 <Mark><C>NumberPrevOrbitPoints</C></Mark>
 <Item>
 After an orbit for the stabiliser chain has been enumerated, the randomised
-Schreier-Sims method first tries <C>NumberPrevOrbitPoints</C> from this
+Schreier-Sims method first tries <C>NumberPrevOrbitPoints</C> points from this
 orbit as next base points. Note that this is not done if the
 <C>StrictlyUseCandidates</C> component is set to <K>true</K>.
 </Item>
@@ -193,7 +193,7 @@ reliable.
 <Mark><C>OrbitsWithLog</C></Mark>
 <Item>
 This component defaults to <K>true</K> in which case the orbit objects
-for the stabiliser chain have a log to allow to make the Schreier
+for the stabiliser chain have a log, which allows making the Schreier
 trees shallow by adding generators. If you set this to <K>false</K>,
 no logs are written and the Schreier trees could potentially be deep.
 This will make sifting slower. Usually you should not touch this
@@ -263,7 +263,7 @@ See the <C>TryShortOrbit</C> component.
 <Mark><C>Size</C></Mark>
 <Item>
 If the <C>Size</C> component is set to a positive integer it is taken as
-the size of the group <A>G</A>. This information allows to verify the
+the size of the group <A>G</A>. This information allows verifying the
 stabiliser chain simply by looking at its size. If the group object
 knows its size already (and the <C>Projective</C> component was not set to
 <K>true</K>), then the stored size of the group is automatically taken into
@@ -299,7 +299,7 @@ If this component is set to <K>true</K> (default is <K>false</K>) then
 only the given candidate points are taken as possible base points. In
 particular, the procedure does not take additional points of the previous
 orbit as candidates for base points (see component
-<C>NumberPrevOrbitPoints</C> ). Use this option in combination to
+<C>NumberPrevOrbitPoints</C>). Use this option in combination with
 <C>Reduced</C> set to <K>false</K> to enforce a certain known base.
 </Item>
 <Mark><C>TryBirthdayParadox</C></Mark>
@@ -318,17 +318,17 @@ point is taken as the next base point.
 <Item>
 The method to try to find short orbits using the standard Murray/O'Brien
 heuristics is used up to <C>TryShortOrbit</C> times for each new base
-point. This method uses the heuristics to find candicates for short orbits
+point. This method uses the heuristics to find candidates for short orbits
 using <C>ShortOrbitsNrRandoms</C> random group elements.
 It then enumerates all these orbits up to the limit
-<C>ShortOrbitsInitialLimit</C>. If any of them closes the corresponding 
+<C>ShortOrbitsInitialLimit</C>. If any of them closes, the corresponding 
 candidate is taken as the next base point. Otherwise half of the points are
 thrown away and the limit is doubled. This goes on until either an orbit
 closes or the limit grows over <C>ShortOrbitsOrbLimit</C>.
 </Item>
 <Mark><C>VerifyElements</C></Mark>
 <Item>
-This component can be used to set it to the number of random elements that
+This component sets the number of random elements that
 are used in the end to verify the stabiliser chain statistically.
 Usually the user specifies the component <C>ErrorBound</C> instead
 and <C>VerifyElements</C> is then computed automatically from that. 
@@ -370,9 +370,9 @@ action.
 <Heading>How base points are chosen</Heading>
 
 This section explains some internal details of how base points are chosen
-during a stabiliser chain computations. As a user, you can probably safely
+during a stabiliser chain computation. As a user, you can probably safely
 skip this section and ignore it altogether. However, in situations where
-thes stabiliser chain computation is more difficult (for example if
+the stabiliser chain computation is more difficult (for example if
 it is difficult to find short orbits), then it can be helpful to know
 about these details.
 
@@ -394,7 +394,7 @@ Note that if the user supplies candidates for the base points and
 operations (see component <C>Cand</C> in the stabiliser chain options in
 Section <Ref Sect="StabChainOpts"/>), then it is entirely possible that
 all base points come from these candidates and the mechanisms described
-in this sections are not used at all.
+in this section are not used at all.
 
 <P/>
 However, if the procedure runs out of base points, it needs a way to find
@@ -414,16 +414,16 @@ There are various methods installed to this end which all might fail
 and call <C>TryNextMethod();</C>. We do not document the details of
 these methods here but only give an overview. For permutation groups
 the choice of candidates is very straightforward, one simply takes a
-few integers with the usual action <C>OnPoints</C>. For matrix group
+few integers with the usual action <C>OnPoints</C>. For matrix groups
 finding a reasonably short orbit is more difficult. The system first
 handles the case of a scalar group which is easy. Then it hopes to
 find a <Q>very short orbit</Q> defined by the component 
 <C>VeryShortOrbLimit</C> in the stabiliser chain computation options.
-If this fails the birthday paradoxon method is used to find an
-estimate for a reasonably short orbit amoung candidates coming from
+If this fails the birthday paradox method is used to find an
+estimate for a reasonably short orbit among candidates coming from
 the Murray and O'Brien heuristics. If this fails the same heuristics
 are used but various orbits are enumerated up to a certain point
-decreasing the number of orbits as the limit goes up. If all fails
+decreasing the number of orbits as the limit goes up. If all else fails,
 some of the candidates from the heuristics are simply tried
 with brute force. The whole computation can fail if some upper orbit
 length limit is reached (see component <C>OrbitLengthLimit</C> in the
@@ -435,7 +435,7 @@ stabiliser chain computation options).
 <Heading>Using stabiliser chains</Heading>
 
 The most important thing one can do with a stabiliser chain is sifting.
-This is done with one of the next to operations:
+This is done with one of the next two operations:
 
 <ManSection>
 <Oper Name="SiftGroupElement" Arg="S, el"/>
@@ -452,7 +452,7 @@ the <C>IsOne</C>-component of the options record for the stabiliser chain
 operation then the 
 <C>rem</C> component is equal to the identity according to that test.
 The result of this test (<K>true</K> or <K>false</K>) is stored in the
-component <C>isone</C> of the resulting record. This means, that this
+component <C>isone</C> of the resulting record. This means that this
 component indicates whether or not the sifting was successful. The
 component <C>S</C> is bound to the stabiliser chain
 object corresponding to the layer in which the sifting stopped. If it
@@ -578,7 +578,7 @@ of the stabiliser chain.
 <Returns>nothing</Returns>
 <Description>
 Once the user is convinced that the stabiliser chain <A>S</A> describes
-the group <A>g</A> correctly, he can call this operation to store the
+the group <A>g</A> correctly, one can call this operation to store the
 stabiliser chain together with the group object. From then on, additional
 methods using the stabiliser chain (for example <Ref Oper="Size"/>,
 <Ref Oper="Random"/> and
@@ -588,7 +588,7 @@ the group knew its size beforehand), then the stabiliser chain is
 stored with the group automatically when it is constructed, which 
 makes the explicit storing of the stabiliser chain unnecessary.
 <P/>
-The stored stabiliser chain of a group object can be used using
+The stored stabiliser chain of a group object can be accessed with
 <Ref Oper="StoredStabilizerChain"/>.
 </Description>
 </ManSection>
@@ -659,10 +659,10 @@ to the elements <A>images</A> which must lie in <A>h</A>. This mapping must
 be a group homomorphism, note that this is not checked!
 <P/>
 The homomorphism is computed by computing stabiliser chains on both sides
-such that elements can be mapped in both directions simply be sifting and
+such that elements can be mapped in both directions simply by sifting and
 expressing them in terms of the strong generators. This is where the
-two arguments <A>opts1</A> and <A>opts2</A> come into play. The former
-is used as the options record for the stabiliser computation in <A>g</A> and
+two arguments <A>opt1</A> and <A>opt2</A> come into play. The former
+is used as the options record for the stabiliser chain computation in <A>g</A> and
 the latter for the one in the group generated by <A>images</A>.
 </Description>
 </ManSection>

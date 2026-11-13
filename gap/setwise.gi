@@ -21,10 +21,10 @@ InstallGlobalFunction( GENSS_FindElmMappingBaseSubsetIntoSet,
     # map is a list and depth gives the recursion depth.
     # Mapping point M[depth] to x is documented by map[depth] := x.
     # This function recursively searches for some element of G
-    # that maps all points of M into N and the first basis point into
+    # that maps all points of M into N and the first base point into
     # NN. It directly returns as soon as it has found one or returns
     # fail if none exists.
-    # It returns the list map, filled with a (possibly partial) images
+    # It returns the list map, filled with (possibly partial) images
     # of the points in M.
     local Nti,i,j,orbpos,res,word;
 
@@ -278,10 +278,10 @@ InstallGlobalFunction(
     # map is a list and depth gives the recursion depth.
     # Mapping point M[depth] to x is documented by map[depth] := x.
     # This function recursively searches for some element of G
-    # that maps all points of M into N and the first basis point into
+    # that maps all points of M into N and the first base point into
     # NN. It directly returns as soon as it has found one or returns
     # fail if none exists.
-    # It returns the list map, filled with a (possibly partial) images
+    # It returns the list map, filled with (possibly partial) images
     # of the points in M.
     local cellsM,cellsN,Nti,i,j,orbpos,pa,po,res,word,x;
 
@@ -305,7 +305,7 @@ InstallGlobalFunction(
     if IsBound( S!.mainorb ) then
         # We think about pruning the tree here, we check, whether the
         # cell distribution in M{[depth..]} is the same as in NN:
-        # If not, this subtree can not be successful any more:
+        # If not, this subtree cannot be successful any more:
         pa := S!.parts;
         cellsM := S!.cellsM{[depth..Length(M)]};
         #cellsM := [];

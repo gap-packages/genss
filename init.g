@@ -4,7 +4,7 @@
 ##                                                          Max Neunhoeffer
 ##                                                             Felix Noeske
 ##
-##  Copyright 2006 Lehrstuhl D für Mathematik, RWTH Aachen
+##  Copyright 2006 Lehrstuhl D fÃ¼r Mathematik, RWTH Aachen
 ##
 ##  Reading the declaration part of the genss package.
 ##
