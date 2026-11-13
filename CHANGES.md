@@ -1,5 +1,12 @@
 This file describes changes in the genss package.
 
+## Unreleased
+
+- Fix stabilizer chains whose size does not divide the group order. If
+  the Monte Carlo algorithm misses stabilizer generators, the size is now
+  a proper divisor of the group order, as the manual claimed before
+  1.6.10 (PR #29)
+
 ## 1.6.10 (2026-08-18)
 
 - Correct an incorrect claim in the manual about what can happen if a

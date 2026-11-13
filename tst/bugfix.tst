@@ -114,4 +114,25 @@ gap> for i in [1..100] do
 #I  Computing adjusted stabilizer chain...
 
 #
+# The size of an unproved stabilizer chain must divide the group order.
+# These seeds gave 48384 and 230400 when deeper strong generators were
+# missing from the upper orbits.
+#
+gap> SizeDividesOrder := function(G, N, seeds)
+>   local seed, S;
+>   for seed in seeds do
+>     Reset(GlobalMersenneTwister, seed);
+>     Reset(GlobalRandomSource, seed);
+>     S := StabilizerChain(Group(GeneratorsOfGroup(G)),
+>                          rec(Projective := true));
+>     if N mod Size(S) <> 0 then
+>       Print("seed ", seed, ": size ", Size(S), "\n");
+>     fi;
+>   od;
+> end;;
+gap> SizeDividesOrder(SO(+1,4,7), 56448, [455, 551]);
+gap> SizeDividesOrder(SO(+1,4,9), 259200,
+>                     [430, 531, 965, 1682, 1932, 2277, 2343, 2835]);
+
+#
 gap> STOP_TEST("bugfix.tst", 1);
