@@ -30,13 +30,13 @@ the interfaces and calling conventions.
     So <A>G</A> must be a group acting on some set <M>\Omega</M>, 
     this action is
     given by the action function <A>op</A>. The set <A>M</A> must consist
-    of elements <M>\Omega</M>. The result is a record with the
+    of elements of <M>\Omega</M>. The result is a record with the
     components <C>setstab</C> containing the setwise stabiliser and
     <C>S</C> containing a stabiliser chain for it.
     <P/>
     This operation uses backtrack search in a specially crafted
     stabiliser chain for <A>G</A> doing not much intelligent pruning
-    of the search tree, so expect possible long delays!
+    of the search tree, so expect possibly long delays!
 </Description>
 </ManSection>
 
@@ -48,14 +48,14 @@ the interfaces and calling conventions.
     So <A>G</A> must be a group acting on some set <M>\Omega</M>, 
     this action is
     given by the action function <A>op</A>. The set <A>M</A> must consist
-    of elements <M>\Omega</M>. The result is a record with the
+    of elements of <M>\Omega</M>. The result is a record with the
     components <C>setstab</C> containing the setwise stabiliser and
     <C>S</C> containing a stabiliser chain for it.
     <P/>
     This operation uses backtrack search in a specially crafted
-    stabiliser chain for <A>G</A>. It does some ideas coming from
-    partition backtrack but does not (yet) implement a full featured
-   partition backtrack, so expect possible longish delays!
+    stabiliser chain for <A>G</A>. It uses some ideas coming from
+    partition backtrack but does not (yet) implement a full-featured
+    partition backtrack, so expect possibly long delays!
 </Description>
 </ManSection>
 
@@ -70,14 +70,14 @@ the interfaces and calling conventions.
 <Description>
     Let <M>G</M> be the group described by the stabiliser chain <A>S</A>.
     The group element <A>g</A> must be some element in an overgroup 
-    <M>\hat G</M>of
+    <M>\hat G</M> of
     <M>G</M> such that the function <A>P</A> described below is defined
-    on the whole of <M>\hat G</M>
+    on the whole of <M>\hat G</M>.
     <P/>
     This operation implements a generic backtrack search in the coset
-    <M>G<A>g</A></M> looking for an element <M>x\ in G</M>
+    <M>G<A>g</A></M> looking for an element <M>x \in G</M>
     such that <A>P</A><M>(x<A>g</A>)</M>
-    is <K>true</K> where <A>P</A> is a function on <M>\hat G</M>taking
+    is <K>true</K> where <A>P</A> is a function on <M>\hat G</M> taking
     values <K>true</K> and <K>false</K>.
     The operation returns the group
     element <M>x</M> if one is found or <K>fail</K> if none was found.
@@ -85,7 +85,7 @@ the interfaces and calling conventions.
     The search tree is given by the stabiliser chain, each node corresponds
     to a right coset of one of the stabilisers in the chain. The leaves
     correspond to right cosets of the identity group, i.e. to group
-    elements in <M>G<A>g</A></M>
+    elements in <M>G<A>g</A></M>.
     <P/>
     To make this backtrack search efficient some pruning of the search
     tree has to be done. To this end there is the fourth argument 
@@ -93,7 +93,7 @@ the interfaces and calling conventions.
     pruning at all happens) or a &GAP; function taking 5 arguments and
     returning either <K>true</K> or <K>false</K>. The function
     <A>pruner</A> is called for every node in the search tree before
-    the backtrack search descents into the subtrees. If the <A>pruner</A> 
+    the backtrack search descends into the subtrees. If the <A>pruner</A> 
     function returns <K>false</K>, the complete subtree starting at
     the current node is pruned and no further search is performed
     there. If the result is <K>true</K> (or <A>pruner</A> was equal to
@@ -141,15 +141,15 @@ the interfaces and calling conventions.
     The search tree is given by the stabiliser chain, each node corresponds
     to a right coset of one of the stabilisers in the chain. The leaves
     correspond to right cosets of the identity group, i.e. to group
-    elements in <M>G</M>
+    elements in <M>G</M>.
     <P/>
     To make this backtrack search efficient some pruning of the search
-    tree has to be done. To this end there is the fourth argument 
+    tree has to be done. To this end there is the third argument 
     <A>pruner</A> which can either be <K>false</K> (in which case no
     pruning at all happens) or a &GAP; function taking 5 arguments and
     returning either <K>true</K> or <K>false</K>. The function
     <A>pruner</A> is called for every node in the search tree before
-    the backtrack search descents into the subtrees. If the <A>pruner</A> 
+    the backtrack search descends into the subtrees. If the <A>pruner</A> 
     function returns <K>false</K>, the complete subtree starting at
     the current node is pruned and no further search is performed
     there. If the result is <K>true</K> (or <A>pruner</A> was equal to
@@ -164,7 +164,7 @@ the interfaces and calling conventions.
     <Math> G = S_0 > S_1 > S_2 > \cdots > S_m > S_{{m+1}} = \{1\}
     </Math> be the stabiliser chain and let 
     <Math> O_1, O_2, \ldots, O_m </Math> be the basic orbits. Then for the 
-    node corresponding to the coset <M>S_i t<A>g</A></M> 
+    node corresponding to the coset <M>S_i t</M> 
     for <M>i \ge 1</M> and
     some transversal element <M>t</M> contained in <M>S_{{i-1}}</M>
     the arguments with which the <A>pruner</A> function is called

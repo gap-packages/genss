@@ -16,10 +16,10 @@ Do this in a directory called `pkg`, preferably (but not necessarily)
 in the `pkg` subdirectory of your GAP 4 installation. It creates a
 subdirectory called `genss-x.x`.
 
-This is all which is needed if you installed the package in the standard
+This is all that is needed if you installed the package in the standard
 `pkg` subdirectory.
 
-Note that the genss package needs the `orb` and `IO` packages to work.
+Note that the genss package needs the `orb` package to work.
 
 If you installed the package in another `pkg` directory than the standard
 `pkg` directory in your GAP 4 installation, then you have to add the path

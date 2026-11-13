@@ -73,7 +73,7 @@ Persons := [
 Status := "deposited",
 
 ##  You must provide the next two entries if and only if the status is 
-##  "accepted" because is was successfully refereed:
+##  "accepted" because it was successfully refereed:
 # format: 'name (place)'
 # CommunicatedBy := "Mike Atkinson (St. Andrews)",
 #CommunicatedBy := "",
@@ -99,7 +99,7 @@ ArchiveFormats := ".tar.gz .tar.bz2",
 ##  for a Webpage with more detailed information about the package
 ##  (not more than a few lines, less is ok):
 ##  Please, use '<span class="pkgname">GAP</span>' and
-##  '<span class="pkgname">MyPKG</span>' for specifing package names.
+##  '<span class="pkgname">MyPKG</span>' for specifying package names.
 ##  
 AbstractHTML := 
   "The <span class=\"pkgname\">genss</span> package implements the \
@@ -138,7 +138,7 @@ AutoDoc := rec(
                     "&copyright; 2006-2014 by Max Neunhöffer and Felix Noeske<P/>\n",
                     "\n",
                     "This package may be distributed under the terms and conditions of the\n",
-                    "GNU Public License Version 3 or higher.\n"
+                    "GNU General Public License Version 3 or higher.\n"
                 ),
     )
 ),

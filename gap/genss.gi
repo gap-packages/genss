@@ -59,7 +59,7 @@ GENSS.NumberSchreierGens := 20;
 GENSS.MaxNumberSchreierGens := 100;
 # By default do 3 rounds of birthday paradox method:
 GENSS.TryBirthdayParadox := 3;
-# By default do 1 short orbit tries:
+# By default do 1 short orbit try:
 GENSS.TryShortOrbit := 1;
 # Limit for orbit length during orbit estimation using birthday paradox:
 GENSS.OrbitLimitBirthdayParadox := 1000000;
@@ -81,12 +81,12 @@ GENSS.StabInitialLimit := 1000;
 GENSS.StabInitialPatience := 10;
 # Maximal amount of memory used for the orbit:
 GENSS.StabOrbitLimit := 1000000;
-# If the probability of a wrong stabiliser is smaller than this, do no
-# longer try to create stabiliser elements:
+# If the probability of a wrong stabiliser is smaller than this, stop
+# trying to create stabiliser elements:
 GENSS.StabAssumeCompleteLimit := 1/(10^7);
 # The following switches off the log used in all orbits for stabilizer
 # chains if set to false. Do not do this unless you know what you are
-# doing since since could prevent Schreier trees from being shallow.
+# doing since this could prevent Schreier trees from being shallow.
 GENSS.OrbitsWithLog := true;
 
 #############################################################################
@@ -203,15 +203,16 @@ InstallGlobalFunction( GENSS_FindShortOrbit,
     # Needs opt components:
     #  "ShortOrbitsNrRandoms"  (because it uses GENSS_FindVectorsWithShortOrbit)
     #  "ShortOrbitsOrbLimit"
-    #  "ShortOrbitsInitialartLimit"
+    #  "ShortOrbitsInitialLimit"
     local ThrowAwayOrbit,found,gens,hashlen,i,j,limit,newnrorbs,nrorbs,o,wb;
 
     wb := GENSS_FindVectorsWithShortOrbit(g,opt,parentS);
     if Length(wb) = 0 then return fail; fi;
 
     # Now we have a list of vectors with (hopefully) short orbits.
-    # We start enumerating all those orbits, but first only 50 elements:
-    nrorbs := Minimum(Length(wb),64);  # take only the 64 first
+    # We start enumerating all those orbits, but first only up to
+    # opt.ShortOrbitsInitialLimit points:
+    nrorbs := Minimum(Length(wb),64);  # take only the first 64
     gens := GeneratorsOfGroup(g);
     o := [];
     hashlen := NextPrimeInt(QuoInt(opt.ShortOrbitsOrbLimit,2));
@@ -317,7 +318,7 @@ InstallMethod( FindBasePointCandidates,
 InstallMethod( FindBasePointCandidates, 
   "for a matrix group over a FF, very short orbit",
   [ IsGroup and IsMatrixGroup and IsFinite, IsRecord, IsInt, IsObject ],
-  40,  # highest weight,
+  40,
   function( grp, opt, i, parentS )
     local F, q, d, gens, op, v, vv, k, kk, o, cand, j;
     F := DefaultFieldOfMatrixGroup(grp);
@@ -390,8 +391,6 @@ InstallMethod( FindBasePointCandidates,
     Append(opt.FindBasePointCandidatesData.vecs,v);  # hand on vectors
     TryNextMethod();
   end );
-
-# Method with rank 30 taking some commutators and invariant spaces
 
 InstallMethod( FindBasePointCandidates,
   "for a matrix group over a FF, using birthday paradox method",
@@ -747,13 +746,13 @@ InstallGlobalFunction( GENSS_RandomElementFromAbove,
     # the one product replacer object in the opt record for the whole
     # group. They are sifted through i layers of the stabiliser chain
     # infrastructure until they stabilise the first i points (i=0 simply
-    # means a random element in the whole group). If we find out underways
+    # means a random element in the whole group). If we find out on the way
     # that an orbit is too small (that is, a stabiliser was not complete),
     # we fix the stabiliser chain as we go. Random elements that have
     # been generated in a layer j < i previously and are not yet used
     # as strong generators can be taken from a pool that was kept in
-    # the stabiliser chain. S must either be layer i of the stabiliser 
-    # or (for i=0) it can be equal to the options record opt chain.
+    # the stabiliser chain. S must either be layer i of the stabiliser
+    # chain or (for i=0) the options record opt.
     local SS, x, topS, j, o, p, po;
     if i = 0 then
         return Next(S.pr);    # in this case we got the options record
@@ -916,7 +915,6 @@ InstallGlobalFunction( GENSS_StabilizerChainInner,
                  S!.layer," (",opt.ImmediateVerificationElements,
                  " elements)...");
             i := 0;
-#Error("foobar");
             while i < opt.ImmediateVerificationElements do
                 i := i + 1;
                 x := GENSS_RandomElementFromAbove(S,layer);
@@ -1005,7 +1003,7 @@ InstallMethod( StabilizerChain, "for a group object and a record",
     #               if Base is set
     #   BaseOps:    a list of operation functions for the base points
     #   Projective: if set to true indicates that the matrices given
-    #               as generators are to be thought as projective
+    #               as generators are to be thought of as projective
     #               elements, that is, the whole StabilizerChain will
     #               be one for a projective group!
     #   StrictlyUseCandidates: if set to true exactly the points in
@@ -1071,7 +1069,7 @@ InstallMethod( StabilizerChain, "for a group object and a record",
         return S;
     fi;
     
-    # Setup a random element generator for the whole group and store
+    # Set up a random element generator for the whole group and store
     # it in the opt record:
     opt.pr := ProductReplacer( gens,
                       rec( scramble := opt.StabGenScramble,
@@ -1258,7 +1256,7 @@ InstallMethod( AddGeneratorToStabilizerChain,
                            SS!.layer+1,SS!.cand, SS!.opt, SS );
         if IsString(SS!.stab) then return SS!.stab; fi; 
         SS := SS!.stab;
-        # the new layers' generators must act on all layers above
+        # the new layer's generators must act on all layers above
         up := SS!.parentS;
         while up <> false do
             GENSS_AddLowerGensToLayer(up,SS);
@@ -2046,8 +2044,8 @@ InstallGlobalFunction( GENSS_FindGensStabilizer,
 
 InstallGlobalFunction( GENSS_FindShortGensStabilizer,
   function( gens, pt, op, grpsize, stabsize, S )
-    # Assumes that S is a correct stabilizer chain a supergroup of the
-    # group g generated by gens. pt and op is an action for g.
+    # Assumes that S is a correct stabilizer chain for a supergroup of the
+    # group g generated by gens. pt is a point and op an action for g.
     # grpsize is the Size of g and stabsize is the size of the stabilizer.
     # Finds an SLP to express generators of the stabilizer of pt in
     # g in terms of the gens.
@@ -2373,7 +2371,7 @@ InstallMethod( ORB_StabilizerChainKnownSize,
   end );
 
 InstallMethod( ORB_BaseStabilizerChain,
-  "GENSS method for arbitary groups",
+  "GENSS method for arbitrary groups",
   [IsStabilizerChain],
   BaseStabilizerChain );
 
@@ -2584,7 +2582,7 @@ InstallMethod( Stab, "by Orb orbit enumeration",
                         if not(res) then
                             Remove(stabgens,Length(stabgens));
                             errorprob := errorprob / 2;
-                            Info(InfoGenSS,2,"Error probablity now < ",
+                            Info(InfoGenSS,2,"Error probability now < ",
                                  errorprob);
                         else
                             Info(InfoGenSS,2,
@@ -2675,7 +2673,7 @@ InstallGlobalFunction( BacktrackSearchStabilizerChainElement,
             P,     # a property function G -> {true,false}
             g,     # a group element
             pruner )
-    # Let G be a group and U being the subgroup defined by S.
+    # Let G be a group and U the subgroup defined by S.
     # Does a backtrack search in U using S for an element x of U
     # for which P(xg) is true. g not necessarily in U!
     # pruner is either false or a function taking arguments as seen below.
@@ -2736,7 +2734,7 @@ InstallGlobalFunction( ComputeSuborbitsForStabilizerChain,
 
 InstallGlobalFunction( BacktrackSearchStabilizerChainSubgroup,
   function(S,P,pruner) 
-    # Let G be a group and U being the subgroup defined by S.
+    # Let G be a group and U the subgroup defined by S.
     # Does a backtrack search in U using S for the subgroup H of U
     # with H := {h \in U | P(h)=true}. P must be such that H is 
     # a subgroup of U.

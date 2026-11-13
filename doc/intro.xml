@@ -4,7 +4,7 @@
                                                                Max Neunhoeffer
                                                                   Felix Noeske
 
-         Copyright (C) 2006, Lehrstuhl D für Mathematik, RWTH-Aachen
+         Copyright (C) 2006, Lehrstuhl D fÃ¼r Mathematik, RWTH-Aachen
 
 This chapter gives a short introduction and explains the philosophy
 behind the package.
@@ -22,11 +22,11 @@ generating sets for arbitrary finite groups.
 </Section>
 
 <Section Label="overview">
-<Heading>Overview over this manual</Heading>
+<Heading>Overview of this manual</Heading>
 
 Chapter <Ref Chap="install"/> describes the installation of this package.
 
-Chapter <Ref Chap="StabChains"/> desribes the core functionality of the
+Chapter <Ref Chap="StabChains"/> describes the core functionality of the
 package, namely the computation and usage of stabiliser chains.
 
 Chapter <Ref Chap="Backtrack"/> describes some methods using backtrack
