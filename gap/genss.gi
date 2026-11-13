@@ -278,13 +278,11 @@ InstallGlobalFunction( GENSS_FindShortOrbit,
 InstallGlobalFunction( GENSS_IsOneProjective,
   function(el)
     local s;
-    s := el[1][1];
-    if IsZero(s) then return false; fi;
-    if not(IsOne(s)) then
-        s := s^-1;
-        el := s * el;
-    fi;
-    return IsOne( el );
+    # test for a nonzero scalar matrix without computing s^-1 * el
+    s := el[1,1];
+    return not IsZero(s)
+       and ForAll([2..NrRows(el)], i -> el[i,i] = s)
+       and IsDiagonalMat(el);
   end );
 
 
