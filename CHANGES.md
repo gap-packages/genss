@@ -1,11 +1,20 @@
 This file describes changes in the genss package.
 
-## Unreleased
+## 1.7.0 (2026-11-14)
 
 - Fix stabilizer chains whose size does not divide the group order. If
   the Monte Carlo algorithm misses stabilizer generators, the size is now
   a proper divisor of the group order, as the manual claimed before
-  1.6.10 (PR #29)
+  1.6.10. Upper orbits now also use the strong generators of deeper
+  layers, so Schreier trees and sifting words differ from earlier
+  versions, and chain computation can be slower for some groups (PR #29)
+- `SetwiseStabilizer` and `SetwiseStabilizerPartitionBacktrack` return
+  the stabilizer with considerably fewer generators (PR #31)
+- Speed up the identity test for projective matrix groups by avoiding
+  a matrix copy per call (PR #30)
+- Correct errors in the manual, e.g. the argument numbering of the
+  pruner in `BacktrackSearchStabilizerChainSubgroup`, and point to the
+  issue tracker for feedback (PR #32, #34)
 
 ## 1.6.10 (2026-08-18)
 
